@@ -1,6 +1,6 @@
 name: "💻 새로운 기능"
 description: "새로운 기능에 대한 이슈를 작성해주세요!"
-labels: "💻 Feat"
+labels: "💻 Feature"
 
 body:
     - type: input
