@@ -8,11 +8,33 @@
 import SwiftUI
 
 struct RootView: View {
+    
+    @AppStorage("hasCompletedOnboarding")
+    private var hasCompletedOnboarding: Bool = false
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Group {
+            if hasCompletedOnboarding {
+                HomeView()
+                    .transition(
+                        .move(edge: .trailing)
+                        .combined(with: .opacity)
+                    )
+                    .zIndex(0)
+            } else {
+                OnboardingView {
+                    hasCompletedOnboarding = true
+                }
+                .transition(
+                    .move(edge: .leading)
+                    .combined(with: .opacity)
+                )
+                .zIndex(1)
+            }
+        }
+        .animation(
+            .easeInOut(duration: 0.6),
+            value: hasCompletedOnboarding
+        )
     }
-}
-
-#Preview {
-    RootView()
 }
