@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SubQuestView: View {
-    @State private var isCameraPresented = false
-    @State private var isCompleted = false
+    @State private var isCameraPresented: Bool = false
+    @State private var hasCapturedPhoto: Bool = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -19,7 +19,12 @@ struct SubQuestView: View {
             }
             // Apple은 카메라 인터페이스는 전체 화면으로 표시하는 것을 권장한다
             .fullScreenCover(isPresented: $isCameraPresented) {
-                CameraPicker(isPresented: $isCameraPresented, isCompleted: $isCompleted)
+                CameraPicker(onCapture: {
+                    isCameraPresented = false
+                    hasCapturedPhoto = true
+                }, onCancel: {
+                    isCameraPresented = false
+                })
                     .ignoresSafeArea()
             }
         }
@@ -69,11 +74,11 @@ struct SubQuestView: View {
                     ZStack {
                         Circle()
                             .stroke(.black, lineWidth: 2)
-                        Text(isCompleted ? "✅" : "📷")
+                        Text(hasCapturedPhoto ? "✅" : "📷")
                     }
                     .frame(width: 55, height: 55)
                 }
-                .disabled(isCompleted)
+                .disabled(hasCapturedPhoto)
             }
         }
         .padding()

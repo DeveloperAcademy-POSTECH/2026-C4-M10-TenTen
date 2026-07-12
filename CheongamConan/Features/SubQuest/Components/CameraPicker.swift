@@ -12,8 +12,9 @@ import UIKit
 
 // UIKit의 시스템 카메라를 SwiftUI에서 표시하기 위한 어댑터
 struct CameraPicker: UIViewControllerRepresentable {
-    @Binding var isPresented: Bool
-    @Binding var isCompleted: Bool
+    let onCapture: () -> Void
+    let onCancel: () -> Void
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
@@ -42,12 +43,11 @@ struct CameraPicker: UIViewControllerRepresentable {
             ]
         ) {
             // 촬영 성공
-            parent.isCompleted = true
-            parent.isPresented = false
+            parent.onCapture()
         }
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             // 촬영 취소
-            parent.isPresented = false
+            parent.onCancel()
         }
     }
 }
