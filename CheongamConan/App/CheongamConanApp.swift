@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct CheongamConanApp: App {
+    @State private var locationService = LocationService()
+    
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            RootView()
+                .environment(locationService)
         }
     }
 }
