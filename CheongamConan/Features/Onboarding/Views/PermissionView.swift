@@ -8,7 +8,16 @@
 import SwiftUI
 
 struct PermissionView: View {
+    @Environment(LocationService.self) private var locationService
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @State private var model = PermissionModel()
+    
+    let onCompleted: () -> Void
+    
     var body: some View {
+        @Bindable var model = model
+        
         VStack {
             Spacer()
             
@@ -17,11 +26,8 @@ struct PermissionView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
-                VStack(spacing: 23) {
+                VStack(alignment: .leading, spacing: 23) {
                     Text("📍 위치 권한 (필수)")
-                        .font(.title3)
-                    
-                    Text("🔔 알림 권한 (필수)")
                         .font(.title3)
                 }
             }
@@ -30,7 +36,7 @@ struct PermissionView: View {
             Spacer()
             
             Button {
-                print("버튼 누름")
+                model.confirm(using: locationService, onCompleted: onCompleted)
             } label: {
                 Text("확인")
                     .fontWeight(.semibold)
@@ -42,9 +48,37 @@ struct PermissionView: View {
         .padding(.horizontal, 16)
         .padding(.bottom, 40)
         .ignoresSafeArea()
+        .alert(
+            "위치 권한이 필요합니다.",
+            isPresented: $model.isSettingsAlertPresented
+        ) {
+            Button("취소", role: .cancel) {}
+            
+            Button("설정으로 이동") {
+                model.openSettings(using: locationService)
+            }
+            .keyboardShortcut(.defaultAction)
+        } message: {
+            Text("현재 위치를 기반으로 서비스를 제공하기 위해 위치 권한이 필요합니다.")
+        }
+        .onChange(of: locationService.authorizationStatus) { _, _ in
+            model.authorizationDidChange(
+                using: locationService,
+                onCompleted: onCompleted
+            )
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            
+            model.appDidBecomeActive(
+                using: locationService,
+                onCompleted: onCompleted
+            )
+        }
     }
 }
 
 #Preview {
-    PermissionView()
+    PermissionView(onCompleted: {})
+        .environment(LocationService())
 }

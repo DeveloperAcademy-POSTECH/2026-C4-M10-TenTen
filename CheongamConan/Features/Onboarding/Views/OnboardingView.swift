@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @State private var isPermissionViewPresented = false
+    @State private var isPermissionViewPresented: Bool = false
+    
+    let onCompleted: () -> Void
 
     var body: some View {
         ZStack {
             if isPermissionViewPresented {
-                PermissionView()
+                PermissionView(
+                    onCompleted: onCompleted
+                )
                     .transition(
                         .move(edge: .bottom)
                         .combined(with: .opacity)
@@ -39,5 +43,6 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView(onCompleted: {})
+        .environment(LocationService())
 }
