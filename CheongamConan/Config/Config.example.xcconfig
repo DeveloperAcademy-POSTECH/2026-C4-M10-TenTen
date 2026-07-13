@@ -1,0 +1,11 @@
+//
+//  Config.example.xcconfig
+//  CheongamConan
+//
+//  Created by 정홍섭 on 7/13/26.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+NAVER_MAP_NCP_KEY_ID = YOUR_NAVER_MAP_KEY_ID
