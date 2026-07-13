@@ -10,7 +10,7 @@ import SwiftUI
 struct HomeView: View {
     var body: some View {
         NavigationView {
-            NavigationLink(destination: AreaPickerView()) {
+            NavigationLink(destination: TravelSetupView()) {
                 Text("여행 시작하기")
             }
         }
