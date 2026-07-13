@@ -9,3 +9,5 @@
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
 NAVER_MAP_NCP_KEY_ID = YOUR_NAVER_MAP_KEY_ID
+VWORLD_API_KEY = YOUR_VWORLD_API_KEY
+NAVER_MAP_STYLE_ID = YOUR_NAVER_MAP_STYLE_ID
