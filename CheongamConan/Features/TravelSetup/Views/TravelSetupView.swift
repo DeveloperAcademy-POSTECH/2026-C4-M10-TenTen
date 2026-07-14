@@ -11,8 +11,7 @@ struct TravelSetupView: View {
     @State private var model = TravelSetupModel()
     
     var body: some View {
-        AreaPickerView()
-            .environment(model)
+        AreaPickerView(setupModel: model)
     }
 }
 
