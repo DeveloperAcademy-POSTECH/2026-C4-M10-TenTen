@@ -25,7 +25,7 @@ struct SubQuestView: View {
                 }, onCancel: {
                     isCameraPresented = false
                 })
-                    .ignoresSafeArea()
+                .ignoresSafeArea()
             }
         }
     }
