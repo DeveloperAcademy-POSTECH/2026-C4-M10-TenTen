@@ -9,20 +9,13 @@ import SwiftUI
 import CoreLocation
 
 struct AreaPickerView: View {
-    @Environment(LocationService.self)
-    private var locationService
+    let setupModel: TravelSetupModel
     
-    @Environment(TravelSetupModel.self)
-    private var setupModel
+    @Environment(LocationService.self) private var locationService
     
-    @State
-    private var model = AreaPickerModel()
-    
-    @State
-    private var selectedAreaName: String?
-    
-    @State
-    private var isCategoryPresented = false
+    @State private var model = AreaPickerModel()
+    @State private var selectedAreaName: String?
+    @State private var isCategoryPresented = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -53,7 +46,7 @@ struct AreaPickerView: View {
         .navigationDestination(
             isPresented: $isCategoryPresented
         ) {
-            CategoryView()
+            CategoryView(setupModel: setupModel)
         }
         .task {
             locationService.requestCurrentLocation()
@@ -74,8 +67,7 @@ struct AreaPickerView: View {
 }
 
 #Preview {
-    AreaPickerView()
+    AreaPickerView(setupModel: TravelSetupModel())
         .environment(LocationService())
-        .environment(TravelSetupModel())
 }
 
