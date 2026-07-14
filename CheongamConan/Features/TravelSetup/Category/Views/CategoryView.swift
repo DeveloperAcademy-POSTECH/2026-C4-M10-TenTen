@@ -8,11 +8,39 @@
 import SwiftUI
 
 struct CategoryView: View {
+    let setupModel: TravelSetupModel
+    
+    private let colums = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
     var body: some View {
-        Text("카테고리 페이지임ㅋ")
+        LazyVGrid(
+            columns: colums,
+            spacing: 10
+        ) {
+            ForEach(Category.allCases) { category in
+                NavigationLink(
+                    destination: CategoryCheckView(
+                        category: category,
+                        setupModel: setupModel
+                    )
+                ) {
+                    Text(category.title)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .foregroundStyle(.white)
+                        .bold()
+                        .background(.blue)
+                        .cornerRadius(8)
+                }
+            }
+        }
+        .padding()
     }
 }
 
 #Preview {
-    CategoryView()
+    CategoryView(setupModel: TravelSetupModel())
 }
