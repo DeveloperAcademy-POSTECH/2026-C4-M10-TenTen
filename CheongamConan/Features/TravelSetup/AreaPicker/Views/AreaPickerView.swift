@@ -43,6 +43,7 @@ struct AreaPickerView: View {
                 .disabled(selectedAreaName == nil)
             }
         }
+        .navigationBarBackButtonHidden()
         .navigationDestination(
             isPresented: $isCategoryPresented
         ) {
