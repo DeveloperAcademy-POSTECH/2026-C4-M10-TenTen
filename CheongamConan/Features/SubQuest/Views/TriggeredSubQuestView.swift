@@ -10,7 +10,6 @@ import SwiftUI
 struct TriggeredSubQuestView: View {
     let subQuest: SubQuest
     let onAuthenticate: () -> Void
-    let onDismiss: () -> Void
     
     var body: some View {
         NavigationStack {
@@ -42,6 +41,5 @@ struct TriggeredSubQuestView: View {
     TriggeredSubQuestView(
         subQuest: .movementExample(),
         onAuthenticate: {},
-        onDismiss: {}
     )
 }

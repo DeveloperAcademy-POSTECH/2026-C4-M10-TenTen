@@ -13,7 +13,18 @@ struct JourneyTrackingView: View {
     
     @State private var trackingModel = JourneyTrackingModel()
     
-    @State private var isSubQuestPresented: Bool = false
+    private var isSubQuestPresented: Binding<Bool> {
+        Binding(
+            get: {
+                trackingModel.activeSubQuest != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    trackingModel.dismissActiveSubQuest()
+                }
+            }
+        )
+    }
     @State private var isCameraPresented: Bool = false
     
     var body: some View {
@@ -27,24 +38,15 @@ struct JourneyTrackingView: View {
             .onAppear {
                 connectLocationService()
             }
-            .onChange(of: trackingModel.activeSubQuest) { _, quest in
-                isSubQuestPresented = quest != nil
-            }
             .sheet(
-                isPresented: $isSubQuestPresented,
-                onDismiss: {
-                    trackingModel.dismissActiveSubQuest()
-                }
+                isPresented: isSubQuestPresented
             ) {
                 if let quest = trackingModel.activeSubQuest {
                     TriggeredSubQuestView(
                         subQuest: quest,
                         onAuthenticate: {
                             isCameraPresented = true
-                        },
-                        onDismiss:{
-                        isSubQuestPresented = false
-                    }
+                        }
                 )
                     .fullScreenCover(isPresented: $isCameraPresented) {
                         CameraPicker(
