@@ -12,7 +12,7 @@ struct SubQuest: Identifiable, Equatable {
     let id: UUID
     let title: String
     let description: String
-    let isCompleted: Bool
+    var isCompleted: Bool
     let triggeredAt: Date
 }
 

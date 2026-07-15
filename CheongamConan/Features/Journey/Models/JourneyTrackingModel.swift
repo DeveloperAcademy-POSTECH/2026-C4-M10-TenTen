@@ -55,6 +55,20 @@ final class JourneyTrackingModel {
     func dismissActiveSubQuest() {
         activeSubQuest = nil
     }
+    
+    // 현재 퀘스트의 완료 상태를 변경한다
+    func completeSubQuest(id: UUID) {
+        guard let index = triggeredSubQuests.firstIndex(where: {
+            $0.id == id}
+        ) else {
+            return
+        }
+        triggeredSubQuests[index].isCompleted = true
+        
+        if activeSubQuest?.id == id {
+            activeSubQuest?.isCompleted = true
+        }
+    }
 
     // 여행을 시작할 준비를 하고, 첫 번째 유효 위치를 시작점으로 기다린다
     func beginJourney(at date: Date = .now) {
