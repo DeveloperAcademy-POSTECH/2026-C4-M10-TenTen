@@ -20,7 +20,7 @@ struct DestinationView: View {
             Spacer()
             
             Button{
-                // 서브 퀘스트 화면으로 이동 구현
+                // TODO: 서브 퀘스트 화면으로 이동 구현
             } label: {
                 Image(systemName: "arrow.down.circle.fill")
                     .font(.system(size: 44))
