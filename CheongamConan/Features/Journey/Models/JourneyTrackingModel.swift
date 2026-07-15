@@ -124,5 +124,6 @@ final class JourneyTrackingModel {
         distanceFromStart = 0
         totalDistance = 0
         hasTriggeredSubQuest = false
+        triggeredSubQuests = []
     }
 }
