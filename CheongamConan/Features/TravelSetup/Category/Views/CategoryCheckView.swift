@@ -13,6 +13,8 @@ struct CategoryCheckView: View {
     
     @Environment(\.dismiss) private var dimiss
     
+    @State private var isDestinationPresented = false
+    
     var body: some View {
         VStack {
             Spacer()
@@ -37,8 +39,7 @@ struct CategoryCheckView: View {
                 Button {
                     setupModel.selectCategory(category)
                     
-                    // 추천페이지로 이동 로직 구현
-                    // + 지역, 카테고리에서 프랜차이즈를 제외한 곳 추천
+                    isDestinationPresented = true
                 } label: {
                     Text("여행 떠나기")
                         .frame(maxWidth: .infinity)
@@ -49,6 +50,9 @@ struct CategoryCheckView: View {
             .padding(.horizontal)
         }
         .navigationBarBackButtonHidden()
+        .navigationDestination(isPresented: $isDestinationPresented) {
+            DestinationView()
+        }
     }
 }
 
