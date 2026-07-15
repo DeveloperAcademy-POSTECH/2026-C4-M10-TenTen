@@ -12,7 +12,7 @@ struct SubQuest: Identifiable, Equatable {
     let id: UUID
     let title: String
     let description: String
-    let isCompleted: Bool
+    var isCompleted: Bool
     let triggeredAt: Date
 }
 
@@ -22,8 +22,8 @@ extension SubQuest {
     ) -> SubQuest {
         SubQuest(
             id: UUID(),
-            title: "신호등 사진 찍기",
-            description: "지나가는 길에 보이는 신호등 사진을 찍어주세요",
+            title: "7월의 꽃, 능소화",
+            description: "능소화 사진을 찍어주세요",
             isCompleted: false,
             triggeredAt: triggeredAt
         )}
