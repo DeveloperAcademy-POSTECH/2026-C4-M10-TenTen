@@ -14,6 +14,7 @@ struct JourneyTrackingView: View {
     @State private var trackingModel = JourneyTrackingModel()
     
     @State private var isSubQuestPresented: Bool = false
+    @State private var isCameraPresented: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -36,8 +37,25 @@ struct JourneyTrackingView: View {
                 }
             ) {
                 if let quest = trackingModel.activeSubQuest {
-                    TriggeredSubQuestView(subQuest: quest) {
+                    TriggeredSubQuestView(
+                        subQuest: quest,
+                        onAuthenticate: {
+                            isCameraPresented = true
+                        },
+                        onDismiss:{
                         isSubQuestPresented = false
+                    }
+                )
+                    .fullScreenCover(isPresented: $isCameraPresented) {
+                        CameraPicker(
+                            onCapture: {
+                                trackingModel.completeSubQuest(id: quest.id)
+                                isCameraPresented = false
+                            },
+                            onCancel: {
+                                isCameraPresented = false
+                            }
+                        )
                     }
                 } else {
                     Text("퀘스트 불러오기 실패")
