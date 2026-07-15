@@ -1,5 +1,5 @@
 //
-//  JourneyTracking.swift
+//  JourneyTrackingView.swift
 //  CheongamConan
 //
 //  Created by Dayoon Lee on 7/13/26.
@@ -14,6 +14,7 @@ struct JourneyTrackingView: View {
     @State private var trackingModel = JourneyTrackingModel()
     
     @State private var isSubQuestPresented: Bool = false
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -21,9 +22,26 @@ struct JourneyTrackingView: View {
                 journeyControlSection
                 trackingStatusSection
             }
-            .navigationTitle("여행 추적 실험 | 서브 퀘스트 발생과 이동 위치 누적")
+            .navigationTitle("여행 추적 실험")
             .onAppear {
                 connectLocationService()
+            }
+            .onChange(of: trackingModel.activeSubQuest) { _, quest in
+                isSubQuestPresented = quest != nil
+            }
+            .sheet(
+                isPresented: $isSubQuestPresented,
+                onDismiss: {
+                    trackingModel.dismissActiveSubQuest()
+                }
+            ) {
+                if let quest = trackingModel.activeSubQuest {
+                    TriggeredSubQuestView(subQuest: quest) {
+                        isSubQuestPresented = false
+                    }
+                } else {
+                    Text("퀘스트 불러오기 실패")
+                }
             }
         }
     }
@@ -72,17 +90,17 @@ struct JourneyTrackingView: View {
     private var trackingStatusSection: some View {
         Section("추적 상태") {
             LabeledContent("상태", value: stateText)
-
+            
             LabeledContent(
                 "시작점에서 거리",
                 value: "\(trackingModel.distanceFromStart.formatted(.number.precision(.fractionLength(1))))m"
             )
-
+            
             LabeledContent(
                 "누적 이동 거리",
                 value: "\(trackingModel.totalDistance.formatted(.number.precision(.fractionLength(1))))m"
             )
-
+            
             LabeledContent(
                 "기록 위치 수",
                 value: "\(trackingModel.routeLocations.count)개"
@@ -132,6 +150,7 @@ struct JourneyTrackingView: View {
             model?.receive(locations)
         }
     }
+    
 }
 
 

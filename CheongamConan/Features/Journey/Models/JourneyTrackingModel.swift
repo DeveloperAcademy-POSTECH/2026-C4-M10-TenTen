@@ -16,21 +16,45 @@ enum JourneyTrackingState {
 }
 
 /// 여행이 시작된 시점부터 종료될 때까지의 위치와 이동 거리를 관리한다
-/// Core Location 접근과 서브 퀘스트 발생 조건은 이 모델의 책임이 아니다
+/// Core Location API 접근은 LocationService의 책임이다
 @MainActor
 @Observable
 final class JourneyTrackingModel {
     private(set) var state: JourneyTrackingState = .idle
-
     private(set) var startedAt: Date?
     private(set) var endedAt: Date?
-
     private(set) var startLocation: CLLocation?
     private(set) var currentLocation: CLLocation?
     private(set) var routeLocations: [CLLocation] = []
-
     private(set) var distanceFromStart: CLLocationDistance = 0 // 서브 퀘스트 발생 조건으로 활용
+    private let subQuestTriggerRule = SubQuestTriggerRule(distanceThreshold: 25)
+    private(set) var hasTriggeredSubQuest: Bool = false
+    private(set) var activeSubQuest: SubQuest?
     private(set) var totalDistance: CLLocationDistance = 0
+    private(set) var triggeredSubQuests: [SubQuest] = [] // 타임라인에 보여줄 퀘스트
+
+    // 서브 퀘스트 발생 조건을 만족하는지 검사한다
+    private func activateSubQuestIfNeeded() {
+        // 서브 퀘스트가 발생한 적이 없는지
+        guard !hasTriggeredSubQuest else {
+            return
+        }
+        // 거리 기준을 만족하는지
+        guard subQuestTriggerRule.matches(
+            distanceFromStart: distanceFromStart
+        ) else {
+            return
+        }
+        let quest = SubQuest.movementExample()
+        activeSubQuest = quest
+        triggeredSubQuests.append(quest)
+        hasTriggeredSubQuest = true
+    }
+
+    // 퀘스트 닫기
+    func dismissActiveSubQuest() {
+        activeSubQuest = nil
+    }
 
     // 여행을 시작할 준비를 하고, 첫 번째 유효 위치를 시작점으로 기다린다
     func beginJourney(at date: Date = .now) {
@@ -59,7 +83,7 @@ final class JourneyTrackingModel {
         endedAt = date
         state = .completed
     }
-    
+
     // 여행 기록 초기화
     func reset() {
         resetJourneyData()
@@ -87,6 +111,7 @@ final class JourneyTrackingModel {
         routeLocations.append(location)
         distanceFromStart = startLocation.distance(from: location)
         totalDistance += previousLocation.distance(from: location)
+        activateSubQuestIfNeeded()
     }
 
     private func resetJourneyData() {
@@ -94,8 +119,11 @@ final class JourneyTrackingModel {
         endedAt = nil
         startLocation = nil
         currentLocation = nil
+        activeSubQuest = nil
         routeLocations = []
         distanceFromStart = 0
         totalDistance = 0
+        hasTriggeredSubQuest = false
+        triggeredSubQuests = []
     }
 }
