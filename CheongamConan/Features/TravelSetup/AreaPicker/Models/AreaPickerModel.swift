@@ -19,9 +19,11 @@ final class AreaPickerModel {
     private let areaService: VWorldAreaService
     private var lastRequestedLocation: CLLocation?
 
-    init(
-        areaService: VWorldAreaService = VWorldAreaService()
-    ) {
+    init() {
+        areaService = VWorldAreaService()
+    }
+
+    init(areaService: VWorldAreaService) {
         self.areaService = areaService
     }
 
@@ -35,7 +37,7 @@ final class AreaPickerModel {
 
         if let lastRequestedLocation,
            requestedLocation.distance(
-               from: lastRequestedLocation
+            from: lastRequestedLocation
            ) < 1_000 {
             return
         }

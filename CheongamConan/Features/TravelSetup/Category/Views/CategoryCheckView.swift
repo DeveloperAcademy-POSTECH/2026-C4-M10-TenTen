@@ -12,6 +12,8 @@ struct CategoryCheckView: View {
     let setupModel: TravelSetupModel
     
     @Environment(\.dismiss) private var dimiss
+
+    @State private var destinationArea: String?
     
     var body: some View {
         VStack {
@@ -35,10 +37,12 @@ struct CategoryCheckView: View {
                 .buttonStyle(.bordered)
                 
                 Button {
-                    setupModel.selectCategory(category)
+                    guard let area = setupModel.selectedAreaName else {
+                        return
+                    }
                     
-                    // 추천페이지로 이동 로직 구현
-                    // + 지역, 카테고리에서 프랜차이즈를 제외한 곳 추천
+                    setupModel.selectCategory(category)
+                    destinationArea = area
                 } label: {
                     Text("여행 떠나기")
                         .frame(maxWidth: .infinity)
@@ -49,6 +53,12 @@ struct CategoryCheckView: View {
             .padding(.horizontal)
         }
         .navigationBarBackButtonHidden()
+        .navigationDestination(item: $destinationArea) { area in
+            DestinationView(
+                area: area,
+                category: category.title
+            )
+        }
     }
 }
 
