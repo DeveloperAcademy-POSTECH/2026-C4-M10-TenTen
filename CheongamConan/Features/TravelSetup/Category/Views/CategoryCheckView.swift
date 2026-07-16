@@ -11,7 +11,7 @@ struct CategoryCheckView: View {
     let category: Category
     let setupModel: TravelSetupModel
     
-    @Environment(\.dismiss) private var dimiss
+    @Environment(\.dismiss) private var dismiss
 
     @State private var destinationArea: String?
     
@@ -27,7 +27,7 @@ struct CategoryCheckView: View {
             
             HStack(spacing: 20) {
                 Button {
-                    dimiss()
+                    dismiss()
                 } label: {
                     Text("뒤로 가기")
                         .foregroundStyle(.black)
@@ -37,11 +37,10 @@ struct CategoryCheckView: View {
                 .buttonStyle(.bordered)
                 
                 Button {
-                    guard let area = setupModel.selectedAreaName else {
+                    guard let area = setupModel.cofirmCategory(category) else {
                         return
                     }
                     
-                    setupModel.selectCategory(category)
                     destinationArea = area
                 } label: {
                     Text("여행 떠나기")
