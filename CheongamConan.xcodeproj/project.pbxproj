@@ -6,13 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8E548F9D3003EE8E005353A2 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 8E548F9C3003EE8E005353A2 /* NMapsMap */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8E103A893000F0CF00AF9464 /* CheongamConan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CheongamConan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8E548F9F3003EF90005353A2 /* Exceptions for "CheongamConan" folder in "CheongamConan" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8E103A883000F0CF00AF9464 /* CheongamConan */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8E103A8B3000F0CF00AF9464 /* CheongamConan */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8E548F9F3003EF90005353A2 /* Exceptions for "CheongamConan" folder in "CheongamConan" target */,
+			);
 			path = CheongamConan;
 			sourceTree = "<group>";
 		};
@@ -23,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E548F9D3003EE8E005353A2 /* NMapsMap in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +83,7 @@
 			);
 			name = CheongamConan;
 			packageProductDependencies = (
+				8E548F9C3003EE8E005353A2 /* NMapsMap */,
 			);
 			productName = CheongamConan;
 			productReference = 8E103A893000F0CF00AF9464 /* CheongamConan.app */;
@@ -94,6 +113,9 @@
 			);
 			mainGroup = 8E103A803000F0CF00AF9464;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8E548F9B3003EE8E005353A2 /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8E103A8A3000F0CF00AF9464 /* Products */;
 			projectDirPath = "";
@@ -127,6 +149,8 @@
 /* Begin XCBuildConfiguration section */
 		8E103A923000F0CF00AF9464 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8E103A8B3000F0CF00AF9464 /* CheongamConan */;
+			baseConfigurationReferenceRelativePath = Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -190,6 +214,8 @@
 		};
 		8E103A933000F0CF00AF9464 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8E103A8B3000F0CF00AF9464 /* CheongamConan */;
+			baseConfigurationReferenceRelativePath = Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -251,9 +277,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = HJGS4LQ7XH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CheongamConan/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "퀘스트 인증 사진을 촬영하기 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치를 기준으로 가까운 동네와 목적지를 추천하기 위해 위치 정보가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -288,6 +315,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CheongamConan/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "퀘스트 인증 사진을 촬영하기 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치를 기준으로 가까운 동네와 목적지를 추천하기 위해 위치 정보가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -334,6 +362,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8E548F9B3003EE8E005353A2 /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/navermaps/SPM-NMapsMap";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.23.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8E548F9C3003EE8E005353A2 /* NMapsMap */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8E548F9B3003EE8E005353A2 /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */;
+			productName = NMapsMap;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8E103A813000F0CF00AF9464 /* Project object */;
 }
