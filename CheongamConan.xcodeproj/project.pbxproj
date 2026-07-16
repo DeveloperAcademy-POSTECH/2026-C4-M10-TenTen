@@ -10,9 +10,22 @@
 		8E103A893000F0CF00AF9464 /* CheongamConan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CheongamConan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		78471B963008B07400C3722C /* Exceptions for "CheongamConan" folder in "CheongamConan" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8E103A883000F0CF00AF9464 /* CheongamConan */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8E103A8B3000F0CF00AF9464 /* CheongamConan */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				78471B963008B07400C3722C /* Exceptions for "CheongamConan" folder in "CheongamConan" target */,
+			);
 			path = CheongamConan;
 			sourceTree = "<group>";
 		};
@@ -254,6 +267,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CheongamConan/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "퀘스트 인증 사진을 촬영하기 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치를 기준으로 가까운 동네와 목적지를 추천하기 위해 위치 정보가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -288,6 +302,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CheongamConan/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "퀘스트 인증 사진을 촬영하기 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치를 기준으로 가까운 동네와 목적지를 추천하기 위해 위치 정보가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
