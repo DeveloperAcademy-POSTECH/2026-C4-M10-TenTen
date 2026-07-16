@@ -26,8 +26,16 @@ final class AreaPickerModel {
     init(areaService: VWorldAreaService) {
         self.areaService = areaService
     }
+    
+    func locationDidChange(_ location: CLLocation?) async {
+        guard let coordinate = location?.coordinate else {
+            return
+        }
+        
+        await loadAreas(around: coordinate)
+    }
 
-    func loadAreas(
+    private func loadAreas(
         around coordinate: CLLocationCoordinate2D
     ) async {
         let requestedLocation = CLLocation(

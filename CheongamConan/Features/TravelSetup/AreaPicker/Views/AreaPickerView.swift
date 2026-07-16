@@ -52,17 +52,8 @@ struct AreaPickerView: View {
         .task {
             locationService.requestCurrentLocation()
         }
-        .task(
-            id: locationService.currentLocation?.timestamp
-        ) {
-            guard let coordinate =
-                    locationService.currentLocation?.coordinate else {
-                return
-            }
-            
-            await model.loadAreas(
-                around: coordinate
-            )
+        .task(id: locationService.currentLocation?.timestamp) {
+            await model.locationDidChange(locationService.currentLocation)
         }
     }
 }
