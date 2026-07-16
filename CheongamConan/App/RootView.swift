@@ -13,30 +13,28 @@ struct RootView: View {
     private var hasCompletedOnboarding: Bool = false
     
     var body: some View {
-        NavigationStack {
-            Group {
-                if hasCompletedOnboarding {
-                    HomeView()
-                        .transition(
-                            .move(edge: .trailing)
-                            .combined(with: .opacity)
-                        )
-                        .zIndex(0)
-                } else {
-                    OnboardingView {
-                        hasCompletedOnboarding = true
-                    }
+        Group {
+            if hasCompletedOnboarding {
+                HomeView()
                     .transition(
-                        .move(edge: .leading)
+                        .move(edge: .trailing)
                         .combined(with: .opacity)
                     )
-                    .zIndex(1)
+                    .zIndex(0)
+            } else {
+                OnboardingView {
+                    hasCompletedOnboarding = true
                 }
+                .transition(
+                    .move(edge: .leading)
+                    .combined(with: .opacity)
+                )
+                .zIndex(1)
             }
-            .animation(
-                .easeInOut(duration: 0.6),
-                value: hasCompletedOnboarding
-            )
         }
+        .animation(
+            .easeInOut(duration: 0.6),
+            value: hasCompletedOnboarding
+        )
     }
 }

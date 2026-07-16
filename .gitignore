@@ -63,4 +63,7 @@ fastlane/test_output
 
 .DS_Store
 
-**/Config/Config.xcconfig
+.env
+.env.*
+Secrets.xcconfig
+Config/Secrets.xcconfig
