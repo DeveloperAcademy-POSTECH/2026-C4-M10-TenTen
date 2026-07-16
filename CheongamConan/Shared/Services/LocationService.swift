@@ -13,40 +13,46 @@ import UIKit
 @Observable
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
-    
+
     private(set) var authorizationStatus: CLAuthorizationStatus
     private(set) var currentLocation: CLLocation?
     private(set) var locationError: Error?
-    
+    private(set) var isRequestingLocation: Bool = false
+
     override init() {
         authorizationStatus = locationManager.authorizationStatus
-        
+
         super.init()
-        
+
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.distanceFilter = 10
     }
-    
+
     var isAuthorized: Bool {
         switch authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             return true
-            
+
         default:
             return false
         }
     }
-    
+
     func requestAuthorization() {
-        guard authorizationStatus == .notDetermined else { return }
-        
+        guard authorizationStatus == .notDetermined else {
+            return
+        }
+
         locationManager.requestWhenInUseAuthorization()
     }
-    
+
     func refreshAuthorizationStatus() {
-        authorizationStatus = locationManager.authorizationStatus
+        authorizationStatus =
+            locationManager.authorizationStatus
     }
-    
+
     @MainActor
     func openSettings() {
         guard let url = URL(
@@ -54,28 +60,32 @@ final class LocationService: NSObject {
         ) else {
             return
         }
-        
+
         UIApplication.shared.open(url)
     }
-    
+
     // 현위치를 한 번만 요청
     func requestCurrentLocation() {
-        guard isAuthorized else {
+        guard isAuthorized, !isRequestingLocation else {
             return
         }
-        
+
+        isRequestingLocation = true
+        locationError = nil
+
         locationManager.requestLocation()
     }
-    
+
     // 위치를 계속 추적
     func startUpdatingLocation() {
         guard isAuthorized else {
             return
         }
-        
+
+        locationError = nil
         locationManager.startUpdatingLocation()
     }
-    
+
     // 위치 추적 중지
     func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
@@ -83,16 +93,45 @@ final class LocationService: NSObject {
 }
 
 extension LocationService: CLLocationManagerDelegate {
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    func locationManagerDidChangeAuthorization(
+        _ manager: CLLocationManager
+    ) {
         authorizationStatus = manager.authorizationStatus
+
+        switch authorizationStatus {
+        case .denied, .restricted:
+            manager.stopUpdatingLocation()
+
+            isRequestingLocation = false
+            currentLocation = nil
+
+        case .notDetermined, .authorizedWhenInUse, .authorizedAlways:
+            break
+
+        @unknown default:
+            break
+        }
     }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        currentLocation = locations.last
+
+    func locationManager(
+        _ manager: CLLocationManager,
+        didUpdateLocations locations: [CLLocation]
+    ) {
+        guard let location = locations.last,
+              location.horizontalAccuracy >= 0 else {
+            return
+        }
+
+        currentLocation = location
         locationError = nil
+        isRequestingLocation = false
     }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+
+    func locationManager(
+        _ manager: CLLocationManager,
+        didFailWithError error: Error
+    ) {
         locationError = error
+        isRequestingLocation = false
     }
 }
