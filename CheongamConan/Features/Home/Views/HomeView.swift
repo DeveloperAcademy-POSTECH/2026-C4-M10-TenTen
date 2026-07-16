@@ -9,11 +9,13 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        NavigationView {
-            NavigationLink(destination: TravelSetupView()) {
-                Text("여행 시작하기")
-            }
+        VStack {
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+            Text("Hello, world!")
         }
+        .padding()
     }
 }
 
