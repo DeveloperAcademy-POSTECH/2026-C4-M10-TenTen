@@ -11,6 +11,8 @@ enum AppConfig {
     static let naverMapKeyID: String = value(for: "NMFClientId")
     static let vWorldAPIKey: String = value(for: "VWorldAPIKey")
     static let naverMapStyleID: String = value(for: "NaverMapStyleID")
+    static var searchClientID: String = value(for: "NAVER_SEARCH_CLIENT_ID")
+    static var searchClientSecret: String = value(for: "NAVER_SEARCH_CLIENT_SECRET")
 
     private static func value<T>(for key: String) -> T {
         guard let value = Bundle.main.object(
