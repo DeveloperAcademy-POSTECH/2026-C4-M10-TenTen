@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct DestinationView: View {
+    let area: String
+    let category: String
+    
+    @State private var destinationModel = DestinationModel()
+    
     var body: some View {
         VStack {
             Spacer()
             
-            Text("바르벳")
-                .font(.largeTitle)
-                .fontWeight(.heavy)
-            Text("경북 포항시 남구 효자동 225-2")
+            if let place = destinationModel.recommendedPlace {
+                Text(place.name)
+                    .font(.largeTitle)
+                    .fontWeight(.heavy)
+                Text(place.roadAddress)
+            }
             
             Spacer()
             
@@ -24,12 +31,15 @@ struct DestinationView: View {
             } label: {
                 Image(systemName: "arrow.down.circle.fill")
                     .font(.system(size: 44))
+                    .foregroundStyle(.black)
             }
+        }
+        .task {
+            await destinationModel.recommend(
+                area: area,
+                category: category
+            )
         }
         .navigationBarBackButtonHidden()
     }
-}
-
-#Preview {
-    DestinationView()
 }

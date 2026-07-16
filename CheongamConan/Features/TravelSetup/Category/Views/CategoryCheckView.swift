@@ -12,8 +12,8 @@ struct CategoryCheckView: View {
     let setupModel: TravelSetupModel
     
     @Environment(\.dismiss) private var dimiss
-    
-    @State private var isDestinationPresented = false
+
+    @State private var destinationArea: String?
     
     var body: some View {
         VStack {
@@ -37,9 +37,12 @@ struct CategoryCheckView: View {
                 .buttonStyle(.bordered)
                 
                 Button {
-                    setupModel.selectCategory(category)
+                    guard let area = setupModel.selectedAreaName else {
+                        return
+                    }
                     
-                    isDestinationPresented = true
+                    setupModel.selectCategory(category)
+                    destinationArea = area
                 } label: {
                     Text("여행 떠나기")
                         .frame(maxWidth: .infinity)
@@ -50,8 +53,11 @@ struct CategoryCheckView: View {
             .padding(.horizontal)
         }
         .navigationBarBackButtonHidden()
-        .navigationDestination(isPresented: $isDestinationPresented) {
-            DestinationView()
+        .navigationDestination(item: $destinationArea) { area in
+            DestinationView(
+                area: area,
+                category: category.title
+            )
         }
     }
 }
