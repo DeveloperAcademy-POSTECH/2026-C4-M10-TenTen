@@ -5,41 +5,43 @@
 //  Created by Dayoon Lee on 7/12/26.
 //
 
-
 import SwiftUI
 import UIKit
 
-
-// UIKit의 시스템 카메라를 SwiftUI에서 표시하기 위한 어댑터
+/// UIKit의 카메라 화면을 SwiftUI에 연결하고,
+/// 촬영 성공과 취소 이벤트만 상위 View로 전달한다
 struct CameraPicker: UIViewControllerRepresentable {
     let onCapture: () -> Void
     let onCancel: () -> Void
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
+
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.sourceType = .camera
         picker.delegate = context.coordinator
         return picker
     }
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        
-    }
-    
+
+    func updateUIViewController(
+        _ uiViewController: UIViewControllerType,
+        context: Context
+    ) { }
+
     // 카메라의 촬영 및 취소 이벤트를 SwiftUI 상태로 전달
     final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let parent: CameraPicker
-        
+
         init(parent: CameraPicker) {
             self.parent = parent
         }
-        
+
         func imagePickerController(
             _ picker: UIImagePickerController,
             didFinishPickingMediaWithInfo info: [
-                UIImagePickerController.InfoKey : Any
+                UIImagePickerController.InfoKey: Any
             ]
         ) {
             // 촬영 성공

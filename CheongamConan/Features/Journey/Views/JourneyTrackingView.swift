@@ -42,12 +42,12 @@ struct JourneyTrackingView: View {
                 isPresented: isSubQuestPresented
             ) {
                 if let quest = trackingModel.activeSubQuest {
-                    TriggeredSubQuestView(
+                    ActiveSubQuestView(
                         subQuest: quest,
                         onAuthenticate: {
                             isCameraPresented = true
                         }
-                )
+                    )
                     .fullScreenCover(isPresented: $isCameraPresented) {
                         CameraPicker(
                             onCapture: {
