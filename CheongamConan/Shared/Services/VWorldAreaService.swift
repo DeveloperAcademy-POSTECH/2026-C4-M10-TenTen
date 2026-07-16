@@ -215,10 +215,7 @@ private struct VWorldFeature: Decodable {
     
     struct Geometry: Decodable {
         let type: GeometryType
-        
-        /// Polygon과 MultiPolygon을 같은 구조로 정규화합니다.
-        ///
-        /// polygons → rings → coordinates → [longitude, latitude]
+
         let polygons: [[[[Double]]]]
         
         enum CodingKeys: String, CodingKey {

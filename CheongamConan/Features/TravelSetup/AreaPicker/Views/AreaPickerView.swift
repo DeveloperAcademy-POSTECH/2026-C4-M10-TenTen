@@ -19,7 +19,7 @@ struct AreaPickerView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            NaverMapView(
+            AreaPickerMapView(
                 trackCurrentLocation: locationService.isAuthorized,
                 polygons: model.polygons,
                 selectedAreaName: $selectedAreaName
