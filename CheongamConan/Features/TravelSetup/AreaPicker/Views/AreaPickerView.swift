@@ -19,7 +19,7 @@ struct AreaPickerView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            NaverMapView(
+            AreaPickerMapView(
                 trackCurrentLocation: locationService.isAuthorized,
                 polygons: model.polygons,
                 selectedAreaName: $selectedAreaName
@@ -52,17 +52,8 @@ struct AreaPickerView: View {
         .task {
             locationService.requestCurrentLocation()
         }
-        .task(
-            id: locationService.currentLocation?.timestamp
-        ) {
-            guard let coordinate =
-                    locationService.currentLocation?.coordinate else {
-                return
-            }
-            
-            await model.loadAreas(
-                around: coordinate
-            )
+        .task(id: locationService.currentLocation?.timestamp) {
+            await model.locationDidChange(locationService.currentLocation)
         }
     }
 }

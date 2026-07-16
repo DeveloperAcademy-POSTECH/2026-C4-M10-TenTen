@@ -99,16 +99,13 @@ extension LocationService: CLLocationManagerDelegate {
         authorizationStatus = manager.authorizationStatus
 
         switch authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            requestCurrentLocation()
-
         case .denied, .restricted:
             manager.stopUpdatingLocation()
 
             isRequestingLocation = false
             currentLocation = nil
 
-        case .notDetermined:
+        case .notDetermined, .authorizedWhenInUse, .authorizedAlways:
             break
 
         @unknown default:

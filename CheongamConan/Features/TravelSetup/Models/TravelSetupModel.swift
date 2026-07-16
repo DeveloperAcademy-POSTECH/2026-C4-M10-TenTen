@@ -26,4 +26,13 @@ final class TravelSetupModel {
         selectedAreaName = nil
         selectedCategory = nil
     }
+    
+    func cofirmCategory(_ category: Category) -> String? {
+        guard let selectedAreaName else {
+            return nil
+        }
+        
+        selectedCategory = category
+        return selectedAreaName
+    }
 }
