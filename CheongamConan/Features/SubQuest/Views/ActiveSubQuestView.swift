@@ -1,5 +1,5 @@
 //
-//  TriggeredSubQuestView.swift
+//  ActiveSubQuestView.swift
 //  CheongamConan
 //
 //  Created by Dayoon Lee on 7/14/26.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct TriggeredSubQuestView: View {
+/// 현재 활성화된 서브 퀘스트를 표시하고 인증 요청을 전달한다
+struct ActiveSubQuestView: View {
     let subQuest: SubQuest
     let onAuthenticate: () -> Void
-    let onDismiss: () -> Void
     
     var body: some View {
         NavigationStack {
@@ -39,9 +39,8 @@ struct TriggeredSubQuestView: View {
 }
 
 #Preview {
-    TriggeredSubQuestView(
+    ActiveSubQuestView(
         subQuest: .movementExample(),
         onAuthenticate: {},
-        onDismiss: {}
     )
 }

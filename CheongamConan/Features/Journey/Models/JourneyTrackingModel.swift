@@ -5,8 +5,8 @@
 //  Created by Dayoon Lee on 7/13/26.
 //
 import CoreLocation
-import Observation
 import Foundation
+import Observation
 
 enum JourneyTrackingState {
     case idle
@@ -15,60 +15,48 @@ enum JourneyTrackingState {
     case completed
 }
 
-/// 여행이 시작된 시점부터 종료될 때까지의 위치와 이동 거리를 관리한다
-/// Core Location API 접근은 LocationService의 책임이다
+/// 한 번의 여정에서 발생하는 위치와 서브 퀘스트 상태를 관리한다.
+///
+/// 위치 권한과 Core Location 연동은 `LocationService`의 책임이다.
+/// 서브 퀘스트 기록과 완료 상태의 Single Source of Truth는
+/// `triggeredSubQuests`이다.
 @MainActor
 @Observable
 final class JourneyTrackingModel {
+    // MARK: - Journey State
+
     private(set) var state: JourneyTrackingState = .idle
     private(set) var startedAt: Date?
     private(set) var endedAt: Date?
+
+    // MARK: - Location State
+
     private(set) var startLocation: CLLocation?
     private(set) var currentLocation: CLLocation?
     private(set) var routeLocations: [CLLocation] = []
     private(set) var distanceFromStart: CLLocationDistance = 0 // 서브 퀘스트 발생 조건으로 활용
-    private let subQuestTriggerRule = SubQuestTriggerRule(distanceThreshold: 25)
-    private(set) var hasTriggeredSubQuest: Bool = false
-    private(set) var activeSubQuest: SubQuest?
     private(set) var totalDistance: CLLocationDistance = 0
-    private(set) var triggeredSubQuests: [SubQuest] = [] // 타임라인에 보여줄 퀘스트
 
-    // 서브 퀘스트 발생 조건을 만족하는지 검사한다
-    private func activateSubQuestIfNeeded() {
-        // 서브 퀘스트가 발생한 적이 없는지
-        guard !hasTriggeredSubQuest else {
-            return
+    // MARK: - SubQuest State
+
+    private let subQuestTriggerRule = SubQuestTriggerRule(distanceThreshold: 25)
+
+    /// 현재는 기존 동작을 유지하기 위해
+    /// 한 Journey에서 서브 퀘스트를 한 번만 발생시킨다
+    private var hasTriggeredSubQuest: Bool = false
+    private var activeSubQuestID: SubQuest.ID? // 현재 사용자에게 표시 중인 퀘스트 지정
+
+    private(set) var triggeredSubQuests: [SubQuest] = []
+
+    var activeSubQuest: SubQuest? {
+        guard let activeSubQuestID else { return nil }
+
+        return triggeredSubQuests.first {
+            $0.id == activeSubQuestID
         }
-        // 거리 기준을 만족하는지
-        guard subQuestTriggerRule.matches(
-            distanceFromStart: distanceFromStart
-        ) else {
-            return
-        }
-        let quest = SubQuest.movementExample()
-        activeSubQuest = quest
-        triggeredSubQuests.append(quest)
-        hasTriggeredSubQuest = true
     }
 
-    // 퀘스트 닫기
-    func dismissActiveSubQuest() {
-        activeSubQuest = nil
-    }
-    
-    // 현재 퀘스트의 완료 상태를 변경한다
-    func completeSubQuest(id: UUID) {
-        guard let index = triggeredSubQuests.firstIndex(where: {
-            $0.id == id}
-        ) else {
-            return
-        }
-        triggeredSubQuests[index].isCompleted = true
-        
-        if activeSubQuest?.id == id {
-            activeSubQuest?.isCompleted = true
-        }
-    }
+    // MARK: - Journey Lifecycle
 
     // 여행을 시작할 준비를 하고, 첫 번째 유효 위치를 시작점으로 기다린다
     func beginJourney(at date: Date = .now) {
@@ -104,9 +92,31 @@ final class JourneyTrackingModel {
         state = .idle
     }
 
+    // MARK: - SubQuest Actions
+
+    // 퀘스트 완료 처리 (배열에서만 관리)
+    func completeSubQuest(id: SubQuest.ID) {
+        guard let index = triggeredSubQuests.firstIndex(
+            where: { $0.id == id }
+        ) else {
+            assertionFailure(
+                "완료할 서브 퀘스트가 기록에 존재하지 않습니다."
+            )
+            return
+        }
+        triggeredSubQuests[index].isCompleted = true
+    }
+
+    // 퀘스트 닫기
+    func dismissActiveSubQuest() {
+        activeSubQuestID = nil
+    }
+
+    // MARK: - Location Processing
+
     // 유효한 위치 데이터를 여행 기록에 추가
     private func accept(_ location: CLLocation) {
-        // 첫 번쨰 위치 추가
+        // 첫 번째 위치 추가
         if state == .waitingForStartLocation {
             startLocation = location
             currentLocation = location
@@ -120,7 +130,6 @@ final class JourneyTrackingModel {
               let previousLocation = routeLocations.last else {
             return
         }
-        // 현재 위치 갱신
         currentLocation = location
         routeLocations.append(location)
         distanceFromStart = startLocation.distance(from: location)
@@ -128,12 +137,37 @@ final class JourneyTrackingModel {
         activateSubQuestIfNeeded()
     }
 
+    // MARK: - SubQuest Processing
+
+    // 서브 퀘스트 발생 조건을 만족하는지 검사한다
+    private func activateSubQuestIfNeeded() {
+        guard !hasTriggeredSubQuest else {
+            return
+        }
+        guard subQuestTriggerRule.matches(
+            distanceFromStart: distanceFromStart
+        ) else {
+            return
+        }
+        let subQuest = SubQuest.movementExample()
+        activate(subQuest)
+        hasTriggeredSubQuest = true
+    }
+
+    // 퀘스트가 발생하면 배열에 추가하고 활성 ID를 설정한다
+    private func activate(_ subQuest: SubQuest) {
+        triggeredSubQuests.append(subQuest)
+        activeSubQuestID = subQuest.id
+    }
+
+    // MARK: - Reset
+
     private func resetJourneyData() {
         startedAt = nil
         endedAt = nil
         startLocation = nil
         currentLocation = nil
-        activeSubQuest = nil
+        activeSubQuestID = nil
         routeLocations = []
         distanceFromStart = 0
         totalDistance = 0
