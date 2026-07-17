@@ -15,7 +15,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8E548F9F3003EF90005353A2 /* Exceptions for "CheongamConan" folder in "CheongamConan" target */ = {
+		78471B963008B07400C3722C /* Exceptions for "CheongamConan" folder in "CheongamConan" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -28,7 +28,7 @@
 		8E103A8B3000F0CF00AF9464 /* CheongamConan */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				8E548F9F3003EF90005353A2 /* Exceptions for "CheongamConan" folder in "CheongamConan" target */,
+				78471B963008B07400C3722C /* Exceptions for "CheongamConan" folder in "CheongamConan" target */,
 			);
 			path = CheongamConan;
 			sourceTree = "<group>";
