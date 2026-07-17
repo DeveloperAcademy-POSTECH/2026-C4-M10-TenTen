@@ -10,14 +10,14 @@ import SwiftUI
 struct CategoryView: View {
     let setupModel: TravelSetupModel
     
-    private let colums = [
+    private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
     
     var body: some View {
         LazyVGrid(
-            columns: colums,
+            columns: columns,
             spacing: 10
         ) {
             ForEach(Category.allCases) { category in
