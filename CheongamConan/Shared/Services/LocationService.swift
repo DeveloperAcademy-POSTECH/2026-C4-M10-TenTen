@@ -16,7 +16,7 @@ import UIKit
 @Observable
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
-    
+
     private(set) var authorizationStatus: CLAuthorizationStatus
     private(set) var currentLocation: CLLocation?
     private(set) var locationError: Error?
@@ -28,34 +28,37 @@ final class LocationService: NSObject {
     
     override init() {
         authorizationStatus = locationManager.authorizationStatus
-        
+
         super.init()
-        
+
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         // 10m 이상의 이동이 발생하면 업데이트를 요청
         // 실제로 정확히 10m마다 전달되는 것은 보장하지 않는다
         locationManager.distanceFilter = 10
     }
-    
+
     var isAuthorized: Bool {
         switch authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             return true
-            
+
         default:
             return false
         }
     }
-    
+
     func requestAuthorization() {
-        guard authorizationStatus == .notDetermined else { return }
-        
+        guard authorizationStatus == .notDetermined else {
+            return
+        }
+
         locationManager.requestWhenInUseAuthorization()
     }
-    
+
     func refreshAuthorizationStatus() {
-        authorizationStatus = locationManager.authorizationStatus
+        authorizationStatus =
+            locationManager.authorizationStatus
     }
     
     // 사용자가 앱 설정에서 위치 권한을 변경할 수 있도록 설정 화면을 연다
@@ -65,25 +68,29 @@ final class LocationService: NSObject {
         ) else {
             return
         }
-        
+
         UIApplication.shared.open(url)
     }
     
     // 연속 위치 추적을 시작하지 않고 현재 위치를 한 번 요청한다
     // 결과는 delegate의 didUpdateLocations에서 비동기로 전달된다
     func requestCurrentLocation() {
-        guard isAuthorized else {
+        guard isAuthorized, !isRequestingLocation else {
             return
         }
-        
+
+        isRequestingLocation = true
+        locationError = nil
+
         locationManager.requestLocation()
     }
-    
+
     // 여행 세션 동안 Standard Location Updates를 시작한다
     func startUpdatingLocation() {
         guard isAuthorized else {
             return
         }
+
         isUpdatingLocation = true
         locationManager.startUpdatingLocation()
     }
@@ -113,7 +120,7 @@ extension LocationService: CLLocationManagerDelegate {
             break
         }
     }
-    
+
     // Core Location이 한 번에 전달한 위치 묶음을 처리한다
     // 최신 위치는 UI 상태에 보관하고, 전체 배열은 경로 기록용으로 전달한다
     func locationManager(
@@ -135,5 +142,6 @@ extension LocationService: CLLocationManagerDelegate {
         didFailWithError error: Error
     ) {
         locationError = error
+        isRequestingLocation = false
     }
 }
