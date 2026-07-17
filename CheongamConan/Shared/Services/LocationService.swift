@@ -75,11 +75,11 @@ final class LocationService: NSObject {
     // 연속 위치 추적을 시작하지 않고 현재 위치를 한 번 요청한다
     // 결과는 delegate의 didUpdateLocations에서 비동기로 전달된다
     func requestCurrentLocation() {
-        guard isAuthorized, !isRequestingLocation else {
+        guard isAuthorized, !isUpdatingLocation else {
             return
         }
 
-        isRequestingLocation = true
+        isUpdatingLocation = true
         locationError = nil
 
         locationManager.requestLocation()
@@ -142,6 +142,6 @@ extension LocationService: CLLocationManagerDelegate {
         didFailWithError error: Error
     ) {
         locationError = error
-        isRequestingLocation = false
+        isUpdatingLocation = false
     }
 }
