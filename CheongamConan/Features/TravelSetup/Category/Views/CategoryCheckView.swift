@@ -37,7 +37,7 @@ struct CategoryCheckView: View {
                 .buttonStyle(.bordered)
                 
                 Button {
-                    guard let area = setupModel.cofirmCategory(category) else {
+                    guard let area = setupModel.confirmCategory(category) else {
                         return
                     }
                     
