@@ -30,6 +30,24 @@ struct Place: Identifiable, Hashable, Decodable {
         case mapY = "mapy"
     }
 
+    init(
+        name: String,
+        category: String,
+        address: String,
+        roadAddress: String,
+        latitude: Double,
+        longitude: Double,
+        link: URL?
+    ) {
+        self.name = name
+        self.category = category
+        self.address = address
+        self.roadAddress = roadAddress
+        self.latitude = latitude
+        self.longitude = longitude
+        self.link = link
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(
             keyedBy: CodingKeys.self
@@ -86,3 +104,17 @@ struct Place: Identifiable, Hashable, Decodable {
         self.link = link.isEmpty ? nil : URL(string: link)
     }
 }
+
+#if DEBUG
+extension Place {
+    static let preview = Place(
+        name: "바르벳",
+        category: "카페",
+        address: "경북 포항시 남구 효자동 225-2",
+        roadAddress: "경북 포항시 남구 효자동 225-2",
+        latitude: 36.009731,
+        longitude: 129.333273,
+        link: nil
+    )
+}
+#endif

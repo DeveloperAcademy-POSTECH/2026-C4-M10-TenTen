@@ -9,64 +9,70 @@ import SwiftUI
 
 @MainActor
 struct JourneyTrackingView: View {
+    let destination: Place
+
     @Environment(LocationService.self) private var locationService
 
     // When in Use 권한은 온보딩에서 처리
-    // TODO: 화면 최초 진입 시 Always 위치 권한 승격 흐름 연결
     @State private var trackingModel: JourneyTrackingModel
     @State private var cameraSubQuest: SubQuest? // 현재 카메라로 인증 중인 퀘스트, nil이면 카메라 닫힘
 
-    init() {
+    init(destination: Place) {
+        self.destination = destination
+
         _trackingModel = State(
             initialValue: JourneyTrackingModel()
         )
     }
-    
-    init(trackingModel: JourneyTrackingModel) {
+
+    init(
+        destination: Place,
+        trackingModel: JourneyTrackingModel
+    ) {
+        self.destination = destination
         _trackingModel = State(
             initialValue: trackingModel
         )
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                destinationHeader
-                    .padding(.leading)
-                mapPlaceHolder
-                    .padding(.top, DSSpacing.spacing8)
+        VStack(alignment: .leading, spacing: 0) {
+            destinationHeader
+                .padding(.leading)
 
-                SubQuestCard(
-                    state: subQuestCardState,
-                    onCameraTap: { subQuest in
-                        cameraSubQuest = subQuest
-                    }
-                )
-                .padding(.top, DSSpacing.spacing48)
+            mapPlaceHolder
+                .padding(.top, DSSpacing.spacing8)
 
-                destinationArrivalButton
-                    .padding(.top, DSSpacing.spacing28)
-            }
+            SubQuestCard(
+                state: subQuestCardState,
+                onCameraTap: { subQuest in
+                    cameraSubQuest = subQuest
+                }
+            )
             .padding(.top, DSSpacing.spacing48)
-            .padding(.bottom, DSSpacing.spacing56)
-            .padding(.horizontal, DSSpacing.contentHorizontal)
+
+            destinationArrivalButton
+                .padding(.top, DSSpacing.spacing28)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, DSSpacing.spacing48)
+        .padding(.bottom, DSSpacing.spacing56)
+        .padding(.horizontal, DSSpacing.contentHorizontal)
         .onAppear {
             connectLocationService()
         }
         .fullScreenCover(item: $cameraSubQuest) { subQuest in
-                cameraPicker(for: subQuest)
-            }
+            cameraPicker(for: subQuest)
+        }
     }
 
     private var destinationHeader: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
             Text("오늘 이곳을 찾아 떠나는 거 어때요?")
                 .font(DSTypography.C2)
-            // TODO: 목적지 정보 추가
-            Text("목적지 이름")
+            Text(destination.name)
                 .font(DSTypography.H3)
-            Text("목적지 주소")
+            Text(destination.roadAddress)
                 .font(DSTypography.C3)
                 .foregroundStyle(.grey600)
         }
@@ -80,7 +86,8 @@ struct JourneyTrackingView: View {
     private var mapPlaceHolder: some View {
         RoundedRectangle(cornerRadius: DSRadius.standard)
             .fill(.grey200)
-            .aspectRatio(contentMode: .fit)
+            .frame(maxWidth: .infinity)
+            .aspectRatio(362.0 / 369.0, contentMode: .fill)
             .overlay {
                 Image(systemName: "map")
                     .font(.largeTitle)
@@ -89,7 +96,7 @@ struct JourneyTrackingView: View {
     
     private var destinationArrivalButton: some View {
         Button {
-            // - TODO: 목적지 도착
+            // TODO: 목적지 도착
         } label: {
             Text("목적지 도착")
                 .font(DSTypography.B1)
@@ -106,7 +113,7 @@ struct JourneyTrackingView: View {
     ) -> some View {
         CameraPicker(
             onCapture: {
-                // - TODO: CameraPicker가 촬영한 이미지를 반환할 수 있도록 변경, 촬영한 이미지를 여행 단위 상태에 보관
+                // TODO: CameraPicker가 촬영한 이미지를 반환할 수 있도록 변경, 촬영한 이미지를 여행 단위 상태에 보관
                 trackingModel.completeSubQuest(id: subQuest.id)
                 cameraSubQuest = nil
             },
@@ -148,6 +155,7 @@ private extension SubQuest {
 
 #Preview("Locked") {
     JourneyTrackingView(
+        destination: .preview,
         trackingModel: .preview()
     )
         .environment(LocationService())
@@ -155,6 +163,7 @@ private extension SubQuest {
 
 #Preview("Active") {
     JourneyTrackingView(
+        destination: .preview,
         trackingModel: .preview(
             activeSubQuest: .movementExample()
         )
@@ -164,6 +173,7 @@ private extension SubQuest {
 
 #Preview("Completed") {
     JourneyTrackingView(
+        destination: .preview,
         trackingModel: .preview(
             activeSubQuest: .completedPreview
         )
