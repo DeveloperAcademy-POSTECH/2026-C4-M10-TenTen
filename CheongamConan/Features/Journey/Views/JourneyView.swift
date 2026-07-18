@@ -16,9 +16,12 @@ struct JourneyView: View {
     let area: String
     let category: String
 
+    @Environment(LocationService.self) private var locationService
+
     @State private var destination: Place?
     @State private var currentPage: Page? = .destination
     @State private var hasEnteredTracking = false // Always Use
+    @State private var trackingModel = JourneyTrackingModel()
 
     init(
         area: String,
@@ -32,7 +35,7 @@ struct JourneyView: View {
 
     var body: some View {
         ScrollView(.vertical) {
-            LazyVStack(spacing: 0) {
+            VStack(spacing: 0) {
                 DestinationView(
                     area: area,
                     category: category,
@@ -47,9 +50,12 @@ struct JourneyView: View {
                 .id(Page.destination)
 
                 if let destination {
-                    JourneyTrackingView(destination: destination)
-                        .containerRelativeFrame(.vertical)
-                        .id(Page.tracking)
+                    JourneyTrackingView(
+                        destination: destination,
+                        trackingModel: trackingModel
+                    )
+                    .containerRelativeFrame(.vertical)
+                    .id(Page.tracking)
                 }
             }
             .scrollTargetLayout()
@@ -60,7 +66,7 @@ struct JourneyView: View {
             guard newPage == .tracking else {
                 return
             }
-            enterTrackingIfNeeded()
+            startJourneyIfNeeded()
         }
     }
 
@@ -71,14 +77,31 @@ struct JourneyView: View {
         currentPage = .tracking
     }
 
-    private func enterTrackingIfNeeded() {
+    private func startJourneyIfNeeded() {
         guard !hasEnteredTracking else {
             return
         }
+
+        guard locationService.isAuthorized else {
+            return
+        }
+
         hasEnteredTracking = true
+
+        connectLocationService()
+        trackingModel.beginJourney()
+        locationService.startUpdatingLocation()
 
         // TODO: Always 위치 권한 요청
         // TODO: 백그라운드 위치 추적
+    }
+
+    private func connectLocationService() {
+        let model = trackingModel
+
+        locationService.onLocationsReceived = { [weak model] locations in
+            model?.receive(locations)
+        }
     }
 }
 

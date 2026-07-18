@@ -11,8 +11,6 @@ import SwiftUI
 struct JourneyTrackingView: View {
     let destination: Place
 
-    @Environment(LocationService.self) private var locationService
-
     // When in Use 권한은 온보딩에서 처리
     @State private var trackingModel: JourneyTrackingModel
     @State private var cameraSubQuest: SubQuest? // 현재 카메라로 인증 중인 퀘스트, nil이면 카메라 닫힘
@@ -58,9 +56,6 @@ struct JourneyTrackingView: View {
         .padding(.top, DSSpacing.spacing48)
         .padding(.bottom, DSSpacing.spacing56)
         .padding(.horizontal, DSSpacing.contentHorizontal)
-        .onAppear {
-            connectLocationService()
-        }
         .fullScreenCover(item: $cameraSubQuest) { subQuest in
             cameraPicker(for: subQuest)
         }
@@ -132,15 +127,6 @@ struct JourneyTrackingView: View {
         }
         return .active(subQuest)
     }
-
-    private func connectLocationService() {
-        let model = trackingModel
-
-        locationService.onLocationsReceived = { [weak model] locations in
-            model?.receive(locations)
-        }
-    }
-    
 }
 
 #if DEBUG
