@@ -175,3 +175,22 @@ final class JourneyTrackingModel {
         triggeredSubQuests = []
     }
 }
+
+#if DEBUG
+extension JourneyTrackingModel {
+    static func preview(
+        activeSubQuest: SubQuest? = nil
+    ) -> JourneyTrackingModel {
+        let model = JourneyTrackingModel()
+
+        guard let activeSubQuest else {
+            return model
+        }
+
+        model.triggeredSubQuests = [activeSubQuest]
+        model.activeSubQuestID = activeSubQuest.id
+
+        return model
+    }
+}
+#endif

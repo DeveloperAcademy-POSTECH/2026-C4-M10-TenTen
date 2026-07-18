@@ -6,166 +6,129 @@
 //
 
 import SwiftUI
-import CoreLocation
 
+@MainActor
 struct JourneyTrackingView: View {
     @Environment(LocationService.self) private var locationService
+
+    // When in Use 권한은 온보딩에서 처리
+    // TODO: 화면 최초 진입 시 Always 위치 권한 승격 흐름 연결
+    @State private var trackingModel: JourneyTrackingModel
+    @State private var cameraSubQuest: SubQuest? // 현재 카메라로 인증 중인 퀘스트, nil이면 카메라 닫힘
+
+    init() {
+        _trackingModel = State(
+            initialValue: JourneyTrackingModel()
+        )
+    }
     
-    @State private var trackingModel = JourneyTrackingModel()
+    init(trackingModel: JourneyTrackingModel) {
+        _trackingModel = State(
+            initialValue: trackingModel
+        )
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                destinationHeader
+                    .padding(.leading)
+                mapPlaceHolder
+                    .padding(.top, DSSpacing.spacing8)
+
+                SubQuestCard(
+                    state: subQuestCardState,
+                    onCameraTap: { subQuest in
+                        cameraSubQuest = subQuest
+                    }
+                )
+                .padding(.top, DSSpacing.spacing48)
+
+                destinationArrivalButton
+                    .padding(.top, DSSpacing.spacing28)
+            }
+            .padding(.top, DSSpacing.spacing48)
+            .padding(.bottom, DSSpacing.spacing56)
+            .padding(.horizontal, DSSpacing.contentHorizontal)
+        }
+        .onAppear {
+            connectLocationService()
+        }
+        .fullScreenCover(item: $cameraSubQuest) { subQuest in
+                cameraPicker(for: subQuest)
+            }
+    }
+
+    private var destinationHeader: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+            Text("오늘 이곳을 찾아 떠나는 거 어때요?")
+                .font(DSTypography.C2)
+            // TODO: 목적지 정보 추가
+            Text("목적지 이름")
+                .font(DSTypography.H3)
+            Text("목적지 주소")
+                .font(DSTypography.C3)
+                .foregroundStyle(.grey600)
+        }
+        .frame(
+            maxWidth: .infinity,
+            alignment: .leading
+        )
+
+    }
     
-    private var isSubQuestPresented: Binding<Bool> {
-        Binding(
-            get: {
-                trackingModel.activeSubQuest != nil
+    private var mapPlaceHolder: some View {
+        RoundedRectangle(cornerRadius: DSRadius.standard)
+            .fill(.grey200)
+            .aspectRatio(contentMode: .fit)
+            .overlay {
+                Image(systemName: "map")
+                    .font(.largeTitle)
+            }
+    }
+    
+    private var destinationArrivalButton: some View {
+        Button {
+            // - TODO: 목적지 도착
+        } label: {
+            Text("목적지 도착")
+                .font(DSTypography.B1)
+                .foregroundStyle(.neutralWhite)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DSSpacing.spacing16)
+                .background(.main300)
+                .clipShape(RoundedRectangle(cornerRadius: DSRadius.standard))
+        }
+    }
+
+    private func cameraPicker(
+        for subQuest: SubQuest
+    ) -> some View {
+        CameraPicker(
+            onCapture: {
+                // - TODO: CameraPicker가 촬영한 이미지를 반환할 수 있도록 변경, 촬영한 이미지를 여행 단위 상태에 보관
+                trackingModel.completeSubQuest(id: subQuest.id)
+                cameraSubQuest = nil
             },
-            set: { isPresented in
-                if !isPresented {
-                    trackingModel.dismissActiveSubQuest()
-                }
+            onCancel: {
+                cameraSubQuest = nil
             }
         )
     }
-    @State private var isCameraPresented: Bool = false
-    
-    var body: some View {
-        NavigationStack {
-            Form {
-                permissionSection
-                journeyControlSection
-                trackingStatusSection
-            }
-            .navigationTitle("여행 추적 실험")
-            .onAppear {
-                connectLocationService()
-            }
-            .sheet(
-                isPresented: isSubQuestPresented
-            ) {
-                if let quest = trackingModel.activeSubQuest {
-                    ActiveSubQuestView(
-                        subQuest: quest,
-                        onAuthenticate: {
-                            isCameraPresented = true
-                        }
-                    )
-                    .fullScreenCover(isPresented: $isCameraPresented) {
-                        CameraPicker(
-                            onCapture: {
-                                trackingModel.completeSubQuest(id: quest.id)
-                                isCameraPresented = false
-                            },
-                            onCancel: {
-                                isCameraPresented = false
-                            }
-                        )
-                    }
-                } else {
-                    Text("퀘스트 불러오기 실패")
-                }
-            }
+
+    private var subQuestCardState: SubQuestCard.State {
+        guard let subQuest = trackingModel.activeSubQuest else {
+            return .locked
         }
-    }
-    
-    private var permissionSection: some View {
-        Section("위치 권한") {
-            Text(authorizationText)
-            
-            if locationService.authorizationStatus == .notDetermined {
-                Button("위치 권한 요청") {
-                    locationService.requestAuthorization()
-                }
-            }
-            
+        if subQuest.isCompleted {
+            return .completed(subQuest)
         }
+        return .active(subQuest)
     }
-    
-    private var journeyControlSection: some View {
-        Section("여행 제어") {
-            switch trackingModel.state {
-            case .idle, .completed:
-                Button("여행 시작") {
-                    trackingModel.beginJourney()
-                    locationService.startUpdatingLocation()
-                }
-                .disabled(!locationService.isAuthorized)
-                
-            case .waitingForStartLocation:
-                Text("시작 위치 확인 중")
-                
-            case .tracking:
-                Button("여행 종료하기") {
-                    trackingModel.endJourney()
-                    locationService.stopUpdatingLocation()
-                }
-            }
-            Button("초기화", role: .destructive) {
-                locationService.stopUpdatingLocation()
-                trackingModel.reset()
-            }
-            .disabled(trackingModel.state == .idle)
-        }
-        
-    }
-    
-    private var trackingStatusSection: some View {
-        Section("추적 상태") {
-            LabeledContent("상태", value: stateText)
-            
-            LabeledContent(
-                "시작점에서 거리",
-                value: "\(trackingModel.distanceFromStart.formatted(.number.precision(.fractionLength(1))))m"
-            )
-            
-            LabeledContent(
-                "누적 이동 거리",
-                value: "\(trackingModel.totalDistance.formatted(.number.precision(.fractionLength(1))))m"
-            )
-            
-            LabeledContent(
-                "기록 위치 수",
-                value: "\(trackingModel.routeLocations.count)개"
-            )
-        }
-    }
-    
-    private var authorizationText: String {
-        switch locationService.authorizationStatus {
-        case .notDetermined:
-            "권한 요청 전"
-            
-        case .authorizedWhenInUse:
-            "앱 사용 중 허용"
-            
-        case .authorizedAlways:
-            "항상 허용"
-            
-        case .denied:
-            "권한 거절됨"
-            
-        case .restricted:
-            "권한 제한됨"
-            
-        @unknown default:
-            "알 수 없음"
-        }
-    }
-    
-    private var stateText: String {
-        switch trackingModel.state {
-        case .idle:
-            "대기"
-        case .waitingForStartLocation:
-            "시작 위치 확인 중"
-        case .tracking:
-            "추적 중"
-        case .completed:
-            "종료됨"
-        }
-    }
-    
+
     private func connectLocationService() {
         let model = trackingModel
-        
+
         locationService.onLocationsReceived = { [weak model] locations in
             model?.receive(locations)
         }
@@ -173,8 +136,37 @@ struct JourneyTrackingView: View {
     
 }
 
+#if DEBUG
+private extension SubQuest {
+    static var completedPreview: SubQuest {
+        var subQuest = SubQuest.movementExample()
+        subQuest.isCompleted = true
+        return subQuest
+    }
+}
+#endif
 
-#Preview {
-    JourneyTrackingView()
+#Preview("Locked") {
+    JourneyTrackingView(
+        trackingModel: .preview()
+    )
         .environment(LocationService())
+}
+
+#Preview("Active") {
+    JourneyTrackingView(
+        trackingModel: .preview(
+            activeSubQuest: .movementExample()
+        )
+    )
+    .environment(LocationService())
+}
+
+#Preview("Completed") {
+    JourneyTrackingView(
+        trackingModel: .preview(
+            activeSubQuest: .completedPreview
+        )
+    )
+    .environment(LocationService())
 }

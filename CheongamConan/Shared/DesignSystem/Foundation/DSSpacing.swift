@@ -16,6 +16,9 @@ enum DSSpacing {
     static let spacing16: CGFloat = 16
     static let spacing20: CGFloat = 20
     static let spacing24: CGFloat = 24
+    static let spacing28: CGFloat = 28
+    static let spacing48: CGFloat = 48
+    static let spacing56: CGFloat = 56
     
     // 공통 레이아웃 간격
     static let contentHorizontal: CGFloat = spacing20
