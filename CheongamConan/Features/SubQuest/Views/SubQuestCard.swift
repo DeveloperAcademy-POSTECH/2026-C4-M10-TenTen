@@ -19,8 +19,8 @@ struct SubQuestCard: View {
 
     var body: some View {
         content
+            .padding(contentInsets)
             .frame(maxWidth: .infinity, minHeight: 119)
-            .padding(DSSpacing.spacing16)
             .background(.grey50)
             .clipShape(
                 RoundedRectangle(cornerRadius: DSRadius.standard)
@@ -143,6 +143,25 @@ struct SubQuestCard: View {
         .clipShape(
             RoundedRectangle(cornerRadius: DSRadius.standard)
         )
+    }
+
+    private var contentInsets: EdgeInsets {
+        switch state {
+        case .locked:
+            EdgeInsets(
+                top: 10,
+                leading: DSSpacing.spacing8,
+                bottom: 10,
+                trailing: DSSpacing.spacing8
+            )
+        case .active, .completed:
+            EdgeInsets(
+                top: DSSpacing.spacing16,
+                leading: DSSpacing.spacing16,
+                bottom: DSSpacing.spacing16,
+                trailing: DSSpacing.spacing16
+            )
+        }
     }
 }
 
