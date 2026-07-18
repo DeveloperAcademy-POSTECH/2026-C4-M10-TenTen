@@ -5,6 +5,7 @@
 //  Created by Dayoon Lee on 7/18/26.
 //
 
+import CoreLocation
 import SwiftUI
 
 struct JourneyView: View {
@@ -20,7 +21,7 @@ struct JourneyView: View {
 
     @State private var destination: Place?
     @State private var currentPage: Page? = .destination
-    @State private var hasEnteredTracking = false // Always Use
+    @State private var hasStartedJourney = false // Always Use
     @State private var trackingModel = JourneyTrackingModel()
 
     init(
@@ -78,7 +79,7 @@ struct JourneyView: View {
     }
 
     private func startJourneyIfNeeded() {
-        guard !hasEnteredTracking else {
+        guard !hasStartedJourney else {
             return
         }
 
@@ -86,14 +87,18 @@ struct JourneyView: View {
             return
         }
 
-        hasEnteredTracking = true
+        hasStartedJourney = true
 
         connectLocationService()
         trackingModel.beginJourney()
-        locationService.startUpdatingLocation()
 
-        // TODO: Always 위치 권한 요청
-        // TODO: 백그라운드 위치 추적
+        locationService.startUpdatingLocation(
+            allowsBackgroundUpdates: true
+        )
+
+        if locationService.authorizationStatus == .authorizedWhenInUse {
+            locationService.requestAlwaysAuthorization()
+        }
     }
 
     private func connectLocationService() {
