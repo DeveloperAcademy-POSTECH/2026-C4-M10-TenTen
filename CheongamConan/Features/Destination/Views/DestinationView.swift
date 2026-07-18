@@ -10,7 +10,10 @@ import SwiftUI
 struct DestinationView: View {
     let area: String
     let category: String
-    
+
+    let onDestinationLoaded: (Place) -> Void
+    let onMoveToTracking: () -> Void
+
     @State private var destinationModel = DestinationModel()
     
     var body: some View {
@@ -27,7 +30,7 @@ struct DestinationView: View {
             Spacer()
             
             Button{
-                // TODO: 서브 퀘스트 화면으로 이동 구현
+                onMoveToTracking()
             } label: {
                 Image(systemName: "arrow.down.circle.fill")
                     .font(.system(size: 44))
@@ -39,6 +42,9 @@ struct DestinationView: View {
                 area: area,
                 category: category
             )
+            if let place = destinationModel.recommendedPlace {
+                onDestinationLoaded(place)
+            }
         }
         .navigationBarBackButtonHidden()
     }

@@ -53,7 +53,7 @@ struct CategoryCheckView: View {
         }
         .navigationBarBackButtonHidden()
         .navigationDestination(item: $destinationArea) { area in
-            DestinationView(
+            JourneyView(
                 area: area,
                 category: category.title
             )
