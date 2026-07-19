@@ -5,26 +5,17 @@
 //  Created by Dayoon Lee on 7/18/26.
 //
 
-import CoreLocation
 import SwiftUI
 
 struct JourneyView: View {
-    enum Page: Hashable {
-        case destination
-        case tracking
-    }
-    
     let area: String
     let category: String
-    
+
     @Environment(LocationService.self) private var locationService
     @Environment(NotificationService.self) private var notificationService
-    
-    @State private var destination: Place?
-    @State private var currentPage: Page? = .destination
-    @State private var hasStartedJourney = false // Always Use
-    @State private var trackingModel = JourneyTrackingModel()
-    
+
+    @State private var model: JourneyModel
+
     init(
         area: String,
         category: String,
@@ -32,43 +23,52 @@ struct JourneyView: View {
     ) {
         self.area = area
         self.category = category
-        _destination = State(initialValue: initialDestination)
+        _model = State(
+            initialValue: JourneyModel(
+                destination: initialDestination
+            )
+        )
     }
     
     var body: some View {
+        @Bindable var model = model
+
         ScrollView(.vertical) {
             VStack(spacing: 0) {
                 DestinationView(
                     area: area,
                     category: category,
                     onDestinationLoaded: { place in
-                        destination = place
+                        model.updateDestination(place)
                     },
                     onMoveToTracking: {
-                        moveToTracking()
+                        model.moveToTracking()
                     }
                 )
                 .containerRelativeFrame(.vertical)
-                .id(Page.destination)
-                
-                if let destination {
+                .id(JourneyModel.Page.destination)
+
+                if let destination = model.destination {
                     JourneyTrackingView(
                         destination: destination,
-                        trackingModel: trackingModel
+                        trackingModel: model.trackingModel
                     )
                     .containerRelativeFrame(.vertical)
-                    .id(Page.tracking)
+                    .id(JourneyModel.Page.tracking)
                 }
             }
             .scrollTargetLayout()
         }
         .scrollTargetBehavior(.paging)
-        .scrollPosition(id: $currentPage)
-        .onChange(of: currentPage) { _, newPage in
+        .scrollPosition(id: $model.currentPage)
+        .onChange(of: model.currentPage) { _, newPage in
             guard newPage == .tracking else {
                 return
             }
-            startJourneyIfNeeded()
+            model.startJourneyIfNeeded(
+                locationService: locationService,
+                notificationService: notificationService
+            )
         }
         #if DEBUG
         .overlay(alignment: .topTrailing) {
@@ -76,67 +76,22 @@ struct JourneyView: View {
         }
         #endif
     }
-    
-    private func moveToTracking() {
-        guard destination != nil else {
-            return
-        }
-        currentPage = .tracking
-    }
-    
-    private func startJourneyIfNeeded() {
-        guard !hasStartedJourney else {
-            return
-        }
-        
-        guard locationService.isAuthorized else {
-            return
-        }
-        
-        hasStartedJourney = true
-        
-        connectLocationService()
-        connectSubQuestNotification()
-        trackingModel.beginJourney()
-        
-        locationService.startUpdatingLocation(
-            allowsBackgroundUpdates: true
-        )
-        
-        if locationService.authorizationStatus == .authorizedWhenInUse {
-            locationService.requestAlwaysAuthorization()
-        }
-    }
-    
-    private func connectLocationService() {
-        let model = trackingModel
-        
-        locationService.onLocationsReceived = { [weak model] locations in
-            model?.receive(locations)
-        }
-    }
-    
-    private func connectSubQuestNotification() {
-        let service = notificationService
-
-        trackingModel.onSubQuestTriggered = { subQuest in
-            Task {
-                await service.notifySubQuest(subQuest)
-            }
-        }
-    }
 
     #if DEBUG
     private var debugSubQuestControls: some View {
         VStack(alignment: .trailing) {
             Button("5초 후 퀘스트 발생") {
-                trackingModel.triggerSubQuestForDebug(after: .seconds(5))
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(5)
+                )
             }
             Button("10초 후 퀘스트 발생") {
-                trackingModel.triggerSubQuestForDebug(after: .seconds(10))
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(10)
+                )
             }
             Button("퀘스트 리셋") {
-                trackingModel.resetSubQuestForDebug()
+                model.trackingModel.resetSubQuestForDebug()
             }
         }
     }
