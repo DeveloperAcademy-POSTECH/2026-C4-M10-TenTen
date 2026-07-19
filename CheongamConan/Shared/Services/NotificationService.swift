@@ -10,8 +10,14 @@ import UserNotifications
 
 @MainActor
 @Observable
-final class NotificationService {
-    private let center = UNUserNotificationCenter.current()
+final class NotificationService: NSObject {
+    private let center: UNUserNotificationCenter
+
+    override init() {
+        center = UNUserNotificationCenter.current()
+        super.init()
+        center.delegate = self
+    }
 
     func requestAuthorization() async -> Bool {
         let settings = await center.notificationSettings()
@@ -52,7 +58,24 @@ final class NotificationService {
             content: content,
             trigger: nil // 퀘스트 발생하는 순간 알려야하므로 nil
         )
+        do {
+            try await center.add(request)
+            #if DEBUG
+            print("notification 추가 성공: \(subQuest.id)")
+            #endif
+        } catch {
+            #if DEBUG
+            print("notification 추가 실패: \(error)")
+            #endif
+        }
+    }
+}
 
-        try? await center.add(request)
+extension NotificationService: UNUserNotificationCenterDelegate {
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .sound, .list]
     }
 }
