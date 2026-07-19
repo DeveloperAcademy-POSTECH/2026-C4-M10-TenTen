@@ -7,6 +7,7 @@
 
 import SwiftUI
 import NMapsMap
+import CoreLocation
 
 @MainActor
 final class AreaPolygonCoordinator: NSObject, NMFMapViewOptionDelegate {
@@ -14,6 +15,7 @@ final class AreaPolygonCoordinator: NSObject, NMFMapViewOptionDelegate {
     
     private var selectedAreaName: Binding<String?>
     private var isTrackingCurrentLocation: Bool = false
+    private var hasCenteredCurrentLocation: Bool = false
     
     private let renderer = AreaPolygonRenderer()
     
@@ -31,9 +33,16 @@ final class AreaPolygonCoordinator: NSObject, NMFMapViewOptionDelegate {
         naverMapView.mapView.addOptionDelegate(delegate: self)
     }
     
-    func update(polygons: [MapPolygon], trackCurrentLocation: Bool) {
+    func update(polygons: [MapPolygon], currentLocation: CLLocation?, trackCurrentLocation: Bool) {
         guard let naverMapView else {
             return
+        }
+        
+        if let currentLocation {
+            updateCurrentLocation(
+                currentLocation,
+                on: naverMapView.mapView
+            )
         }
         
         updateTracking(
@@ -44,6 +53,31 @@ final class AreaPolygonCoordinator: NSObject, NMFMapViewOptionDelegate {
         renderer.render(polygons: polygons, on: naverMapView.mapView) { [weak self] areaName in
             self?.selectedAreaName.wrappedValue = areaName
         }
+    }
+    
+    private func updateCurrentLocation(_ location: CLLocation, on mapView: NMFMapView) {
+        let coordinate = NMGLatLng(
+            lat: location.coordinate.latitude,
+            lng: location.coordinate.longitude
+        )
+        
+        let locationOverlay = mapView.locationOverlay
+        
+        locationOverlay.location = coordinate
+        locationOverlay.hidden = false
+        
+        guard !hasCenteredCurrentLocation else {
+            return
+        }
+        
+        let cameraUpdate = NMFCameraUpdate(
+            scrollTo: coordinate,
+            zoomTo: 15
+        )
+        
+        mapView.moveCamera(cameraUpdate)
+        
+        hasCenteredCurrentLocation = true
     }
     
     func mapViewOptionChanged(_ mapView: NMFMapView) {
