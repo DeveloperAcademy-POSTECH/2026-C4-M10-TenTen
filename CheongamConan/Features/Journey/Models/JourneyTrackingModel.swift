@@ -48,6 +48,8 @@ final class JourneyTrackingModel {
 
     private(set) var triggeredSubQuests: [SubQuest] = []
 
+    var onSubQuestTriggered: ((SubQuest) -> Void)?
+
     var activeSubQuest: SubQuest? {
         guard let activeSubQuestID else { return nil }
 
@@ -153,6 +155,7 @@ final class JourneyTrackingModel {
     private func activate(_ subQuest: SubQuest) {
         triggeredSubQuests.append(subQuest)
         activeSubQuestID = subQuest.id
+        onSubQuestTriggered?(subQuest) // 퀘스트 발생 이벤트를 외부로 전달
     }
 
     // MARK: - Reset
