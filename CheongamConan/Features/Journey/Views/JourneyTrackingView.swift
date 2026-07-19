@@ -11,25 +11,17 @@ import SwiftUI
 struct JourneyTrackingView: View {
     let destination: Place
 
-    // When in Use 권한은 온보딩에서 처리
-    @State private var trackingModel: JourneyTrackingModel
     @State private var cameraSubQuest: SubQuest? // 현재 카메라로 인증 중인 퀘스트, nil이면 카메라 닫힘
 
-    init(destination: Place) {
-        self.destination = destination
-
-        _trackingModel = State(
-            initialValue: JourneyTrackingModel()
-        )
-    }
+    @Bindable var trackingModel: JourneyTrackingModel
 
     init(
         destination: Place,
         trackingModel: JourneyTrackingModel
     ) {
         self.destination = destination
-        _trackingModel = State(
-            initialValue: trackingModel
+        _trackingModel = Bindable(
+            wrappedValue: trackingModel
         )
     }
 
