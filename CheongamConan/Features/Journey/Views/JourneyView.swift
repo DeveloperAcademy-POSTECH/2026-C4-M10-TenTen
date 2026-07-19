@@ -8,20 +8,12 @@
 import SwiftUI
 
 struct JourneyView: View {
-    enum Page: Hashable {
-        case destination
-        case tracking
-    }
-
     let area: String
     let category: String
 
     @Environment(LocationService.self) private var locationService
 
-    @State private var destination: Place?
-    @State private var currentPage: Page? = .destination
-    @State private var hasEnteredTracking = false // Always Use
-    @State private var trackingModel = JourneyTrackingModel()
+    @State private var model: JourneyModel
 
     init(
         area: String,
@@ -30,77 +22,51 @@ struct JourneyView: View {
     ) {
         self.area = area
         self.category = category
-        _destination = State(initialValue: initialDestination)
+        _model = State(
+            initialValue: JourneyModel(
+                destination: initialDestination
+            )
+        )
     }
 
     var body: some View {
+        @Bindable var model = model
+
         ScrollView(.vertical) {
             VStack(spacing: 0) {
                 DestinationView(
                     area: area,
                     category: category,
                     onDestinationLoaded: { place in
-                        destination = place
+                        model.updateDestination(place)
                     },
                     onMoveToTracking: {
-                        moveToTracking()
+                        model.moveToTracking()
                     }
                 )
                 .containerRelativeFrame(.vertical)
-                .id(Page.destination)
+                .id(JourneyModel.Page.destination)
 
-                if let destination {
+                if let destination = model.destination {
                     JourneyTrackingView(
                         destination: destination,
-                        trackingModel: trackingModel
+                        trackingModel: model.trackingModel
                     )
                     .containerRelativeFrame(.vertical)
-                    .id(Page.tracking)
+                    .id(JourneyModel.Page.tracking)
                 }
             }
             .scrollTargetLayout()
         }
         .scrollTargetBehavior(.paging)
-        .scrollPosition(id: $currentPage)
-        .onChange(of: currentPage) { _, newPage in
+        .scrollPosition(id: $model.currentPage)
+        .onChange(of: model.currentPage) { _, newPage in
             guard newPage == .tracking else {
                 return
             }
-            startJourneyIfNeeded()
-        }
-    }
-
-    private func moveToTracking() {
-        guard destination != nil else {
-            return
-        }
-        currentPage = .tracking
-    }
-
-    private func startJourneyIfNeeded() {
-        guard !hasEnteredTracking else {
-            return
-        }
-
-        guard locationService.isAuthorized else {
-            return
-        }
-
-        hasEnteredTracking = true
-
-        connectLocationService()
-        trackingModel.beginJourney()
-        locationService.startUpdatingLocation()
-
-        // TODO: Always 위치 권한 요청
-        // TODO: 백그라운드 위치 추적
-    }
-
-    private func connectLocationService() {
-        let model = trackingModel
-
-        locationService.onLocationsReceived = { [weak model] locations in
-            model?.receive(locations)
+            model.startJourneyIfNeeded(
+                locationService: locationService
+            )
         }
     }
 }
