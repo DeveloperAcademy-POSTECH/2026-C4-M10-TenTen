@@ -172,6 +172,30 @@ final class JourneyTrackingModel {
         hasTriggeredSubQuest = false
         triggeredSubQuests = []
     }
+
+    // MARK: - Debugging
+    #if DEBUG
+    func triggerSubQuestForDebug(after delay: Duration) {
+        Task {
+            @MainActor
+            [weak self] in
+            try? await Task.sleep(for: delay)
+
+            guard let self, !hasTriggeredSubQuest else {
+                return
+            }
+            activate(SubQuest.movementExample())
+            hasTriggeredSubQuest = true
+        }
+    }
+
+    func resetSubQuestForDebug() {
+        activeSubQuestID = nil
+        hasTriggeredSubQuest = false
+        triggeredSubQuests = []
+    }
+    #endif
+
 }
 
 #if DEBUG

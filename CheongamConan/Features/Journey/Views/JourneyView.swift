@@ -70,6 +70,11 @@ struct JourneyView: View {
             }
             startJourneyIfNeeded()
         }
+        #if DEBUG
+        .overlay(alignment: .topTrailing) {
+            debugSubQuestControls
+        }
+        #endif
     }
     
     private func moveToTracking() {
@@ -120,6 +125,22 @@ struct JourneyView: View {
             }
         }
     }
+
+    #if DEBUG
+    private var debugSubQuestControls: some View {
+        VStack(alignment: .trailing) {
+            Button("5초 후 퀘스트 발생") {
+                trackingModel.triggerSubQuestForDebug(after: .seconds(5))
+            }
+            Button("10초 후 퀘스트 발생") {
+                trackingModel.triggerSubQuestForDebug(after: .seconds(10))
+            }
+            Button("퀘스트 리셋") {
+                trackingModel.resetSubQuestForDebug()
+            }
+        }
+    }
+    #endif
 }
 
 #Preview {
@@ -129,4 +150,5 @@ struct JourneyView: View {
         initialDestination: .preview
     )
     .environment(LocationService())
+    .environment(NotificationService())
 }
