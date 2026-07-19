@@ -13,6 +13,7 @@ enum AppConfig {
     static let naverMapStyleID: String = value(for: "NaverMapStyleID")
     static var searchClientID: String = value(for: "NAVER_SEARCH_CLIENT_ID")
     static var searchClientSecret: String = value(for: "NAVER_SEARCH_CLIENT_SECRET")
+    static var kakaoRESTAPIKey: String = value(for: "KAKAO_REST_API_KEY")
 
     private static func value<T>(for key: String) -> T {
         guard let value = Bundle.main.object(
