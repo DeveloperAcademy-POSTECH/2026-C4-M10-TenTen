@@ -31,7 +31,16 @@ struct SubQuestCard: View {
     private var content: some View {
         switch state {
         case .locked:
-            lockedContent
+            VStack(spacing: 10) {
+                Image(systemName: "lock.fill")
+                    .foregroundStyle(.grey800)
+                VStack(spacing: DSSpacing.spacing4) {
+                    Text("집 밖을 나서면")
+                        .foregroundStyle(.grey600)
+                    Text("첫 번째 미션이 공개됩니다.")
+                        .foregroundStyle(.grey600)
+                }
+            }
 
         case .active(let subQuest):
             missionContent(
@@ -44,19 +53,6 @@ struct SubQuestCard: View {
                 for: subQuest,
                 isCompleted: true
             )
-        }
-    }
-
-    private var lockedContent: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "lock.fill")
-                .foregroundStyle(.grey800)
-            VStack(spacing: DSSpacing.spacing4) {
-                Text("집 밖을 나서면")
-                    .foregroundStyle(.grey600)
-                Text("첫 번째 미션이 공개됩니다.")
-                    .foregroundStyle(.grey600)
-            }
         }
     }
 
@@ -83,57 +79,37 @@ struct SubQuestCard: View {
 
                 Spacer(minLength: DSSpacing.spacing16)
 
-                missionAction(
-                    for: subQuest,
-                    isCompleted: isCompleted
-                )
+                if isCompleted {
+                    actionLabel(
+                        icon: "checkmark.circle.fill",
+                        title: "촬영 완료"
+                    )
+                } else {
+                    Button {
+                        onCameraTap(subQuest)
+                    } label: {
+                        actionLabel(
+                            icon: "camera.fill",
+                            title: "촬영하기"
+                        )
+                    }
+                }
             }
         }
     }
 
-    @ViewBuilder
-    private func missionAction(
-        for subQuest: SubQuest,
-        isCompleted: Bool
+    private func actionLabel(
+        icon: String,
+        title: String
     ) -> some View {
-        if isCompleted {
-            completedStatus
-        } else {
-            cameraButton(for: subQuest)
-        }
-    }
-
-    private func cameraButton(for subQuest: SubQuest) -> some View {
-        Button {
-            onCameraTap(subQuest)
-        } label: {
-            HStack(spacing: DSSpacing.spacing12) {
-                Image(systemName: "camera.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 16)
-                    .accessibilityHidden(true)
-                Text("촬영하기")
-                    .font(DSTypography.C3)
-            }
-            .foregroundStyle(.white)
-            .padding(DSSpacing.spacing12)
-            .frame(minWidth: 100, minHeight: 46)
-            .background(.black)
-            .clipShape(
-                RoundedRectangle(cornerRadius: DSRadius.standard)
-            )
-        }
-    }
-
-    private var completedStatus: some View {
         HStack(spacing: DSSpacing.spacing12) {
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: icon)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 20, height: 16)
                 .accessibilityHidden(true)
-            Text("촬영 완료")
+
+            Text(title)
                 .font(DSTypography.C3)
         }
         .foregroundStyle(.white)
