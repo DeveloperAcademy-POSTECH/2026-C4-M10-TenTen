@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DestinationView: View {
     let area: String
     let category: String
+    
+    @Environment(\.modelContext) private var modelContext
     
     @State private var destinationModel = DestinationModel()
     
@@ -35,9 +38,10 @@ struct DestinationView: View {
             }
         }
         .task {
-            await destinationModel.recommend(
+            await destinationModel.loadOrRecommend(
                 area: area,
-                category: category
+                category: category,
+                modelContext: modelContext
             )
         }
         .navigationBarBackButtonHidden()

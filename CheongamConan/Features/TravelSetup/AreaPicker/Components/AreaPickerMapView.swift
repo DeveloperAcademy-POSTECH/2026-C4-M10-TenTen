@@ -7,8 +7,10 @@
 
 import SwiftUI
 import NMapsMap
+import CoreLocation
 
 struct AreaPickerMapView: View {
+    let currentLocation: CLLocation?
     let trackCurrentLocation: Bool
     let polygons: [MapPolygon]
     
@@ -26,18 +28,17 @@ struct AreaPickerMapView: View {
                 
                 coordinator.update(
                     polygons: polygons,
+                    currentLocation: currentLocation,
                     trackCurrentLocation: trackCurrentLocation
                 )
             },
             onUpdate: { naverMapView, coordinator in
-                coordinator.connect(
-                    to: naverMapView
-                )
+                coordinator.connect(to: naverMapView)
                 
                 coordinator.update(
                     polygons: polygons,
-                    trackCurrentLocation:
-                        trackCurrentLocation
+                    currentLocation: currentLocation,
+                    trackCurrentLocation: trackCurrentLocation
                 )
             }
         )
@@ -46,6 +47,7 @@ struct AreaPickerMapView: View {
 
 #Preview {
     AreaPickerMapView(
+        currentLocation: nil,
         trackCurrentLocation: false,
         polygons: [],
         selectedAreaName: .constant(nil)

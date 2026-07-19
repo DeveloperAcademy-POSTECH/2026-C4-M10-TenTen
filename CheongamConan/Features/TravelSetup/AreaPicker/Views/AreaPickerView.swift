@@ -20,6 +20,7 @@ struct AreaPickerView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             AreaPickerMapView(
+                currentLocation: locationService.currentLocation,
                 trackCurrentLocation: locationService.isAuthorized,
                 polygons: model.polygons,
                 selectedAreaName: $selectedAreaName
