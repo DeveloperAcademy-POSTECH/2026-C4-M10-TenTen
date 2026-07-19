@@ -26,9 +26,7 @@ struct ArrivalPlaceSelectionView: View {
                 .buttonStyle(.borderedProminent)
             }
             
-            Button{
-                
-            } label: {
+            NavigationLink (destination: ArrivalPlaceSearchView()) {
                 Text("다른 장소")
                     .padding(.vertical, DSSpacing.spacing16)
                     .frame(maxWidth: .infinity)
