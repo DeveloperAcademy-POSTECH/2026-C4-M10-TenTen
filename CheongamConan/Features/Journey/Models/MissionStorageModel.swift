@@ -14,7 +14,8 @@ import SwiftData
 final class MissionStorageModel {
     private(set) var missions: [MissionRecord] = []
     
-    func fetch(
+    // 특정 미션 한 개를 정확히 찾음
+    private func fetch(
         id: UUID,
         modelContext: ModelContext
     ) throws -> MissionRecord? {
@@ -29,6 +30,29 @@ final class MissionStorageModel {
         
         return try modelContext.fetch(descriptor).first
     }
+    
+    // 특정 목적지에 속한 미션 목록
+    func fetchMissions(
+        recommendedPlaceID: UUID,
+        modelContext: ModelContext
+    ) throws -> [MissionRecord] {
+        let placeID = recommendedPlaceID
+        
+        let descriptor = FetchDescriptor<MissionRecord>(
+            predicate: #Predicate{ mission in
+                mission.recommendedPlaceID == placeID
+            },
+            sortBy: [
+                SortDescriptor(
+                    \MissionRecord.unlockedAt,
+                     order: .forward
+                )
+            ]
+        )
+        
+        return try modelContext.fetch(descriptor)
+    }
+    
     
     func save(
         _ mission: MissionRecord,

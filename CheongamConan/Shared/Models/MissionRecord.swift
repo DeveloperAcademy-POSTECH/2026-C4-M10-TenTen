@@ -13,6 +13,8 @@ final class MissionRecord {
     @Attribute(.unique)
     var id: UUID // SubQuest와 동일한 Id
     
+    var recommendedPlaceID: UUID
+    
     var title: String
     var missionDescription: String
     var unlockedAt: Date // 미션 발생 조건을 충족하여 미션이 사용자에게 공개된 시각
@@ -23,6 +25,7 @@ final class MissionRecord {
     
     init(
         id: UUID,
+        recommendedPlaceID: UUID,
         title: String,
         missionDescription: String,
         unlockedAt: Date,
@@ -31,6 +34,7 @@ final class MissionRecord {
         imageFileName: String? = nil
     ) {
         self.id = id
+        self.recommendedPlaceID = recommendedPlaceID
         self.title = title
         self.missionDescription = missionDescription
         self.unlockedAt = unlockedAt
