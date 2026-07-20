@@ -24,6 +24,11 @@ struct CheongamConanApp: App {
                 .environment(locationService)
                 .environment(notificationService)
         }
-        .modelContainer(for: RecommendedPlace.self)
+        .modelContainer(
+            for: [
+                RecommendedPlace.self,
+                MissionRecord.self
+            ]
+        )
     }
 }

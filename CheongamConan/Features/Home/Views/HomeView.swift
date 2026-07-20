@@ -13,6 +13,13 @@ struct HomeView: View {
             NavigationLink(destination: TravelSetupEntryView()) {
                 Text("여행 시작하기")
             }
+            #if DEBUG
+            NavigationLink {
+                MissionImageStorageDebugView()
+            } label: {
+                Text("이미지 저장 테스트")
+            }
+            #endif
         }
     }
 }

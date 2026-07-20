@@ -99,8 +99,8 @@ struct JourneyTrackingView: View {
         for subQuest: SubQuest
     ) -> some View {
         CameraPicker(
-            onCapture: {
-                // TODO: CameraPicker가 촬영한 이미지를 반환할 수 있도록 변경, 촬영한 이미지를 여행 단위 상태에 보관
+            onCapture: { image in
+                // TODO: 이미지 저장
                 trackingModel.completeSubQuest(id: subQuest.id)
                 cameraSubQuest = nil
             },
