@@ -20,6 +20,8 @@ struct JourneyView: View {
     @State private var model: JourneyModel
     @State private var destinationModel = DestinationModel()
     @State private var cameraSubQuest: SubQuest?
+    @State private var isShowDestinationArrivalAlert = false
+    @State private var isShowArrivalView = false
     
     init(
         area: String,
@@ -52,6 +54,20 @@ struct JourneyView: View {
             cameraPicker(for: subQuest)
         }
         .navigationBarBackButtonHidden()
+        .customAlert(
+            isPresented: $isShowDestinationArrivalAlert,
+            title: "목적지에 도착하셨나요?",
+            content: "\(model.destination?.name ?? "")(이)가 아니어도 괜찮아요",
+            primaryButtonTitle: "도착했어요",
+            secondaryButtonTitle: "가는 중이에요",
+            primaryAction: {
+                isShowArrivalView = true
+            },
+            secondaryAction: {}
+        )
+        .navigationDestination(isPresented: $isShowArrivalView) {
+            ArrivalPlaceSelectionView()
+        }
     }
     
     private func journeyContent(destination: RecommendedPlace) -> some View {
@@ -130,7 +146,7 @@ struct JourneyView: View {
     
     private var destinationArrivalButton: some View {
         Button {
-            // TODO: 목적지 도착 처리
+            isShowDestinationArrivalAlert = true
         } label: {
             Text("목적지 도착")
                 .font(DSTypography.B1)
