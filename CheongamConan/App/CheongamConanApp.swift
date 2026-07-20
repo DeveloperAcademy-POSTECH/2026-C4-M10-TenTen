@@ -12,7 +12,8 @@ import SwiftData
 @main
 struct CheongamConanApp: App {
     @State private var locationService = LocationService()
-    
+    @State private var notificationService = NotificationService()
+
     init() {
         NMFAuthManager.shared().ncpKeyId = AppConfig.naverMapKeyID
     }
@@ -21,6 +22,7 @@ struct CheongamConanApp: App {
         WindowGroup {
             RootView()
                 .environment(locationService)
+                .environment(notificationService)
         }
         .modelContainer(for: RecommendedPlace.self)
     }
