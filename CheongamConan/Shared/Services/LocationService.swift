@@ -17,11 +17,14 @@ import UIKit
 final class LocationService: NSObject {
     private let locationManager = CLLocationManager()
 
+    private var wantsBackgroundLocationUpdates = false
+
     private(set) var authorizationStatus: CLAuthorizationStatus
     private(set) var currentLocation: CLLocation?
     private(set) var locationError: Error?
     private(set) var isUpdatingLocation = false
-    
+    private(set) var isRequestingCurrentLocation = false
+
     // 수신한 위치 묶음을 여행 추적 모델에 전달한다
     // 현재는 하나의 소비자만 등록할 수 있다
     var onLocationsReceived: (([CLLocation]) -> Void)?
@@ -56,11 +59,19 @@ final class LocationService: NSObject {
         locationManager.requestWhenInUseAuthorization()
     }
 
+    func requestAlwaysAuthorization() {
+        guard authorizationStatus == .authorizedWhenInUse else {
+            return
+        }
+
+        locationManager.requestAlwaysAuthorization()
+    }
+
     func refreshAuthorizationStatus() {
         authorizationStatus =
             locationManager.authorizationStatus
     }
-    
+
     // 사용자가 앱 설정에서 위치 권한을 변경할 수 있도록 설정 화면을 연다
     func openSettings() {
         guard let url = URL(
@@ -71,34 +82,50 @@ final class LocationService: NSObject {
 
         UIApplication.shared.open(url)
     }
-    
+
     // 연속 위치 추적을 시작하지 않고 현재 위치를 한 번 요청한다
     // 결과는 delegate의 didUpdateLocations에서 비동기로 전달된다
     func requestCurrentLocation() {
-        guard isAuthorized, !isUpdatingLocation else {
+        guard isAuthorized, !isRequestingCurrentLocation else {
             return
         }
 
-        isUpdatingLocation = true
+        isRequestingCurrentLocation = true
         locationError = nil
 
         locationManager.requestLocation()
     }
 
     // 여행 세션 동안 Standard Location Updates를 시작한다
-    func startUpdatingLocation() {
+    func startUpdatingLocation(
+        allowsBackgroundUpdates: Bool = false
+    ) {
         guard isAuthorized else {
             return
         }
-
+        wantsBackgroundLocationUpdates = allowsBackgroundUpdates
         isUpdatingLocation = true
+
+        updateBackgroundLocationConfiguration()
         locationManager.startUpdatingLocation()
     }
-    
+
     // 여행 종료 또는 위치 권한 철회시 Standard Location Updates를 중지한다
     func stopUpdatingLocation() {
         isUpdatingLocation = false
+        wantsBackgroundLocationUpdates = false
         locationManager.stopUpdatingLocation()
+        updateBackgroundLocationConfiguration()
+    }
+
+    private func updateBackgroundLocationConfiguration() {
+        let canUseBackgroundUpdates =
+        wantsBackgroundLocationUpdates &&
+        authorizationStatus == .authorizedAlways
+
+        locationManager.allowsBackgroundLocationUpdates = canUseBackgroundUpdates
+
+        locationManager.showsBackgroundLocationIndicator = canUseBackgroundUpdates
     }
 }
 
@@ -110,10 +137,13 @@ extension LocationService: CLLocationManagerDelegate {
         authorizationStatus = manager.authorizationStatus
         
         switch authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            updateBackgroundLocationConfiguration()
+
         case .denied, .restricted:
             stopUpdatingLocation()
         
-        case .notDetermined, .authorizedWhenInUse, .authorizedAlways:
+        case .notDetermined:
             break
             
         @unknown default:
@@ -127,6 +157,11 @@ extension LocationService: CLLocationManagerDelegate {
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
     ) {
+        isRequestingCurrentLocation = false // 위치 수신 시 일회성 요청 상태 종료
+        self.currentLocation = currentLocation
+        locationError = nil
+        onLocationsReceived?(locations)
+
         guard let currentLocation = locations.last else {
             return
         }
@@ -142,6 +177,7 @@ extension LocationService: CLLocationManagerDelegate {
         didFailWithError error: Error
     ) {
         locationError = error
-        isUpdatingLocation = false
+        isRequestingCurrentLocation = false
     }
 }
+

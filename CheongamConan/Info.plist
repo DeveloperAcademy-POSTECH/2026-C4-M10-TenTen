@@ -20,6 +20,10 @@
 		<string>Pretendard-Medium.otf</string>
 		<string>Pretendard-Regular.otf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>VWorldAPIKey</key>
 	<string>$(VWORLD_API_KEY)</string>
 </dict>
