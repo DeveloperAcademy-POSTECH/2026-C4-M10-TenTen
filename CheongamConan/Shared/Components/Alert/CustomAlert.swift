@@ -58,29 +58,16 @@ struct CustomAlert: View {
                             secondaryAction()
                         } label: {
                             Text(secondaryButtonTitle)
-                                .font(DSTypography.B2)
-                                .foregroundStyle(.neutralBlack)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 53)
-                                .background(.grey200)
-                                .clipShape(
-                                    RoundedRectangle(
-                                        cornerRadius: DSRadius.standard
-                                    )
-                                )
                         }
+                        .buttonStyle(CustomAlertButtonStyle(style: .secondary))
                     }
                     
                     Button {
                         primaryAction()
                     } label: {
                         Text(primaryButtonTitle)
-                            .font(DSTypography.B2)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: 53)
-                    .foregroundStyle(.neutralWhite)
-                    .background(.main300)
-                    .cornerRadius(DSRadius.standard)
+                    .buttonStyle(CustomAlertButtonStyle(style: .primary))
                 }
             }
             .padding(.horizontal, DSSpacing.spacing16)
