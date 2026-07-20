@@ -24,3 +24,15 @@ final class RecommendedPlace {
         self.recommendedAt = recommendedAt
     }
 }
+#if DEBUG
+extension RecommendedPlace {
+    static var preview: RecommendedPlace {
+        RecommendedPlace(
+            latitude: 36.009731,
+            longitude: 129.333273,
+            name: "바르벳추천",
+            roadAddress: "경북 포항시 남구 효자동 225-2"
+        )
+    }
+}
+#endif

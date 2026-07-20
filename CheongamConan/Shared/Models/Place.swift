@@ -47,7 +47,7 @@ struct Place: Identifiable, Hashable, Decodable {
         case mapX = "mapx"
         case mapY = "mapy"
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(
             keyedBy: CodingKeys.self

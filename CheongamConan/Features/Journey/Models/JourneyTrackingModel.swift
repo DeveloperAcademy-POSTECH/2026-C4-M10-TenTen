@@ -107,11 +107,6 @@ final class JourneyTrackingModel {
         triggeredSubQuests[index].isCompleted = true
     }
 
-    // 퀘스트 닫기
-    func dismissActiveSubQuest() {
-        activeSubQuestID = nil
-    }
-
     // MARK: - Location Processing
 
     // 유효한 위치 데이터를 여행 기록에 추가
@@ -175,3 +170,22 @@ final class JourneyTrackingModel {
         triggeredSubQuests = []
     }
 }
+
+#if DEBUG
+extension JourneyTrackingModel {
+    static func preview(
+        activeSubQuest: SubQuest? = nil
+    ) -> JourneyTrackingModel {
+        let model = JourneyTrackingModel()
+
+        guard let activeSubQuest else {
+            return model
+        }
+
+        model.triggeredSubQuests = [activeSubQuest]
+        model.activeSubQuestID = activeSubQuest.id
+
+        return model
+    }
+}
+#endif

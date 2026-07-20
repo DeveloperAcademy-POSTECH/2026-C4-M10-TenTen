@@ -11,7 +11,12 @@ import SwiftData
 struct DestinationView: View {
     let area: String
     let category: String
-    
+
+
+    let onDestinationLoaded: (RecommendedPlace) -> Void
+    let onMoveToTracking: () -> Void
+
+
     @Environment(\.modelContext) private var modelContext
     
     @State private var destinationModel = DestinationModel()
@@ -30,7 +35,7 @@ struct DestinationView: View {
             Spacer()
             
             Button{
-                // TODO: 서브 퀘스트 화면으로 이동 구현
+                onMoveToTracking()
             } label: {
                 Image(systemName: "arrow.down.circle.fill")
                     .font(.system(size: 44))
@@ -43,6 +48,9 @@ struct DestinationView: View {
                 category: category,
                 modelContext: modelContext
             )
+            if let place = destinationModel.recommendedPlace {
+                onDestinationLoaded(place)
+            }
         }
         .navigationBarBackButtonHidden()
     }
