@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class MissionImageStorageService {
+actor MissionImageStorageService {
     private let fileManager: FileManager
     
     init(fileManager: FileManager = .default) {
@@ -59,7 +59,7 @@ final class MissionImageStorageService {
             to: fileURL,
             options: .atomic
         )
-        
+
         return fileName
     }
     

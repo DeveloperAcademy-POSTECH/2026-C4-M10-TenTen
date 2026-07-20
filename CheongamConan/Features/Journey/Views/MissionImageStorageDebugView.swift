@@ -39,13 +39,17 @@ struct MissionImageStorageDebugView: View {
                 .buttonStyle(.borderedProminent)
 
                 Button("2. 저장된 이미지 불러오기") {
-                    loadSavedImage()
+                    Task {
+                        await loadSavedImage()
+                    }
                 }
                 .buttonStyle(.bordered)
                 .disabled(savedFileName == nil)
 
                 Button("3. 저장된 이미지 삭제") {
-                    deleteSavedImage()
+                    Task {
+                        await deleteSavedImage()
+                    }
                 }
                 .buttonStyle(.bordered)
                 .tint(.red)
@@ -65,7 +69,10 @@ struct MissionImageStorageDebugView: View {
         CameraPicker(
             onCapture: { image in
                 isCameraPresented = false
-                saveCapturedImage(image)
+                Task {
+                    await saveCapturedImage(image)
+                }
+
             },
             onCancel: {
                 isCameraPresented = false
@@ -102,16 +109,16 @@ struct MissionImageStorageDebugView: View {
 
     private func saveCapturedImage(
         _ image: UIImage
-    ) {
+    ) async {
         do {
             // 반복 테스트 시 이전 파일 정리
             if let savedFileName {
-                try? imageStorageService.delete(
+                try? await imageStorageService.delete(
                     fileName: savedFileName
                 )
             }
 
-            let fileName = try imageStorageService.save(
+            let fileName = try await imageStorageService.save(
                 image,
                 missionID: missionID
             )
@@ -127,13 +134,13 @@ struct MissionImageStorageDebugView: View {
         }
     }
 
-    private func loadSavedImage() {
+    private func loadSavedImage() async {
         guard let savedFileName else {
             return
         }
 
         do {
-            loadedImage = try imageStorageService.load(
+            loadedImage = try await imageStorageService.load(
                 fileName: savedFileName
             )
             statusMessage = "촬영 이미지 불러오기 성공"
@@ -142,13 +149,13 @@ struct MissionImageStorageDebugView: View {
         }
     }
 
-    private func deleteSavedImage() {
+    private func deleteSavedImage() async {
         guard let savedFileName else {
             return
         }
 
         do {
-            try imageStorageService.delete(
+            try await imageStorageService.delete(
                 fileName: savedFileName
             )
 
