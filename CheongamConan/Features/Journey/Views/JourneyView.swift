@@ -22,17 +22,25 @@ struct JourneyView: View {
     @State private var cameraSubQuest: SubQuest?
     @State private var isShowDestinationArrivalAlert = false
     @State private var isShowArrivalView = false
+    @State private var journeySession: JourneySession?
     
     init(
         area: String,
         category: String,
+        journeySession: JourneySession? = nil,
         initialDestination: RecommendedPlace? = nil
     ) {
         self.area = area
         self.category = category
+        
+        _journeySession = State(
+            initialValue: journeySession
+        )
+        
         _model = State(
             initialValue: JourneyModel(
                 destination: initialDestination
+                ?? journeySession?.destination
             )
         )
     }
@@ -41,10 +49,6 @@ struct JourneyView: View {
         Group {
             if let destination = model.destination {
                 journeyContent(destination: destination)
-            } else if destinationModel.isLoading {
-                ProgressView()
-            } else {
-                ProgressView()
             }
         }
         .task {
@@ -61,7 +65,7 @@ struct JourneyView: View {
             primaryButtonTitle: "도착했어요",
             secondaryButtonTitle: "가는 중이에요",
             primaryAction: {
-                isShowArrivalView = true
+                moveToArrival()
             },
             secondaryAction: {}
         )
@@ -176,24 +180,36 @@ struct JourneyView: View {
     
     private func loadDestinationIfNeeded() async {
         if model.destination == nil {
-            await destinationModel.loadOrRecommend(
-                area: area,
-                category: category,
-                modelContext: modelContext
-            )
-            
-            guard let destination = destinationModel.recommendedPlace else {
-                return
+            if let savedDestination = journeySession?.destination {
+                model.updateDestination(savedDestination)
+            } else {
+                await destinationModel.loadOrRecommend(
+                    area: area,
+                    category: category,
+                    modelContext: modelContext
+                )
+                
+                guard let destination = destinationModel.recommendedPlace else {
+                    return
+                }
+                
+                model.updateDestination(destination)
             }
-            model.updateDestination(destination)
         }
+        
+        guard let destination = model.destination else {
+            return
+        }
+        
+        createJourneySessionIfNeeded(
+            destination: destination
+        )
         
         model.startJourneyIfNeeded(
             locationService: locationService,
             notificationService: notificationService
         )
     }
-    
     private func cameraPicker(
         for subQuest: SubQuest
     ) -> some View {
@@ -208,6 +224,37 @@ struct JourneyView: View {
                 cameraSubQuest = nil
             }
         )
+    }
+    
+    private func createJourneySessionIfNeeded(
+        destination: RecommendedPlace
+    ) {
+        guard journeySession == nil else { return }
+        
+        let session = JourneySession(
+            area: area,
+            category: category,
+            destination: destination
+        )
+        
+        modelContext.insert(session)
+        
+        try? modelContext.save()
+        journeySession = session
+        modelContext.delete(session)
+    }
+    
+    private func moveToArrival() {
+        guard let journeySession else { return }
+        
+        guard journeySession.phase == .journey else {
+            return
+        }
+        
+        journeySession.arrive()
+        
+        try? modelContext.save()
+        isShowArrivalView = true
     }
 }
 
