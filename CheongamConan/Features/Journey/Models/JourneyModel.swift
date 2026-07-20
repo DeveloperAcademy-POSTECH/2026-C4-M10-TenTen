@@ -7,6 +7,7 @@
 
 import CoreLocation
 import Observation
+import SwiftData
 
 // 여행 화면의 목적지, 페이지와 위치 추적 시작 흐름을 관리한다
 @MainActor
@@ -22,6 +23,8 @@ final class JourneyModel {
 
     // 여행 진행 화면 재진입 시 위치 추적이 중복 시작되지 않도록 관리
     private(set) var hasStartedTracking = false
+    
+    private(set) var missionStorageError: Error? = nil
 
     let trackingModel: JourneyTrackingModel
 
@@ -48,7 +51,10 @@ final class JourneyModel {
 
     func startJourneyIfNeeded(
         locationService: LocationService,
-        notificationService: NotificationService
+        notificationService: NotificationService,
+        missionStorageModel: MissionStorageModel,
+        modelContext: ModelContext
+        
     ) {
         guard !hasStartedTracking else { return }
         guard locationService.isAuthorized else { return }
@@ -56,7 +62,11 @@ final class JourneyModel {
         hasStartedTracking = true
 
         connectLocationService(locationService)
-        connectSubQuestNotification(notificationService)
+        connectSubQuestHandling(
+            notificationService: notificationService,
+            missionStorageModel: missionStorageModel,
+            modelContext: modelContext
+        )
         trackingModel.beginJourney()
         locationService.startUpdatingLocation(
             allowsBackgroundUpdates: true
@@ -78,10 +88,37 @@ final class JourneyModel {
         }
     }
 
-    private func connectSubQuestNotification(
-        _ notificationService: NotificationService
+    private func connectSubQuestHandling(
+        notificationService: NotificationService,
+        missionStorageModel: MissionStorageModel,
+        modelContext: ModelContext
     ) {
-        trackingModel.onSubQuestTriggered = { subQuest in
+        trackingModel.onSubQuestTriggered = {
+            [weak self] subQuest in
+            
+            guard let self,
+                  let destination else {
+                return
+            }
+            
+            let missionRecord = MissionRecord(
+                id: subQuest.id,
+                recommendedPlaceID: destination.id,
+                title: subQuest.title,
+                missionDescription: subQuest.description,
+                unlockedAt: subQuest.triggeredAt
+            )
+            
+            do {
+                try missionStorageModel.save(
+                    missionRecord,
+                    modelContext: modelContext
+                )
+                missionStorageError = nil
+            } catch {
+                missionStorageError = error
+            }
+            
             Task {
                 await notificationService.notifySubQuest(subQuest)
             }

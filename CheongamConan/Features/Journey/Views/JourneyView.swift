@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct JourneyView: View {
     let area: String
@@ -13,8 +14,10 @@ struct JourneyView: View {
 
     @Environment(LocationService.self) private var locationService
     @Environment(NotificationService.self) private var notificationService
+    @Environment(\.modelContext) private var modelContext
 
     @State private var model: JourneyModel
+    @State private var missionStorageModel = MissionStorageModel()
 
     init(
         area: String,
@@ -67,7 +70,9 @@ struct JourneyView: View {
             }
             model.startJourneyIfNeeded(
                 locationService: locationService,
-                notificationService: notificationService
+                notificationService: notificationService,
+                missionStorageModel: missionStorageModel,
+                modelContext: modelContext
             )
         }
         #if DEBUG
