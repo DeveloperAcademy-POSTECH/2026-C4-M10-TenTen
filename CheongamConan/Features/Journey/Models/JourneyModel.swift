@@ -27,7 +27,7 @@ final class JourneyModel {
     
     private(set) var missionStorageError: Error? = nil
 
-    private(set) var isCompletingMission = false // 카메라 화면에서 Use Photo 버튼 중복 입력 방지
+    private(set) var isCompletingMission = false // 비동기 완료 처리 중 동일 미션이 중복 제출되는 것을 방지
     private let missionImageStorageService: MissionImageStorageService
 
     let trackingModel: JourneyTrackingModel
@@ -145,13 +145,13 @@ final class JourneyModel {
             isCompletingMission = false
         }
 
-        // 1. actor에서 이미지 파일 저장
+        // 1. 인증 이미지 파일 저장
         let fileName = try await missionImageStorageService.save(
             image,
             missionID: subQuest.id
         )
 
-        // 2. MainActor에서 SwiftData 미션 완료 처리
+        // 2. 저장된 미션 완료 정보 갱신
         do {
             try missionStorageModel.completeMission(
                 id: subQuest.id,
@@ -159,13 +159,13 @@ final class JourneyModel {
                 modelContext: modelContext
             )
         } catch {
-            // 저장 실패시 actor에서 파일 삭제
+            // 미션 완료 정보가 저장되지 않으면 참조되지 않는 이미지가 남으므로 삭제한다
             try? await missionImageStorageService.delete(
                 fileName: fileName
             )
             throw error
         }
-        // 3. 메모리의 SubQuest 완료 처리
+        // 3. 파일과 SwiftData 저장이 모두 성공한 뒤 화면 상태를 완료로 변경한다
         trackingModel.completeSubQuest(id: subQuest.id)
     }
 }

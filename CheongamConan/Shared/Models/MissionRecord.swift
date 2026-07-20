@@ -21,7 +21,7 @@ final class MissionRecord {
     
     private(set) var isCompleted: Bool
     private(set) var completedAt: Date? // 미션 완료 시각
-    private(set) var imageFileName: String?
+    private(set) var imageFileName: String? // Application Support 내부에서 사용할 파일명
     
     init(
         id: UUID,
