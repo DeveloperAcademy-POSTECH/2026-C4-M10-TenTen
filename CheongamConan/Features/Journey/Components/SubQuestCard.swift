@@ -13,20 +13,20 @@ struct SubQuestCard: View {
         case active(SubQuest)
         case completed(SubQuest)
     }
-
+    
     let state: State
     let onCameraTap: (SubQuest) -> Void
-
+    
     var body: some View {
         content
             .padding(contentInsets)
-            .frame(maxWidth: .infinity, minHeight: 119)
-            .background(.grey50)
+            .frame(maxWidth: .infinity, minHeight: 120)
+            .background(.grey200)
             .clipShape(
                 RoundedRectangle(cornerRadius: DSRadius.standard)
             )
     }
-
+    
     @ViewBuilder
     private var content: some View {
         switch state {
@@ -34,20 +34,20 @@ struct SubQuestCard: View {
             VStack(spacing: 10) {
                 Image(systemName: "lock.fill")
                     .foregroundStyle(.grey800)
-                VStack(spacing: DSSpacing.spacing4) {
-                    Text("집 밖을 나서면")
-                        .foregroundStyle(.grey600)
-                    Text("첫 번째 미션이 공개됩니다.")
-                        .foregroundStyle(.grey600)
-                }
+                    .frame(width: 20, height: 24)
+                
+                Text("집 밖을 나서면\n첫 번째 미션이 공개됩니다.")
+                    .font(DSTypography.C1)
+                    .foregroundStyle(.grey600)
+                    .multilineTextAlignment(.center)
             }
-
+            
         case .active(let subQuest):
             missionContent(
                 for: subQuest,
                 isCompleted: false
             )
-
+            
         case .completed(let subQuest):
             missionContent(
                 for: subQuest,
@@ -55,72 +55,54 @@ struct SubQuestCard: View {
             )
         }
     }
-
+    
     private func missionContent(
         for subQuest: SubQuest,
         isCompleted: Bool
     ) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.spacing20) {
-            Text("여행을 더 즐겁게 만들어줄 미션")
-                .font(DSTypography.B2)
-            HStack(alignment: .center, spacing: 0) {
-                VStack(
-                    alignment: .leading,
-                    spacing: DSSpacing.spacing4
-                ) {
+        HStack(alignment: .bottom) {
+            VStack(alignment: .leading, spacing: 9) {
+                Text("여행을 더 즐겁게 만들어줄 미션")
+                    .font(DSTypography.C2)
+                    .foregroundStyle(.neutralBlack)
+                
+                VStack(alignment: .leading, spacing: 3) {
                     Text(subQuest.title)
+                        .font(DSTypography.H5)
                         .foregroundStyle(.main300)
-                        .font(DSTypography.C1)
-
+                    
                     Text("사진 찍기")
-                        .font(DSTypography.C1)
+                        .foregroundStyle(.neutralBlack)
+                        .font(DSTypography.B1)
                 }
-                .layoutPriority(1)
-
-                Spacer(minLength: DSSpacing.spacing16)
-
-                if isCompleted {
-                    actionLabel(
-                        icon: "checkmark.circle.fill",
-                        title: "촬영 완료"
-                    )
-                } else {
-                    Button {
-                        onCameraTap(subQuest)
-                    } label: {
-                        actionLabel(
-                            icon: "camera.fill",
-                            title: "촬영하기"
-                        )
-                    }
+            }
+            
+            Spacer()
+            
+            if isCompleted {
+                actionLabel(icon: "checkmark.circle")
+                    .foregroundStyle(.green500)
+            } else {
+                Button {
+                    onCameraTap(subQuest)
+                } label: {
+                    actionLabel(icon: "camera.circle.fill")
+                        .foregroundStyle(.neutralBlack)
                 }
             }
         }
     }
-
-    private func actionLabel(
-        icon: String,
-        title: String
-    ) -> some View {
+    
+    private func actionLabel(icon: String) -> some View {
         HStack(spacing: DSSpacing.spacing12) {
             Image(systemName: icon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 20, height: 16)
+                .frame(width: 80, height: 80)
                 .accessibilityHidden(true)
-
-            Text(title)
-                .font(DSTypography.C3)
         }
-        .foregroundStyle(.white)
-        .padding(DSSpacing.spacing12)
-        .frame(minWidth: 100, minHeight: 46)
-        .background(.black)
-        .clipShape(
-            RoundedRectangle(cornerRadius: DSRadius.standard)
-        )
     }
-
+    
     private var contentInsets: EdgeInsets {
         switch state {
         case .locked:
@@ -132,9 +114,9 @@ struct SubQuestCard: View {
             )
         case .active, .completed:
             EdgeInsets(
-                top: DSSpacing.spacing16,
+                top: DSSpacing.spacing20,
                 leading: DSSpacing.spacing16,
-                bottom: DSSpacing.spacing16,
+                bottom: DSSpacing.spacing20,
                 trailing: DSSpacing.spacing16
             )
         }
@@ -161,7 +143,7 @@ struct SubQuestCard: View {
         subQuest.isCompleted = true
         return subQuest
     }()
-
+    
     SubQuestCard(
         state: .completed(completedSubQuest),
         onCameraTap: { _ in }
