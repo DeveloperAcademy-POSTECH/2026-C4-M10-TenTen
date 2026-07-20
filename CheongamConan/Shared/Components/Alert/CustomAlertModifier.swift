@@ -41,7 +41,6 @@ private struct CustomAlertModifier: ViewModifier {
                     .zIndex(999)
                 }
             }
-//            .animation(.easeInOut(duration: 0.2), value: isPresented)
     }
 }
 
