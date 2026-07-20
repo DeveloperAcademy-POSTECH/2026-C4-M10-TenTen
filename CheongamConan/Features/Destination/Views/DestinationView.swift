@@ -12,10 +12,8 @@ struct DestinationView: View {
     let area: String
     let category: String
 
-
     let onDestinationLoaded: (RecommendedPlace) -> Void
     let onMoveToTracking: () -> Void
-
 
     @Environment(\.modelContext) private var modelContext
     
