@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PermissionView: View {
     @Environment(LocationService.self) private var locationService
+    @Environment(NotificationService.self) private var notificationService
     @Environment(\.scenePhase) private var scenePhase
     
     @State private var model = PermissionModel()
@@ -29,6 +30,8 @@ struct PermissionView: View {
                 VStack(alignment: .leading, spacing: 23) {
                     Text("📍 위치 권한 (필수)")
                         .font(.title3)
+                    Text("🔔 알림 권한 (선택)")
+                        .font(.title3)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -36,7 +39,13 @@ struct PermissionView: View {
             Spacer()
             
             Button {
-                model.confirm(using: locationService, onCompleted: onCompleted)
+                Task {
+                    await model.confirm(
+                        using: locationService,
+                        notificationService: notificationService,
+                        onCompleted: onCompleted
+                    )
+                }
             } label: {
                 Text("확인")
                     .fontWeight(.semibold)
@@ -50,7 +59,7 @@ struct PermissionView: View {
         .ignoresSafeArea()
         .alert(
             "위치 권한이 필요합니다.",
-            isPresented: $model.isSettingsAlertPresented
+            isPresented: $model.isLocationSettingsAlertPresented
         ) {
             Button("취소", role: .cancel) {}
             
@@ -62,18 +71,24 @@ struct PermissionView: View {
             Text("현재 위치를 기반으로 서비스를 제공하기 위해 위치 권한이 필요합니다.")
         }
         .onChange(of: locationService.authorizationStatus) { _, _ in
-            model.authorizationDidChange(
-                using: locationService,
-                onCompleted: onCompleted
-            )
+            Task {
+                await model.locationAuthorizationDidChange(
+                    using: locationService,
+                    notificationService: notificationService,
+                    onCompleted: onCompleted
+                )
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             guard newPhase == .active else { return }
-            
-            model.appDidBecomeActive(
-                using: locationService,
-                onCompleted: onCompleted
-            )
+
+            Task {
+                await model.appDidBecomeActive(
+                    using: locationService,
+                    notificationService: notificationService,
+                    onCompleted: onCompleted
+                )
+            }
         }
     }
 }
@@ -81,4 +96,5 @@ struct PermissionView: View {
 #Preview {
     PermissionView(onCompleted: {})
         .environment(LocationService())
+        .environment(NotificationService())
 }

@@ -12,6 +12,7 @@ struct JourneyView: View {
     let category: String
 
     @Environment(LocationService.self) private var locationService
+    @Environment(NotificationService.self) private var notificationService
 
     @State private var model: JourneyModel
 
@@ -28,7 +29,7 @@ struct JourneyView: View {
             )
         )
     }
-
+    
     var body: some View {
         @Bindable var model = model
 
@@ -65,10 +66,36 @@ struct JourneyView: View {
                 return
             }
             model.startJourneyIfNeeded(
-                locationService: locationService
+                locationService: locationService,
+                notificationService: notificationService
             )
         }
+        #if DEBUG
+        .overlay(alignment: .topTrailing) {
+            debugSubQuestControls
+        }
+        #endif
     }
+
+    #if DEBUG
+    private var debugSubQuestControls: some View {
+        VStack(alignment: .trailing) {
+            Button("5초 후 퀘스트 발생") {
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(5)
+                )
+            }
+            Button("10초 후 퀘스트 발생") {
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(10)
+                )
+            }
+            Button("퀘스트 리셋") {
+                model.trackingModel.resetSubQuestForDebug()
+            }
+        }
+    }
+    #endif
 }
 
 #Preview {
@@ -78,4 +105,5 @@ struct JourneyView: View {
         initialDestination: .preview
     )
     .environment(LocationService())
+    .environment(NotificationService())
 }

@@ -5,6 +5,7 @@
 //  Created by Dayoon Lee on 7/20/26.
 //
 
+import CoreLocation
 import Observation
 
 // 여행 화면의 목적지, 페이지와 위치 추적 시작 흐름을 관리한다
@@ -46,7 +47,8 @@ final class JourneyModel {
     }
 
     func startJourneyIfNeeded(
-        locationService: LocationService
+        locationService: LocationService,
+        notificationService: NotificationService
     ) {
         guard !hasStartedTracking else { return }
         guard locationService.isAuthorized else { return }
@@ -54,8 +56,15 @@ final class JourneyModel {
         hasStartedTracking = true
 
         connectLocationService(locationService)
+        connectSubQuestNotification(notificationService)
         trackingModel.beginJourney()
-        locationService.startUpdatingLocation()
+        locationService.startUpdatingLocation(
+            allowsBackgroundUpdates: true
+        )
+
+        if locationService.authorizationStatus == .authorizedWhenInUse {
+            locationService.requestAlwaysAuthorization()
+        }
     }
 
     private func connectLocationService(
@@ -66,6 +75,16 @@ final class JourneyModel {
         locationService.onLocationsReceived = {
             [weak trackingModel] locations in
             trackingModel?.receive(locations)
+        }
+    }
+
+    private func connectSubQuestNotification(
+        _ notificationService: NotificationService
+    ) {
+        trackingModel.onSubQuestTriggered = { subQuest in
+            Task {
+                await notificationService.notifySubQuest(subQuest)
+            }
         }
     }
 }
