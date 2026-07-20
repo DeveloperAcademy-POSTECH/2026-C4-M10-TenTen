@@ -9,8 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        NavigationView {
-            NavigationLink(destination: TravelSetupView()) {
+        NavigationStack {
+            NavigationLink(destination: TravelSetupEntryView()) {
                 Text("여행 시작하기")
             }
         }

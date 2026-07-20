@@ -19,7 +19,7 @@ struct JourneyView: View {
     init(
         area: String,
         category: String,
-        initialDestination: Place? = nil
+        initialDestination: RecommendedPlace? = nil
     ) {
         self.area = area
         self.category = category

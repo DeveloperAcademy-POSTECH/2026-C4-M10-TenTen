@@ -7,6 +7,7 @@
 
 import SwiftUI
 import NMapsMap
+import SwiftData
 
 @main
 struct CheongamConanApp: App {
@@ -23,5 +24,6 @@ struct CheongamConanApp: App {
                 .environment(locationService)
                 .environment(notificationService)
         }
+        .modelContainer(for: RecommendedPlace.self)
     }
 }
