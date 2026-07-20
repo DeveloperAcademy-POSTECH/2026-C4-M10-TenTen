@@ -51,7 +51,6 @@ final class AreaPolygonRenderer {
         }
         
         renderedPolygons = polygons
-        onSelectionChanged(nil)
     }
     
     private func removeAll() {

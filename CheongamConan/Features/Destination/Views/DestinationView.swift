@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DestinationView: View {
     let area: String
     let category: String
 
-    let onDestinationLoaded: (Place) -> Void
+
+    let onDestinationLoaded: (RecommendedPlace) -> Void
     let onMoveToTracking: () -> Void
 
+
+    @Environment(\.modelContext) private var modelContext
+    
     @State private var destinationModel = DestinationModel()
     
     var body: some View {
@@ -38,9 +43,10 @@ struct DestinationView: View {
             }
         }
         .task {
-            await destinationModel.recommend(
+            await destinationModel.loadOrRecommend(
                 area: area,
-                category: category
+                category: category,
+                modelContext: modelContext
             )
             if let place = destinationModel.recommendedPlace {
                 onDestinationLoaded(place)

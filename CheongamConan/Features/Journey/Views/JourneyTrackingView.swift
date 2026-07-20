@@ -9,14 +9,14 @@ import SwiftUI
 
 @MainActor
 struct JourneyTrackingView: View {
-    let destination: Place
+    let destination: RecommendedPlace
 
     @State private var cameraSubQuest: SubQuest? // 현재 카메라로 인증 중인 퀘스트, nil이면 카메라 닫힘
 
     @Bindable var trackingModel: JourneyTrackingModel
 
     init(
-        destination: Place,
+        destination: RecommendedPlace,
         trackingModel: JourneyTrackingModel
     ) {
         self.destination = destination

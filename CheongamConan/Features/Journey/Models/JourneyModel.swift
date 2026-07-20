@@ -16,7 +16,7 @@ final class JourneyModel {
         case tracking
     }
 
-    var destination: Place?
+    var destination: RecommendedPlace?
     var currentPage: Page? = .destination
 
     // 여행 진행 화면 재진입 시 위치 추적이 중복 시작되지 않도록 관리
@@ -25,14 +25,14 @@ final class JourneyModel {
     let trackingModel: JourneyTrackingModel
 
     init(
-        destination: Place? = nil,
+        destination: RecommendedPlace? = nil,
         trackingModel: JourneyTrackingModel? = nil
     ) {
         self.destination = destination
         self.trackingModel = trackingModel ?? JourneyTrackingModel()
     }
 
-    func updateDestination(_ destination: Place) {
+    func updateDestination(_ destination: RecommendedPlace) {
         self.destination = destination
         // TODO: 목적지 진행 상태가 추가되면 추천 단계에서만 변경하도록 제한
         // 하나의 여행에서 목적지 도착 후 다음 목적지를 추천받는 흐름 고려
