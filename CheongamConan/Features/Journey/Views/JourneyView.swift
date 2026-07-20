@@ -54,7 +54,18 @@ struct JourneyView: View {
                 if let destination = model.destination {
                     JourneyTrackingView(
                         destination: destination,
-                        trackingModel: model.trackingModel
+                        trackingModel: model.trackingModel,
+                        onMissionPhotoCaptured: {
+                            subQuest,
+                            image in
+
+                            try await model.completeSubQuest(
+                                subQuest,
+                                image: image,
+                                missionStorageModel: missionStorageModel,
+                                modelContext: modelContext
+                            )
+                        }
                     )
                     .containerRelativeFrame(.vertical)
                     .id(JourneyModel.Page.tracking)

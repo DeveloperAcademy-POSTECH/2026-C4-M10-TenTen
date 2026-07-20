@@ -10,19 +10,22 @@ import SwiftUI
 @MainActor
 struct JourneyTrackingView: View {
     let destination: RecommendedPlace
-
+    let onMissionPhotoCaptured: (SubQuest, UIImage) async throws -> Void
     @State private var cameraSubQuest: SubQuest? // 현재 카메라로 인증 중인 퀘스트, nil이면 카메라 닫힘
+    @State private var missionCompletionError: Error?
 
     @Bindable var trackingModel: JourneyTrackingModel
 
     init(
         destination: RecommendedPlace,
-        trackingModel: JourneyTrackingModel
+        trackingModel: JourneyTrackingModel,
+        onMissionPhotoCaptured: @escaping (SubQuest, UIImage) async throws -> Void
     ) {
         self.destination = destination
         _trackingModel = Bindable(
             wrappedValue: trackingModel
         )
+        self.onMissionPhotoCaptured = onMissionPhotoCaptured
     }
 
     var body: some View {
@@ -100,14 +103,27 @@ struct JourneyTrackingView: View {
     ) -> some View {
         CameraPicker(
             onCapture: { image in
-                // TODO: 이미지 저장
-                trackingModel.completeSubQuest(id: subQuest.id)
-                cameraSubQuest = nil
+                Task { @MainActor in
+                    do {
+                        try await onMissionPhotoCaptured(subQuest, image)
+
+                        cameraSubQuest = nil
+                        missionCompletionError = nil
+                    } catch {
+                        missionCompletionError = error
+                        cameraSubQuest = nil
+                    }
+                }
             },
             onCancel: {
                 cameraSubQuest = nil
+            },
+            onFailure: { error in
+                missionCompletionError = error
+                cameraSubQuest = nil
             }
         )
+        .ignoresSafeArea()
     }
 
     private var subQuestCardState: SubQuestCard.State {
@@ -134,7 +150,8 @@ private extension SubQuest {
 #Preview("Locked") {
     JourneyTrackingView(
         destination: .preview,
-        trackingModel: .preview()
+        trackingModel: .preview(),
+        onMissionPhotoCaptured: { _, _ in }
     )
         .environment(LocationService())
 }
@@ -144,7 +161,8 @@ private extension SubQuest {
         destination: .preview,
         trackingModel: .preview(
             activeSubQuest: .movementExample()
-        )
+        ),
+        onMissionPhotoCaptured: { _, _ in}
     )
     .environment(LocationService())
 }
@@ -154,7 +172,8 @@ private extension SubQuest {
         destination: .preview,
         trackingModel: .preview(
             activeSubQuest: .completedPreview
-        )
+        ),
+        onMissionPhotoCaptured: { _, _ in }
     )
     .environment(LocationService())
 }

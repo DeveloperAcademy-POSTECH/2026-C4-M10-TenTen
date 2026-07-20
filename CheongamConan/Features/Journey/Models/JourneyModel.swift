@@ -8,6 +8,7 @@
 import CoreLocation
 import Observation
 import SwiftData
+import UIKit
 
 // 여행 화면의 목적지, 페이지와 위치 추적 시작 흐름을 관리한다
 @MainActor
@@ -26,14 +27,19 @@ final class JourneyModel {
     
     private(set) var missionStorageError: Error? = nil
 
+    private(set) var isCompletingMission = false // 카메라 화면에서 Use Photo 버튼 중복 입력 방지
+    private let missionImageStorageService: MissionImageStorageService
+
     let trackingModel: JourneyTrackingModel
 
     init(
         destination: RecommendedPlace? = nil,
-        trackingModel: JourneyTrackingModel? = nil
+        trackingModel: JourneyTrackingModel? = nil,
+        missionImageStorageService: MissionImageStorageService? = nil
     ) {
         self.destination = destination
         self.trackingModel = trackingModel ?? JourneyTrackingModel()
+        self.missionImageStorageService = missionImageStorageService ?? MissionImageStorageService()
     }
 
     func updateDestination(_ destination: RecommendedPlace) {
@@ -108,7 +114,7 @@ final class JourneyModel {
                 missionDescription: subQuest.description,
                 unlockedAt: subQuest.triggeredAt
             )
-            
+
             do {
                 try missionStorageModel.save(
                     missionRecord,
@@ -124,4 +130,46 @@ final class JourneyModel {
             }
         }
     }
+
+    func completeSubQuest(
+        _ subQuest: SubQuest,
+        image: UIImage,
+        missionStorageModel: MissionStorageModel,
+        modelContext: ModelContext
+    ) async throws {
+        guard !isCompletingMission else {
+            throw MissionCompletionError.alreadyInProgress
+        }
+        isCompletingMission = true
+        defer {
+            isCompletingMission = false
+        }
+
+        // 1. actor에서 이미지 파일 저장
+        let fileName = try await missionImageStorageService.save(
+            image,
+            missionID: subQuest.id
+        )
+
+        // 2. MainActor에서 SwiftData 미션 완료 처리
+        do {
+            try missionStorageModel.completeMission(
+                id: subQuest.id,
+                imageFileName: fileName,
+                modelContext: modelContext
+            )
+        } catch {
+            // 저장 실패시 actor에서 파일 삭제
+            try? await missionImageStorageService.delete(
+                fileName: fileName
+            )
+            throw error
+        }
+        // 3. 메모리의 SubQuest 완료 처리
+        trackingModel.completeSubQuest(id: subQuest.id)
+    }
+}
+
+enum MissionCompletionError: Error {
+    case alreadyInProgress
 }
