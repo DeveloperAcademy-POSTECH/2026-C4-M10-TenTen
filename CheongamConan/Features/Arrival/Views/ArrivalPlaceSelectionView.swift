@@ -6,36 +6,45 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ArrivalPlaceSelectionView: View {
-    private let model = ArrivalPlaceSelectionModel()
+    @Environment(\.modelContext) private var modelContext
+    
+    @State private var model = ArrivalPlaceSelectionModel()
     
     var body: some View {
-        if let recommendedPlace = model.recommendedPlace {
-            VStack(spacing: DSSpacing.spacing16) {
-                Button{
-                    
+        VStack(spacing: DSSpacing.spacing16) {
+            if let recommendedPlace = model.recommendedPlace {
+                NavigationLink {
+                    ArrivalPlaceConfirmView(place: recommendedPlace.name)
                 } label: {
                     Text(recommendedPlace.name)
                         .padding(.vertical, DSSpacing.spacing16)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                
-                Button{
-                    
-                } label: {
-                    Text("다른 장소")
-                        .padding(.vertical, DSSpacing.spacing16)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
             }
-            .padding(.horizontal, DSSpacing.contentHorizontal)
+            
+            NavigationLink (destination: ArrivalPlaceSearchView()) {
+                Text("다른 장소")
+                    .padding(.vertical, DSSpacing.spacing16)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+        }
+        .navigationBarBackButtonHidden()
+        .padding(.horizontal, DSSpacing.contentHorizontal)
+        .task {
+            model.loadRecommendPlace(modelContext: modelContext)
         }
     }
 }
 
 #Preview {
     ArrivalPlaceSelectionView()
+        .modelContainer(
+            for: RecommendedPlace.self,
+            inMemory: true
+        )
 }
