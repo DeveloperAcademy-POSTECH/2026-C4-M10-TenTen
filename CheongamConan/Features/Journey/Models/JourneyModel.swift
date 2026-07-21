@@ -10,17 +10,11 @@ import Observation
 import SwiftData
 import UIKit
 
-// 여행 화면의 목적지, 페이지와 위치 추적 시작 흐름을 관리한다
+// 여행 화면의 목적지, 위치 추적 및 미션 저장 흐름을 관리한다
 @MainActor
 @Observable
 final class JourneyModel {
-    enum Page: Hashable {
-        case destination
-        case tracking
-    }
-
     var destination: RecommendedPlace?
-    var currentPage: Page? = .destination
 
     // 여행 진행 화면 재진입 시 위치 추적이 중복 시작되지 않도록 관리
     private(set) var hasStartedTracking = false
@@ -46,13 +40,6 @@ final class JourneyModel {
         self.destination = destination
         // TODO: 목적지 진행 상태가 추가되면 추천 단계에서만 변경하도록 제한
         // 하나의 여행에서 목적지 도착 후 다음 목적지를 추천받는 흐름 고려
-    }
-
-    func moveToTracking() {
-        guard destination != nil else {
-            return
-        }
-        currentPage = .tracking
     }
 
     func startJourneyIfNeeded(
