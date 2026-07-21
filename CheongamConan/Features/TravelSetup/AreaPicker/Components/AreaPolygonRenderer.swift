@@ -139,17 +139,17 @@ private extension AreaPolygonRenderer {
     }
     
     func applyDefaultStyle(to overlay: NMFPolygonOverlay) {
-        overlay.fillColor = UIColor.systemBlue.withAlphaComponent(0.18)
+        overlay.fillColor = .grey250.withAlphaComponent(0.56)
         
-        overlay.outlineColor = UIColor.systemBlue.withAlphaComponent(0.8)
+        overlay.outlineColor = .grey300
         
-        overlay.outlineWidth = 1
+        overlay.outlineWidth = 2
     }
     
     func applySelectedStyle(to overlay: NMFPolygonOverlay) {
-        overlay.fillColor = UIColor.systemBlue.withAlphaComponent(0.4)
+        overlay.fillColor = .main300.withAlphaComponent(0.56)
         
-        overlay.outlineColor = UIColor.systemBlue
+        overlay.outlineColor = .grey300
         
         overlay.outlineWidth = 2
     }
