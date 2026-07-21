@@ -14,30 +14,72 @@ struct ArrivalPlaceSelectionView: View {
     @State private var model = ArrivalPlaceSelectionModel()
     
     var body: some View {
-        VStack(spacing: DSSpacing.spacing16) {
-            if let recommendedPlace = model.recommendedPlace {
-                NavigationLink {
-                    ArrivalPlaceConfirmView(place: recommendedPlace.name)
-                } label: {
-                    Text(recommendedPlace.name)
-                        .padding(.vertical, DSSpacing.spacing16)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-            }
+        VStack(alignment: .leading) {
+            Text("도착한 목적지를\n선택해주세요")
+                .font(DSTypography.H3)
+                .foregroundStyle(.neutralBlack)
             
-            NavigationLink (destination: ArrivalPlaceSearchView()) {
-                Text("다른 장소")
-                    .padding(.vertical, DSSpacing.spacing16)
-                    .frame(maxWidth: .infinity)
+            Spacer()
+            
+            VStack(spacing: DSSpacing.spacing20) {
+                if let recommendedPlace = model.recommendedPlace {
+                    NavigationLink {
+                        ArrivalPlaceConfirmView(place: recommendedPlace.name)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(recommendedPlace.name)
+                                .font(DSTypography.H4)
+                                .foregroundStyle(.main100)
+                            
+                            Spacer()
+                            
+                            HStack {
+                                Spacer()
+                                
+                                Image(systemName: "arrow.down.right.circle.fill")
+                                    .font(.system(size: 54))
+                                    .foregroundStyle(.main100)
+                            }
+                        }
+                        .padding(.horizontal, DSSpacing.spacing32)
+                        .padding(.vertical, DSSpacing.spacing24)
+                        .frame(maxWidth: .infinity, maxHeight: 291)
+                        .background(.main300)
+                        .cornerRadius(DSRadius.standard)
+                    }
+                }
+                
+                NavigationLink (destination: ArrivalPlaceSearchView()) {
+                    VStack(alignment: .leading) {
+                        Text("다른 장소")
+                            .font(DSTypography.H4)
+                            .foregroundStyle(.main300)
+                        
+                        Spacer()
+                        
+                        HStack {
+                            Spacer()
+                            
+                            Image(systemName: "arrow.down.right.circle.fill")
+                                .font(.system(size: 54))
+                                .foregroundStyle(.main300)
+                        }
+                    }
+                    .padding(.horizontal, DSSpacing.spacing32)
+                    .padding(.vertical, DSSpacing.spacing24)
+                    .frame(maxWidth: .infinity, maxHeight: 291)
+                    .background(.main100)
+                    .cornerRadius(DSRadius.standard)
+                }
             }
-            .buttonStyle(.bordered)
+            .navigationBarBackButtonHidden()
+            .task {
+                model.loadRecommendPlace(modelContext: modelContext)
+            }
         }
-        .navigationBarBackButtonHidden()
+        .padding(.top, DSSpacing.spacing32)
+        .padding(.bottom, 6)
         .padding(.horizontal, DSSpacing.contentHorizontal)
-        .task {
-            model.loadRecommendPlace(modelContext: modelContext)
-        }
     }
 }
 
