@@ -14,68 +14,268 @@ import SwiftUI
 struct MissionWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MissionActivityAttributes.self) { context in
+            // 잠금화면 Live Activity
             switch context.state.status {
             case .locked:
-                Label("미션 준비 중", systemImage: "lock.fill")
+                lockedLockScreenView
             case .available:
-                Label(
-                    context.state.missionTitle ?? "새로운 미션",
-                    systemImage: "camera.fill"
+                availableLockScreenView(
+                    title: context.state.missionTitle
                 )
             case .completed:
-                Label(
-                    context.state.missionTitle ?? "미션 완료",
-                    systemImage: "checkmark.circle.fill"
+                completedLockScreenView(
+                    title: context.state.missionTitle
                 )
             }
-        } dynamicIsland: { context in
+        }
+        dynamicIsland: { context in
             DynamicIsland {
-                // Expanded UI goes here.  Compose the expanded UI through
-                // various regions, like leading/trailing/center/bottom
-                DynamicIslandExpandedRegion(.leading) {
-                    Text("Leading")
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    Text("Trailing")
-                }
                 DynamicIslandExpandedRegion(.bottom) {
-                    switch context.state.status {
-                    case .locked:
-                        Label("미션 준비 중", systemImage: "lock.fill")
-                    case .available:
-                        Label(
-                            context.state.missionTitle ?? "새로운 미션",
-                            systemImage: "camera.fill"
-                        )
-                    case .completed:
-                        Label(
-                            context.state.missionTitle ?? "미션 완료",
-                            systemImage: "checkmark.circle.fill"
-                        )
-                    }
+                    expandedView(state: context.state)
                 }
             } compactLeading: {
-                Image(
-                    systemName: context.state.status == .completed
-                    ? "checkmark.circle.fill"
-                    : "figure.walk"
-                )
+                Image(systemName: symbolName(for: context.state.status))
+                    .foregroundStyle(.main300)
             } compactTrailing: {
-                Image(
-                    systemName: context.state.status == .locked
-                    ? "lock.fill"
-                    : "camera.fill"
-                )
+                
             } minimal: {
-                Image(
-                    systemName: context.state.status == .completed
-                    ? "checkmark.circle.fill"
-                    : "figure.walk"
-                )
+                Image(systemName: symbolName(for: context.state.status))
+                    .foregroundStyle(.main300)
             }
-            .keylineTint(Color.red)
         }
     }
+    
+}
+
+private var lockedLockScreenView: some View {
+    VStack(alignment: .leading, spacing: DSSpacing.spacing8){
+        Text("여행을 더 즐겁게 만들어줄 미션")
+            .font(DSTypography.C1)
+        HStack(spacing: DSSpacing.spacing4) {
+            Text("잠시 후")
+                .font(DSTypography.B1)
+                .foregroundStyle(.main300)
+            Text("미션이 공개됩니다.")
+                .font(DSTypography.C1)
+        }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.horizontal, DSSpacing.contentHorizontal)
+}
+
+@ViewBuilder
+private func availableLockScreenView(title: String?) ->  some View {
+    VStack(alignment: .leading, spacing: DSSpacing.spacing8){
+        Text("여행을 더 즐겁게 만들어줄 미션")
+            .font(DSTypography.C1)
+        HStack{
+            if let title {
+                Text(title)
+                    .font(DSTypography.B1)
+                    .foregroundStyle(.main300)
+                Text("사진 찍기")
+                    .font(DSTypography.C1)
+            } else {
+                Text("앱에서 미션을 확인해 보세요")
+                    .font(DSTypography.C1)
+            }
+        }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.horizontal, DSSpacing.contentHorizontal)
+}
+
+@ViewBuilder
+private func completedLockScreenView(title: String?) -> some View {
+    VStack(alignment: .leading, spacing: DSSpacing.spacing8){
+        Text("여행을 더 즐겁게 만들어줄 미션")
+            .font(DSTypography.C1)
+        HStack{
+            if let title {
+                Text(title)
+                    .font(DSTypography.B1)
+                    .foregroundStyle(.main300)
+                Text("사진 찍기 미션 완료")
+                    .font(DSTypography.C1)
+            } else {
+                Text("미션 완료!")
+                    .font(DSTypography.C1)
+            }
+        }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.horizontal, DSSpacing.contentHorizontal)
+}
+
+@ViewBuilder
+private func expandedView(
+    state: MissionActivityAttributes.ContentState
+) -> some View {
+    switch state.status {
+    case .locked:
+        lockedExpandedView
+        
+    case .available:
+        availableExpandedView(
+            missionID: state.missionID,
+            title: state.missionTitle
+        )
+        
+    case .completed:
+        completedExpandedView(
+            title: state.missionTitle
+        )
+    }
+}
+
+private var lockedExpandedView: some View {
+    HStack(spacing: DSSpacing.spacing12) {
+        VStack(
+            alignment: .leading,
+            spacing: DSSpacing.spacing8
+        ) {
+            Text("여행을 더 즐겁게 만들어줄 미션")
+                .font(DSTypography.C1)
+                .foregroundStyle(.white)
+            
+            HStack(spacing: DSSpacing.spacing4) {
+                Text("잠시 후")
+                    .font(DSTypography.B1)
+                    .foregroundStyle(.main300)
+                
+                Text("미션이 공개됩니다.")
+                    .font(DSTypography.C1)
+                    .foregroundStyle(.white)
+            }
+        }
+        
+        Spacer(minLength: DSSpacing.spacing8)
+        
+        Image(systemName: symbolName(for: .locked))
+            .font(.title2)
+            .foregroundStyle(.main300)
+            .frame(width: 60, height: 60)
+            .background(.main600)
+            .clipShape(Circle())
+    }
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, DSSpacing.spacing16)
+}
+
+@ViewBuilder
+private func availableExpandedView(
+    missionID: UUID?,
+    title: String?
+) -> some View {
+    HStack(spacing: DSSpacing.spacing12) {
+        VStack(
+            alignment: .leading,
+            spacing: DSSpacing.spacing8
+        ) {
+            Text("여행을 더 즐겁게 만들어줄 미션")
+                .font(DSTypography.C1)
+                .foregroundStyle(.white)
+            
+            if let title {
+                HStack(spacing: DSSpacing.spacing4) {
+                    Text(title)
+                        .font(DSTypography.B1)
+                        .foregroundStyle(.main300)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                    
+                    Text("사진 찍기")
+                        .font(DSTypography.C1)
+                        .foregroundStyle(.white)
+                        .fixedSize()
+                }
+            } else {
+                Text("앱에서 미션을 확인해 보세요")
+                    .font(DSTypography.C1)
+                    .foregroundStyle(.white)
+            }
+        }
+        
+        Spacer(minLength: DSSpacing.spacing8)
+        
+        if let missionID,
+           let cameraURL = cameraURL(missionID: missionID) {
+            Link(destination: cameraURL) {
+                Image(systemName: "camera.fill")
+                    .font(.title2)
+                    .foregroundStyle(.main300)
+                    .frame(width: 60, height: 60)
+                    .background(.main600)
+                    .clipShape(Circle())
+            }
+        }
+    }
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, DSSpacing.spacing16)
+}
+
+private func cameraURL(
+    missionID: UUID
+) -> URL? {
+    URL(
+        string: "tenten://mission/\(missionID)/camera"
+    )
+}
+
+private func symbolName(
+    for status: MissionActivityAttributes.Status
+) -> String {
+    switch status {
+    case .locked:
+        return "lock.fill"
+
+    case .available:
+        return "camera.fill"
+
+    case .completed:
+        return "checkmark"
+    }
+}
+
+private func completedExpandedView(
+    title: String?
+) -> some View {
+    HStack(spacing: DSSpacing.spacing12) {
+        VStack(
+            alignment: .leading,
+            spacing: DSSpacing.spacing8
+        ) {
+            Text("미션을 완료했어요")
+                .font(DSTypography.C1)
+                .foregroundStyle(.white)
+            
+            if let title {
+                HStack(spacing: DSSpacing.spacing4) {
+                    Text(title)
+                        .font(DSTypography.B1)
+                        .foregroundStyle(.main300)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+
+                    Text("사진 찍기")
+                        .font(DSTypography.C1)
+                        .foregroundStyle(.white)
+                        .fixedSize()
+                }
+            }
+        }
+        
+        Spacer(minLength: DSSpacing.spacing8)
+        
+        Image(systemName: symbolName(for: .completed))
+            .font(.title2.bold())
+            .foregroundStyle(.main300)
+            .frame(width: 60, height: 60)
+            .background(.main600)
+            .clipShape(Circle())
+    }
+    .frame(maxWidth: .infinity)
+    .padding(.horizontal, DSSpacing.spacing16)
 }
 
 extension MissionActivityAttributes {
@@ -98,7 +298,7 @@ extension MissionActivityAttributes.ContentState {
     fileprivate static var available: MissionActivityAttributes.ContentState {
         MissionActivityAttributes.ContentState(
             missionID: UUID(),
-            missionTitle: "횡단보도의 신호등 사진 찍기",
+            missionTitle: "횡단보도의 신호등",
             status: .available
         )
     }
@@ -106,7 +306,7 @@ extension MissionActivityAttributes.ContentState {
     fileprivate static var completed: MissionActivityAttributes.ContentState {
         MissionActivityAttributes.ContentState(
             missionID: UUID(),
-            missionTitle: "횡단보도의 신호등 사진 찍기",
+            missionTitle: "횡단보도의 신호등",
             status: .completed
         )
     }
@@ -127,7 +327,9 @@ extension MissionActivityAttributes.ContentState {
 ) {
     MissionWidgetLiveActivity()
 } contentStates: {
-    .locked
+    MissionActivityAttributes.ContentState.locked
+    MissionActivityAttributes.ContentState.available
+    MissionActivityAttributes.ContentState.completed
 }
 
 #Preview(
@@ -137,7 +339,9 @@ extension MissionActivityAttributes.ContentState {
 ) {
     MissionWidgetLiveActivity()
 } contentStates: {
-    .locked
+    MissionActivityAttributes.ContentState.locked
+    MissionActivityAttributes.ContentState.available
+    MissionActivityAttributes.ContentState.completed
 }
 
 #Preview(
@@ -147,5 +351,7 @@ extension MissionActivityAttributes.ContentState {
 ) {
     MissionWidgetLiveActivity()
 } contentStates: {
-    .locked
+    MissionActivityAttributes.ContentState.locked
+    MissionActivityAttributes.ContentState.available
+    MissionActivityAttributes.ContentState.completed
 }
