@@ -24,11 +24,6 @@ struct OnboardingView: View {
                     .combined(with: .opacity)
                 )
             } else {
-                //                IntroductionView()
-                //                    .transition(
-                //                        .move(edge: .top)
-                //                        .combined(with: .opacity)
-                //                    )
                 if step == 1 {
                     VStack(alignment: .leading) {
                         Text("목적지를 저희가 정해드릴게요")
@@ -137,10 +132,6 @@ struct OnboardingView: View {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             
             guard !Task.isCancelled else { return }
-            
-            //            withAnimation(.easeOut(duration: 1.5)) {
-            //                isPermissionViewPresented = true
-            //            }
         }
     }
 }
