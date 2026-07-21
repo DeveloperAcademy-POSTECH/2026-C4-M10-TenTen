@@ -29,4 +29,17 @@ enum Category: String, CaseIterable, Identifiable, Hashable {
             "랜덤"
         }
     }
+    
+    var imageName: String {
+        switch self {
+        case .cafe:
+            "IconCafe"
+        case .landmark:
+            "IconLandmark"
+        case .random:
+            "IconRandom"
+        case .restaurant:
+            "IconRestaurant"
+        }
+    }
 }
