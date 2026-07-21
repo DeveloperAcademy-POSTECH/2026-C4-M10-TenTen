@@ -241,7 +241,6 @@ struct JourneyView: View {
         
         try? modelContext.save()
         journeySession = session
-        modelContext.delete(session)
     }
     
     private func moveToArrival() {
