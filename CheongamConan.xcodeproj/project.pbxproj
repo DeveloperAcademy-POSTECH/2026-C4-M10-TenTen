@@ -62,6 +62,10 @@
 		78745DDF300F4FBB00C52E19 /* Exceptions for "CheongamConan" folder in "MissionWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Resources/Fonts/Pretendard-Bold.otf",
+				"Resources/Fonts/Pretendard-SemiBold.otf",
+				Shared/DesignSystem/Foundation/DSSpacing.swift,
+				Shared/DesignSystem/Foundation/DSTypography.swift,
 				Shared/Models/MissionActivityAttributes.swift,
 			);
 			target = 78745B73300F0BE600C52E19 /* MissionWidgetExtension */;
