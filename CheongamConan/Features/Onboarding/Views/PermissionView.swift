@@ -26,6 +26,7 @@ struct PermissionView: View {
                 Text("여행 전에 앱 사용을 위해 필요한 권한을 허용해주세요")
                     .font(DSTypography.H4)
                 
+                
                 VStack(alignment: .leading, spacing: 52) {
                     HStack(alignment: .top, spacing: 14) {
                         Image(systemName: "location.circle.fill")
@@ -63,7 +64,7 @@ struct PermissionView: View {
                     }
                 }
             }
-            .padding(.horizontal, DSSpacing.contentHorizontal)
+            //.padding(.horizontal, DSSpacing.contentHorizontal)
             .frame(width: .infinity, alignment: .leading)
             
             Spacer()
@@ -78,14 +79,10 @@ struct PermissionView: View {
                 }
             } label: {
                 Text("확인")
-                    .foregroundStyle(.neutralWhite)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Color.main300)
-                    .cornerRadius(16)
             }
+            .buttonStyle(DSButtonStyle(backgroundColor: .main300, foregroundColor: .neutralWhite))
         }
+        .navigationBarBackButtonHidden()
         .padding(.horizontal, 16)
         .padding(.bottom, 20)
         //.ignoresSafeArea()
