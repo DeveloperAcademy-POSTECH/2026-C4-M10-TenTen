@@ -72,7 +72,7 @@ final class AreaPolygonCoordinator: NSObject, NMFMapViewOptionDelegate {
         
         let cameraUpdate = NMFCameraUpdate(
             scrollTo: coordinate,
-            zoomTo: 15
+            zoomTo: 12
         )
         
         mapView.moveCamera(cameraUpdate)
