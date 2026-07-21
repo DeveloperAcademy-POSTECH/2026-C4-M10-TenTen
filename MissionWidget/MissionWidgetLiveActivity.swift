@@ -9,26 +9,25 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-struct MissionWidgetAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        // Dynamic stateful properties about your activity go here!
-        var emoji: String
-    }
 
-    // Fixed non-changing properties about your activity go here!
-    var name: String
-}
 
 struct MissionWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: MissionWidgetAttributes.self) { context in
-            // Lock screen/banner UI goes here
-            VStack {
-                Text("Hello \(context.state.emoji)")
+        ActivityConfiguration(for: MissionActivityAttributes.self) { context in
+            switch context.state.status {
+            case .locked:
+                Label("미션 준비 중", systemImage: "lock.fill")
+            case .available:
+                Label(
+                    context.state.missionTitle ?? "새로운 미션",
+                    systemImage: "camera.fill"
+                )
+            case .completed:
+                Label(
+                    context.state.missionTitle ?? "미션 완료",
+                    systemImage: "checkmark.circle.fill"
+                )
             }
-            .activityBackgroundTint(Color.cyan)
-            .activitySystemActionForegroundColor(Color.black)
-
         } dynamicIsland: { context in
             DynamicIsland {
                 // Expanded UI goes here.  Compose the expanded UI through
@@ -40,41 +39,113 @@ struct MissionWidgetLiveActivity: Widget {
                     Text("Trailing")
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("Bottom \(context.state.emoji)")
-                    // more content
+                    switch context.state.status {
+                    case .locked:
+                        Label("미션 준비 중", systemImage: "lock.fill")
+                    case .available:
+                        Label(
+                            context.state.missionTitle ?? "새로운 미션",
+                            systemImage: "camera.fill"
+                        )
+                    case .completed:
+                        Label(
+                            context.state.missionTitle ?? "미션 완료",
+                            systemImage: "checkmark.circle.fill"
+                        )
+                    }
                 }
             } compactLeading: {
-                Text("L")
+                Image(
+                    systemName: context.state.status == .completed
+                    ? "checkmark.circle.fill"
+                    : "figure.walk"
+                )
             } compactTrailing: {
-                Text("T \(context.state.emoji)")
+                Image(
+                    systemName: context.state.status == .locked
+                    ? "lock.fill"
+                    : "camera.fill"
+                )
             } minimal: {
-                Text(context.state.emoji)
+                Image(
+                    systemName: context.state.status == .completed
+                    ? "checkmark.circle.fill"
+                    : "figure.walk"
+                )
             }
-            .widgetURL(URL(string: "http://www.apple.com"))
             .keylineTint(Color.red)
         }
     }
 }
 
-extension MissionWidgetAttributes {
-    fileprivate static var preview: MissionWidgetAttributes {
-        MissionWidgetAttributes(name: "World")
+extension MissionActivityAttributes {
+    fileprivate static var preview: MissionActivityAttributes {
+        MissionActivityAttributes(
+            destinationID: UUID()
+        )
     }
 }
 
-extension MissionWidgetAttributes.ContentState {
-    fileprivate static var smiley: MissionWidgetAttributes.ContentState {
-        MissionWidgetAttributes.ContentState(emoji: "😀")
+extension MissionActivityAttributes.ContentState {
+    fileprivate static var locked: MissionActivityAttributes.ContentState {
+        MissionActivityAttributes.ContentState(
+            missionID: nil,
+            missionTitle: nil,
+            status: .locked
+        )
      }
      
-     fileprivate static var starEyes: MissionWidgetAttributes.ContentState {
-         MissionWidgetAttributes.ContentState(emoji: "🤩")
-     }
+    fileprivate static var available: MissionActivityAttributes.ContentState {
+        MissionActivityAttributes.ContentState(
+            missionID: UUID(),
+            missionTitle: "횡단보도의 신호등 사진 찍기",
+            status: .available
+        )
+    }
+    
+    fileprivate static var completed: MissionActivityAttributes.ContentState {
+        MissionActivityAttributes.ContentState(
+            missionID: UUID(),
+            missionTitle: "횡단보도의 신호등 사진 찍기",
+            status: .completed
+        )
+    }
 }
 
-#Preview("Notification", as: .content, using: MissionWidgetAttributes.preview) {
+#Preview("잠금화면", as: .content, using: MissionActivityAttributes.preview) {
    MissionWidgetLiveActivity()
 } contentStates: {
-    MissionWidgetAttributes.ContentState.smiley
-    MissionWidgetAttributes.ContentState.starEyes
+    MissionActivityAttributes.ContentState.locked
+    MissionActivityAttributes.ContentState.available
+    MissionActivityAttributes.ContentState.completed
+}
+
+#Preview(
+    "Dynamic Island - minimal",
+    as: .dynamicIsland(.minimal),
+    using: MissionActivityAttributes.preview
+) {
+    MissionWidgetLiveActivity()
+} contentStates: {
+    .locked
+}
+
+#Preview(
+    "Dynamic Island - compact",
+    as: .dynamicIsland(.compact),
+    using: MissionActivityAttributes.preview
+) {
+    MissionWidgetLiveActivity()
+} contentStates: {
+    .locked
+}
+
+#Preview(
+    "Dynamic Island - expanded",
+    as: .dynamicIsland(.expanded),
+    using: MissionActivityAttributes.preview
+) {
+    MissionWidgetLiveActivity()
+} contentStates: {
+    .locked
 }

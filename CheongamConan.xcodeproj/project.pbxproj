@@ -59,6 +59,13 @@
 			);
 			target = 78745B73300F0BE600C52E19 /* MissionWidgetExtension */;
 		};
+		78745DDF300F4FBB00C52E19 /* Exceptions for "CheongamConan" folder in "MissionWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Shared/Models/MissionActivityAttributes.swift,
+			);
+			target = 78745B73300F0BE600C52E19 /* MissionWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -74,6 +81,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				78471B963008B07400C3722C /* Exceptions for "CheongamConan" folder in "CheongamConan" target */,
+				78745DDF300F4FBB00C52E19 /* Exceptions for "CheongamConan" folder in "MissionWidgetExtension" target */,
 			);
 			path = CheongamConan;
 			sourceTree = "<group>";
@@ -453,13 +461,14 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HJGS4LQ7XH;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CheongamConan/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "퀘스트 인증 사진을 촬영하기 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "여행 중 이동 경로를 기록하고 이동에 따른 미션을 안내하기 위해 백그라운드에서도 위치를 확인합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치를 기준으로 가까운 동네와 목적지를 추천하기 위해 위치 정보가 필요합니다.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -496,6 +505,7 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "퀘스트 인증 사진을 촬영하기 위해 카메라를 사용합니다.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "여행 중 이동 경로를 기록하고 이동에 따른 미션을 안내하기 위해 백그라운드에서도 위치를 확인합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치를 기준으로 가까운 동네와 목적지를 추천하기 위해 위치 정보가 필요합니다.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

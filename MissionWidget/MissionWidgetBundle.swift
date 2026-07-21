@@ -11,8 +11,8 @@ import SwiftUI
 @main
 struct MissionWidgetBundle: WidgetBundle {
     var body: some Widget {
-        MissionWidget()
-        MissionWidgetControl()
+        //MissionWidget()
+        //MissionWidgetControl()
         MissionWidgetLiveActivity()
     }
 }
