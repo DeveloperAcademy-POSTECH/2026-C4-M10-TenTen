@@ -31,7 +31,6 @@ struct HomeView: View {
                     
                     Spacer()
                     
-                    // TODO: 추후 버튼을 공통 컴포넌트로 분리
                     NavigationLink(destination: TravelSetupEntryView()) {
                         Text("여행 시작하기")
                     }
