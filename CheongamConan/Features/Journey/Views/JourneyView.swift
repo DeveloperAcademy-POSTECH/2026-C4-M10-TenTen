@@ -104,6 +104,10 @@ struct JourneyView: View {
                 }
             }
         }
+#if DEBUG
+        .overlay(alignment: .topTrailing) {
+            debugSubQuestControls
+        }
 #endif
     }
     
