@@ -158,10 +158,6 @@ extension LocationService: CLLocationManagerDelegate {
         didUpdateLocations locations: [CLLocation]
     ) {
         isRequestingCurrentLocation = false // 위치 수신 시 일회성 요청 상태 종료
-        self.currentLocation = currentLocation
-        locationError = nil
-        onLocationsReceived?(locations)
-
         guard let currentLocation = locations.last else {
             return
         }
@@ -180,4 +176,3 @@ extension LocationService: CLLocationManagerDelegate {
         isRequestingCurrentLocation = false
     }
 }
-
