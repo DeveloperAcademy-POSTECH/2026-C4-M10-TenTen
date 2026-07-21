@@ -34,13 +34,13 @@ struct HomeView: View {
                     // TODO: 추후 버튼을 공통 컴포넌트로 분리
                     NavigationLink(destination: TravelSetupEntryView()) {
                         Text("여행 시작하기")
-                            .padding(.vertical, DSSpacing.spacing16)
-                            .font(DSTypography.B1)
-                            .frame(maxWidth: .infinity)
-                            .background(.main400)
-                            .foregroundStyle(.neutralWhite)
-                            .cornerRadius(DSRadius.standard)
                     }
+                    .buttonStyle(
+                        DSButtonStyle(
+                            backgroundColor: .main400,
+                            foregroundColor: .neutralWhite
+                        )
+                    )
                 }
                 .padding(.horizontal, DSSpacing.contentHorizontal)
                 .padding(.bottom, DSSpacing.spacing56)
