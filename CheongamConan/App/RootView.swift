@@ -6,37 +6,60 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RootView: View {
-    
     @AppStorage("hasCompletedOnboarding")
-    private var hasCompletedOnboarding: Bool = false
-    
+    private var hasCompletedOnboarding = false
+
+    @Query(
+        filter: #Predicate<JourneySession> {
+            !$0.isCompleted
+        },
+        sort: \JourneySession.updatedAt,
+        order: .reverse
+    )
+    private var activeSessions: [JourneySession]
+
     var body: some View {
         NavigationStack {
-            Group {
-                if hasCompletedOnboarding {
-                    HomeView()
-                        .transition(
-                            .move(edge: .trailing)
-                            .combined(with: .opacity)
-                        )
-                        .zIndex(0)
-                } else {
-                    OnboardingView {
-                        hasCompletedOnboarding = true
-                    }
+            if hasCompletedOnboarding {
+                mainContent
                     .transition(
-                        .move(edge: .leading)
+                        .move(edge: .trailing)
                         .combined(with: .opacity)
                     )
-                    .zIndex(1)
+            } else {
+                OnboardingView {
+                    withAnimation(.easeInOut(duration: 0.6)) {
+                        hasCompletedOnboarding = true
+                    }
                 }
+                .transition(
+                    .move(edge: .leading)
+                    .combined(with: .opacity)
+                )
             }
-            .animation(
-                .easeInOut(duration: 0.6),
-                value: hasCompletedOnboarding
-            )
+        }
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        if let session = activeSessions.first {
+            switch session.phase {
+            case .journey:
+                JourneyView(
+                    area: session.area,
+                    category: session.category,
+                    journeySession: session,
+                    initialDestination: session.destination
+                )
+
+            case .arrival:
+                ArrivalPlaceSelectionView()
+            }
+        } else {
+            HomeView()
         }
     }
 }
