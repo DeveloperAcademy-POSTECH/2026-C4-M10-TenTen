@@ -15,11 +15,23 @@ struct TravelSetupEntryView: View {
             if isReady {
                 TravelSetupView()
             } else {
-                ProgressView()
-                    .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity
-                    )
+                VStack(spacing: 120) {
+                    Text("NAGAM")
+                        .font(DSTypography.H1)
+                        .foregroundStyle(.main400)
+                    
+                    VStack(spacing: 28) {
+                        ProgressView()
+                            .tint(.main900)
+                            .controlSize(.large)
+                        
+                        Text("잠시 후 여행이 시작돼요")
+                            .font(DSTypography.B2)
+                            .foregroundStyle(.main900)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.main250)
             }
         }
         .navigationBarBackButtonHidden()
