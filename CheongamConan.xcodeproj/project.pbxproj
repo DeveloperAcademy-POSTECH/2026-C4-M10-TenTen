@@ -7,10 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		78745B77300F0BE600C52E19 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78745B76300F0BE600C52E19 /* WidgetKit.framework */; };
+		78745B79300F0BE600C52E19 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78745B78300F0BE600C52E19 /* SwiftUI.framework */; };
+		78745B8A300F0BE700C52E19 /* MissionWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 78745B74300F0BE600C52E19 /* MissionWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8E548F9D3003EE8E005353A2 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 8E548F9C3003EE8E005353A2 /* NMapsMap */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		78745B88300F0BE700C52E19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8E103A813000F0CF00AF9464 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 78745B73300F0BE600C52E19;
+			remoteInfo = MissionWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		78745B8F300F0BE700C52E19 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				78745B8A300F0BE700C52E19 /* MissionWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		78745B74300F0BE600C52E19 /* MissionWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MissionWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		78745B76300F0BE600C52E19 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		78745B78300F0BE600C52E19 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		8E103A893000F0CF00AF9464 /* CheongamConan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CheongamConan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -22,9 +52,24 @@
 			);
 			target = 8E103A883000F0CF00AF9464 /* CheongamConan */;
 		};
+		78745B8E300F0BE700C52E19 /* Exceptions for "MissionWidget" folder in "MissionWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 78745B73300F0BE600C52E19 /* MissionWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		78745B7A300F0BE600C52E19 /* MissionWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				78745B8E300F0BE700C52E19 /* Exceptions for "MissionWidget" folder in "MissionWidgetExtension" target */,
+			);
+			path = MissionWidget;
+			sourceTree = "<group>";
+		};
 		8E103A8B3000F0CF00AF9464 /* CheongamConan */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -36,6 +81,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		78745B71300F0BE600C52E19 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				78745B79300F0BE600C52E19 /* SwiftUI.framework in Frameworks */,
+				78745B77300F0BE600C52E19 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8E103A863000F0CF00AF9464 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -47,10 +101,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		78745B75300F0BE600C52E19 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				78745B76300F0BE600C52E19 /* WidgetKit.framework */,
+				78745B78300F0BE600C52E19 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		8E103A803000F0CF00AF9464 = {
 			isa = PBXGroup;
 			children = (
 				8E103A8B3000F0CF00AF9464 /* CheongamConan */,
+				78745B7A300F0BE600C52E19 /* MissionWidget */,
+				78745B75300F0BE600C52E19 /* Frameworks */,
 				8E103A8A3000F0CF00AF9464 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				8E103A893000F0CF00AF9464 /* CheongamConan.app */,
+				78745B74300F0BE600C52E19 /* MissionWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,6 +132,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		78745B73300F0BE600C52E19 /* MissionWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 78745B8B300F0BE700C52E19 /* Build configuration list for PBXNativeTarget "MissionWidgetExtension" */;
+			buildPhases = (
+				78745B70300F0BE600C52E19 /* Sources */,
+				78745B71300F0BE600C52E19 /* Frameworks */,
+				78745B72300F0BE600C52E19 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				78745B7A300F0BE600C52E19 /* MissionWidget */,
+			);
+			name = MissionWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = MissionWidgetExtension;
+			productReference = 78745B74300F0BE600C52E19 /* MissionWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		8E103A883000F0CF00AF9464 /* CheongamConan */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8E103A943000F0CF00AF9464 /* Build configuration list for PBXNativeTarget "CheongamConan" */;
@@ -73,10 +161,12 @@
 				8E103A853000F0CF00AF9464 /* Sources */,
 				8E103A863000F0CF00AF9464 /* Frameworks */,
 				8E103A873000F0CF00AF9464 /* Resources */,
+				78745B8F300F0BE700C52E19 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				78745B89300F0BE700C52E19 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				8E103A8B3000F0CF00AF9464 /* CheongamConan */,
@@ -96,9 +186,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2650;
+				LastSwiftUpdateCheck = 2660;
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
+					78745B73300F0BE600C52E19 = {
+						CreatedOnToolsVersion = 26.6;
+					};
 					8E103A883000F0CF00AF9464 = {
 						CreatedOnToolsVersion = 26.5;
 					};
@@ -122,11 +215,19 @@
 			projectRoot = "";
 			targets = (
 				8E103A883000F0CF00AF9464 /* CheongamConan */,
+				78745B73300F0BE600C52E19 /* MissionWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		78745B72300F0BE600C52E19 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8E103A873000F0CF00AF9464 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,6 +238,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		78745B70300F0BE600C52E19 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8E103A853000F0CF00AF9464 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,7 +254,75 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		78745B89300F0BE700C52E19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 78745B73300F0BE600C52E19 /* MissionWidgetExtension */;
+			targetProxy = 78745B88300F0BE700C52E19 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		78745B8C300F0BE700C52E19 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HJGS4LQ7XH;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MissionWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MissionWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tenten.CheongamConan.MissionWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		78745B8D300F0BE700C52E19 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MissionWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MissionWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tenten.CheongamConan.MissionWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		8E103A923000F0CF00AF9464 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 8E103A8B3000F0CF00AF9464 /* CheongamConan */;
@@ -345,6 +521,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		78745B8B300F0BE700C52E19 /* Build configuration list for PBXNativeTarget "MissionWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				78745B8C300F0BE700C52E19 /* Debug */,
+				78745B8D300F0BE700C52E19 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		8E103A843000F0CF00AF9464 /* Build configuration list for PBXProject "CheongamConan" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
