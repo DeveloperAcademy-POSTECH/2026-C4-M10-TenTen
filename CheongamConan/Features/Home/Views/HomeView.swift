@@ -45,6 +45,13 @@ struct HomeView: View {
                 .padding(.bottom, DSSpacing.spacing56)
                 .padding(.top, 193)
             }
+            #if DEBUG
+            NavigationLink {
+                MissionImageStorageDebugView()
+            } label: {
+                Text("이미지 저장 테스트")
+            }
+            #endif
         }
     }
 }

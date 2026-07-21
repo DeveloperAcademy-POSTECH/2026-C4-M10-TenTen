@@ -27,6 +27,7 @@ struct CheongamConanApp: App {
         .modelContainer(
             for: [
                 RecommendedPlace.self,
+                MissionRecord.self,
                 JourneySession.self
             ]
         )

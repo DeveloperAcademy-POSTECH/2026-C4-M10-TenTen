@@ -17,12 +17,23 @@ struct JourneyView: View {
     @Environment(NotificationService.self) private var notificationService
     @Environment(\.modelContext) private var modelContext
     
+    // 여행 및 미션 저장 로직
     @State private var model: JourneyModel
+    @State private var missionStorageModel = MissionStorageModel()
+    
+    // 현재 진행중인 여행
+    @State private var journeySession: JourneySession?
+    
+    // 목적지 조회
     @State private var destinationModel = DestinationModel()
+    
+    // 카메라 (미션 인증)
     @State private var cameraSubQuest: SubQuest?
+    @State private var missionCompletionError: Error?
+    
+    // 화면 전환 및 alert
     @State private var isShowDestinationArrivalAlert = false
     @State private var isShowArrivalView = false
-    @State private var journeySession: JourneySession?
     
     init(
         area: String,
@@ -207,25 +218,44 @@ struct JourneyView: View {
         
         model.startJourneyIfNeeded(
             locationService: locationService,
-            notificationService: notificationService
+            notificationService: notificationService,
+            missionStorageModel: missionStorageModel,
+            modelContext: modelContext
         )
     }
+    
     private func cameraPicker(
         for subQuest: SubQuest
     ) -> some View {
         CameraPicker(
-            onCapture: {
-                model.trackingModel.completeSubQuest(
-                    id: subQuest.id
-                )
-                cameraSubQuest = nil
+            onCapture: { image in
+                Task { @MainActor in
+                    do {
+                        try await model.completeSubQuest(
+                            subQuest,
+                            image: image,
+                            missionStorageModel: missionStorageModel,
+                            modelContext: modelContext
+                        )
+                        missionCompletionError = nil
+                        cameraSubQuest = nil
+                    } catch {
+                        missionCompletionError = error
+                        cameraSubQuest = nil
+                    }
+                }
             },
             onCancel: {
                 cameraSubQuest = nil
+            },
+            onFailure: { error in
+                missionCompletionError = error
+                cameraSubQuest = nil
             }
         )
+        .ignoresSafeArea()
     }
-    
+        
     private func createJourneySessionIfNeeded(
         destination: RecommendedPlace
     ) {

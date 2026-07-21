@@ -11,9 +11,20 @@ import UIKit
 /// UIKit의 카메라 화면을 SwiftUI에 연결하고,
 /// 촬영 성공과 취소 이벤트만 상위 View로 전달한다
 struct CameraPicker: UIViewControllerRepresentable {
-    let onCapture: () -> Void
+    let onCapture: (UIImage) -> Void
     let onCancel: () -> Void
+    let onFailure: (Error) -> Void
 
+    init(
+        onCapture: @escaping (UIImage) -> Void,
+        onCancel: @escaping () -> Void,
+        onFailure: @escaping (Error) -> Void = { _ in }
+    ) {
+        self.onCapture = onCapture
+        self.onCancel = onCancel
+        self.onFailure = onFailure
+    }
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
     }
@@ -45,11 +56,22 @@ struct CameraPicker: UIViewControllerRepresentable {
             ]
         ) {
             // 촬영 성공
-            parent.onCapture()
+            guard let image = info[.originalImage] as? UIImage else {
+                parent.onFailure(
+                    CameraPickerError.imageNotFound
+                )
+                return
+            }
+            parent.onCapture(image)
         }
+        
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             // 촬영 취소
             parent.onCancel()
         }
     }
+}
+
+enum CameraPickerError: Error {
+    case imageNotFound
 }

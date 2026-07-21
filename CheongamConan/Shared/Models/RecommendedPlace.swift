@@ -10,13 +10,17 @@ import SwiftData
 
 @Model
 final class RecommendedPlace {
+    @Attribute(.unique)
+    var id: UUID
+    
     var latitude: Double
     var longitude: Double
     var name: String
     var roadAddress: String
     var recommendedAt: Date
     
-    init(latitude: Double, longitude: Double, name: String, roadAddress: String, recommendedAt: Date = .now) {
+    init(id: UUID = UUID(), latitude: Double, longitude: Double, name: String, roadAddress: String, recommendedAt: Date = .now) {
+        self.id = id
         self.latitude = latitude
         self.longitude = longitude
         self.name = name
