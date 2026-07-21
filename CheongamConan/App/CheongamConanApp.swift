@@ -13,7 +13,8 @@ import SwiftData
 struct CheongamConanApp: App {
     @State private var locationService = LocationService()
     @State private var notificationService = NotificationService()
-
+    @State private var missionActivityManager = MissionActivityManager()
+    
     init() {
         NMFAuthManager.shared().ncpKeyId = AppConfig.naverMapKeyID
     }
@@ -23,6 +24,10 @@ struct CheongamConanApp: App {
             RootView()
                 .environment(locationService)
                 .environment(notificationService)
+                .environment(missionActivityManager)
+                .task {
+                    missionActivityManager.restore()
+                }
         }
         .modelContainer(
             for: [

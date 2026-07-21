@@ -15,6 +15,7 @@ struct JourneyView: View {
     
     @Environment(LocationService.self) private var locationService
     @Environment(NotificationService.self) private var notificationService
+    @Environment(MissionActivityManager.self) private var missionActivityManager
     @Environment(\.modelContext) private var modelContext
     
     // 여행 및 미션 저장 로직
@@ -83,6 +84,27 @@ struct JourneyView: View {
         .navigationDestination(isPresented: $isShowArrivalView) {
             ArrivalPlaceSelectionView()
         }
+        .onChange(
+            of: model.trackingModel.activeSubQuest // activeSubQuest의 값이 변경되면 Live Activity 의 상태도 변경
+        ) { _, subQuest in
+            guard let subQuest else {
+                return
+            }
+            
+            Task {
+                if subQuest.isCompleted {
+                    await missionActivityManager.completeMission(
+                        missionID: subQuest.id
+                    )
+                } else {
+                    await missionActivityManager.showMission(
+                        missionID: subQuest.id,
+                        title: subQuest.title
+                    )
+                }
+            }
+        }
+#endif
     }
     
     private func journeyContent(destination: RecommendedPlace) -> some View {
@@ -216,12 +238,26 @@ struct JourneyView: View {
             destination: destination
         )
         
+        await startMissionActivity(for: destination)
+        
         model.startJourneyIfNeeded(
             locationService: locationService,
             notificationService: notificationService,
             missionStorageModel: missionStorageModel,
             modelContext: modelContext
         )
+    }
+    
+    private func startMissionActivity(
+        for destination: RecommendedPlace
+    ) async {
+        do {
+            try await missionActivityManager.start(
+                destinationID: destination.id
+            )
+        } catch {
+            print("Live Activity 시작 실패:", error)
+        }
     }
     
     private func cameraPicker(
@@ -255,7 +291,7 @@ struct JourneyView: View {
         )
         .ignoresSafeArea()
     }
-        
+    
     private func createJourneySessionIfNeeded(
         destination: RecommendedPlace
     ) {
@@ -285,6 +321,42 @@ struct JourneyView: View {
         try? modelContext.save()
         isShowArrivalView = true
     }
+    
+    #if DEBUG
+    private var debugSubQuestControls: some View {
+        VStack(alignment: .trailing) {
+            Button("Live Activity 시작") {
+                startLiveActivityForDebug()
+            }
+            
+            Button("5초 후 퀘스트 발생") {
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(5)
+                )
+            }
+            
+            Button("10초 후 퀘스트 발생") {
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(10)
+                )
+            }
+            
+            Button("퀘스트 리셋") {
+                model.trackingModel.resetSubQuestForDebug()
+            }
+        }
+    }
+    
+    private func startLiveActivityForDebug() {
+        guard let destination = model.destination else {
+            return
+        }
+        
+        Task {
+            await startMissionActivity(for: destination)
+        }
+    }
+    #endif
 }
 
 #Preview {
@@ -295,4 +367,5 @@ struct JourneyView: View {
     )
     .environment(LocationService())
     .environment(NotificationService())
+    .environment(MissionActivityManager())
 }

@@ -10,6 +10,9 @@ import SwiftUI
 struct ArrivalPlaceConfirmView: View {
     let place: String
     
+    @Environment(MissionActivityManager.self)
+    private var missionActivityManager
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text(place)
@@ -19,7 +22,9 @@ struct ArrivalPlaceConfirmView: View {
             
             HStack(spacing: DSSpacing.spacing12) {
                 Button {
-                    
+                    Task {
+                        await missionActivityManager.end()
+                    }
                 } label: {
                     Text("여행 종료하기")
                         .frame(maxWidth: .infinity)
@@ -44,4 +49,5 @@ struct ArrivalPlaceConfirmView: View {
 
 #Preview {
     ArrivalPlaceConfirmView(place: "소디스")
+        .environment(MissionActivityManager())
 }
