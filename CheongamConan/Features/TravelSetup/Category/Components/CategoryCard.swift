@@ -46,15 +46,11 @@ struct CategoryCard: View {
         .cornerRadius(DSRadius.standard)
         .overlay {
             if isSelected {
-                RoundedRectangle(cornerRadius: 16)
-                    .inset(by: 2.48)
+                RoundedRectangle(cornerRadius: DSRadius.standard)
+                    .inset(by: 2)
                     .stroke(
-                        Color(
-                            red: 0.96,
-                            green: 0.52,
-                            blue: 0.37
-                        ),
-                        lineWidth: 4.95349
+                        .main300,
+                        lineWidth: 4
                     )
             }
         }
@@ -63,7 +59,7 @@ struct CategoryCard: View {
 
 #Preview {
     CategoryCard(
-        category: .cafe, isSelected: false, onTap: {}
+        category: .cafe, isSelected: true, onTap: {}
     )
     .padding()
 }
