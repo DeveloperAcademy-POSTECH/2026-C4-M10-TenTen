@@ -44,11 +44,13 @@ struct CustomAlert: View {
                     Text(title)
                         .font(DSTypography.B2)
                         .foregroundStyle(.neutralBlack)
+                        .lineLimit(1)
                     
                     if let content, !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Text(content)
                             .font(DSTypography.C2)
                             .foregroundStyle(.grey700)
+                            .lineLimit(1)
                     }
                 }
                 
