@@ -22,19 +22,18 @@ struct PermissionView: View {
         VStack {
             Spacer()
             
-            VStack(alignment: .leading, spacing: 33) {
-                Text("시작하기 앞서")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+            VStack(alignment: .leading, spacing: 112) {
+                Text("여행 전에 앱 사용을 위해\n필요한 권한을 허용해주세요")
+                    .font(DSTypography.H4)
                 
-                VStack(alignment: .leading, spacing: 23) {
-                    Text("📍 위치 권한 (필수)")
-                        .font(.title3)
-                    Text("🔔 알림 권한 (선택)")
-                        .font(.title3)
+                VStack(alignment: .leading, spacing: 52) {
+                    Permissionlist(icon: "location.circle.fill", title: "위치 (필수)", content: "우리 앱은 위치를 기반으로 더 나은 목적지를\n추천해 드리고자 해요.")
+                    
+                    Permissionlist(icon:"bell.fill", title: "알람 (필수)", content: "우리 앱은 여행의 몰입을 중간중간 알람으로 서브 퀘스트같은 컨텐츠 요소를 알람으로 보내드려요.")
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, DSSpacing.contentHorizontal)
+            .frame(width: .infinity, alignment: .leading)
             
             Spacer()
             
@@ -48,15 +47,12 @@ struct PermissionView: View {
                 }
             } label: {
                 Text("확인")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(DSButtonStyle(backgroundColor: .main300, foregroundColor: .neutralWhite))
         }
+        .navigationBarBackButtonHidden()
         .padding(.horizontal, 16)
-        .padding(.bottom, 40)
-        .ignoresSafeArea()
+        .padding(.bottom, 20)
         .alert(
             "위치 권한이 필요합니다.",
             isPresented: $model.isLocationSettingsAlertPresented
@@ -88,6 +84,31 @@ struct PermissionView: View {
                     notificationService: notificationService,
                     onCompleted: onCompleted
                 )
+            }
+        }
+    }
+}
+
+private struct Permissionlist: View {
+    let icon: String
+    let title: String
+    let content: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 49))
+                .foregroundStyle(Color.main800)
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text(title)
+                    .font(DSTypography.B2)
+                    .padding(.trailing, 40)
+                    .foregroundStyle(Color.grey700)
+                
+                Text(content)
+                    .font(DSTypography.C2)
+                    .foregroundStyle(Color.grey700)
             }
         }
     }
