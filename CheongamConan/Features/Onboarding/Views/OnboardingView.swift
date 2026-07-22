@@ -138,6 +138,4 @@ struct OnboardingView: View {
 
 #Preview {
     OnboardingView(onCompleted: {})
-        .environment(LocationService())
-        .environment(NotificationService())
 }
