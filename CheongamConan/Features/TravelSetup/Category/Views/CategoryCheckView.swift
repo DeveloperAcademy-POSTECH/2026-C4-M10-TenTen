@@ -12,11 +12,9 @@ struct CategoryCheckView: View {
     let category: Category
     let setupModel: TravelSetupModel
     
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(JourneyRouter.self) private var journeyRouter
     
-    @State private var destinationModel = DestinationModel()
     @State private var model = CategoryCheckModel()
     
     var body: some View {
@@ -113,21 +111,24 @@ struct CategoryCheckView: View {
                 } label: {
                     if model.isStartingJourney {
                         ProgressView()
+                            .tint(.neutralWhite)
                             .frame(maxWidth: .infinity)
                     } else {
                         Text("여행 떠나기")
-                            .frame(maxWidth: .infinity)
                     }
                 }
-                .frame(height: 30)
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(
+                    DSButtonStyle(
+                        backgroundColor: .main300,
+                        foregroundColor: .neutralWhite
+                    )
+                )
                 .disabled(model.isStartingJourney)
             }
-            .padding(.horizontal)
-            
         }
-        .navigationBarBackButtonHidden()
-
+        .padding(.top, 23)
+        .padding(.bottom, DSSpacing.spacing20)
+        .padding(.horizontal, DSSpacing.contentHorizontal)
     }
 }
  
