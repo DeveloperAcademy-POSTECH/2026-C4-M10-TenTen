@@ -17,7 +17,7 @@ struct CategoryCheckView: View {
     @Environment(JourneyRouter.self) private var journeyRouter
     
     @State private var destinationModel = DestinationModel()
-    @State private var isStartingJourney = false
+    @State private var model = CategoryCheckModel()
     
     var body: some View {
         VStack {
@@ -44,12 +44,17 @@ struct CategoryCheckView: View {
                     guard let area = setupModel.confirmCategory(category) else {
                         return
                     }
-
+                    
                     Task {
-                        await startJourney(area: area)
+                        guard let session = await model.startJourney(
+                            area: area,
+                            category: category,
+                            modelContext: modelContext
+                        ) else { return }
+                        journeyRouter.showJourney(session)
                     }
                 } label: {
-                    if isStartingJourney {
+                    if model.isStartingJourney {
                         ProgressView()
                             .frame(maxWidth: .infinity)
                     } else {
@@ -59,46 +64,15 @@ struct CategoryCheckView: View {
                 }
                 .frame(height: 30)
                 .buttonStyle(.borderedProminent)
-                .disabled(isStartingJourney)
+                .disabled(model.isStartingJourney)
             }
             .padding(.horizontal)
+            
         }
         .navigationBarBackButtonHidden()
     }
-    
-    /// 세션을 먼저 저장하면 RootView가 유일한 JourneyView를 생성한다.
-    /// 이 화면에서 JourneyView를 직접 push하지 않아 추적 모델의 중복 생성을 막는다.
-    private func startJourney(area: String) async {
-        guard !isStartingJourney else { return }
-        isStartingJourney = true
-        defer { isStartingJourney = false }
-        
-        await destinationModel.loadOrRecommend(
-            area: area,
-            category: category.rawValue,
-            modelContext: modelContext
-        )
-        
-        guard let destination = destinationModel.recommendedPlace else {
-            return
-        }
-        
-        let session = JourneySession(
-            area: area,
-            category: category.rawValue,
-            destination: destination
-        )
-        modelContext.insert(session)
-
-        do {
-            try modelContext.save()
-            journeyRouter.showJourney(session)
-        } catch {
-            modelContext.delete(session)
-        }
-    }
 }
-
+ 
 #Preview {
     CategoryCheckView(category: .cafe, setupModel: TravelSetupModel())
         .environment(JourneyRouter())
