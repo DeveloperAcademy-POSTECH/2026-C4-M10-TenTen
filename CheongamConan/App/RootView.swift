@@ -39,22 +39,34 @@ struct RootView: View {
     @State private var journeyRouter = JourneyRouter()
 
     var body: some View {
-        NavigationStack {
+        ZStack {
             if hasCompletedOnboarding {
-                mainContent
-                    .transition(
-                        .move(edge: .trailing)
-                        .combined(with: .opacity)
+                NavigationStack {
+                    mainContent
+                }
+                .transition(
+                    .asymmetric(
+                        insertion: .move(edge: .trailing)
+                            .combined(with: .opacity),
+                        removal: .move(edge: .leading)
+                            .combined(with: .opacity)
                     )
+                )
             } else {
-                OnboardingView {
-                    withAnimation(.easeInOut(duration: 0.6)) {
-                        hasCompletedOnboarding = true
+                NavigationStack {
+                    OnboardingView {
+                        withAnimation(.easeInOut(duration: 0.45)) {
+                            hasCompletedOnboarding = true
+                        }
                     }
                 }
                 .transition(
-                    .move(edge: .leading)
-                    .combined(with: .opacity)
+                    .asymmetric(
+                        insertion: .move(edge: .leading)
+                            .combined(with: .opacity),
+                        removal: .move(edge: .leading)
+                            .combined(with: .opacity)
+                    )
                 )
             }
         }
@@ -67,6 +79,10 @@ struct RootView: View {
             }
             .environment(journeyRouter)
         }
+        .animation(
+            .easeInOut(duration: 0.45),
+            value: hasCompletedOnboarding
+        )
     }
 
     @ViewBuilder
