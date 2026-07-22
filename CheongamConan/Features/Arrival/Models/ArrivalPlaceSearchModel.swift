@@ -34,7 +34,7 @@ final class ArrivalPlaceSearchModel {
         
         searchTask = Task {
             do {
-                try await Task.sleep(for: .milliseconds(400))
+                try await Task.sleep(for: .milliseconds(500))
                 
                 try Task.checkCancellation()
                 
