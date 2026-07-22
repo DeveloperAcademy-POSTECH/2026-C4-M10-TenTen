@@ -22,25 +22,41 @@ struct RootView: View {
     private var activeSessions: [JourneySession]
 
     var body: some View {
-        NavigationStack {
+        ZStack {
             if hasCompletedOnboarding {
-                mainContent
-                    .transition(
-                        .move(edge: .trailing)
-                        .combined(with: .opacity)
+                NavigationStack {
+                    mainContent
+                }
+                .transition(
+                    .asymmetric(
+                        insertion: .move(edge: .trailing)
+                            .combined(with: .opacity),
+                        removal: .move(edge: .leading)
+                            .combined(with: .opacity)
                     )
+                )
             } else {
-                OnboardingView {
-                    withAnimation(.easeInOut(duration: 0.6)) {
-                        hasCompletedOnboarding = true
+                NavigationStack {
+                    OnboardingView {
+                        withAnimation(.easeInOut(duration: 0.45)) {
+                            hasCompletedOnboarding = true
+                        }
                     }
                 }
                 .transition(
-                    .move(edge: .leading)
-                    .combined(with: .opacity)
+                    .asymmetric(
+                        insertion: .move(edge: .leading)
+                            .combined(with: .opacity),
+                        removal: .move(edge: .leading)
+                            .combined(with: .opacity)
+                    )
                 )
             }
         }
+        .animation(
+            .easeInOut(duration: 0.45),
+            value: hasCompletedOnboarding
+        )
     }
 
     @ViewBuilder
