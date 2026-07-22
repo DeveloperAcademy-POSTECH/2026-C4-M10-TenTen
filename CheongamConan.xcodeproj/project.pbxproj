@@ -63,6 +63,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Resources/Fonts/Pretendard-Bold.otf",
+				"Resources/Fonts/Pretendard-Medium.otf",
 				"Resources/Fonts/Pretendard-SemiBold.otf",
 				Shared/DesignSystem/Foundation/DSSpacing.swift,
 				Shared/DesignSystem/Foundation/DSTypography.swift,

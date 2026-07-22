@@ -6,6 +6,7 @@
 	<array>
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-SemiBold.otf</string>
+		<string>Pretendard-Medium.otf</string>
 	</array>
 	<key>NSExtension</key>
 	<dict>
