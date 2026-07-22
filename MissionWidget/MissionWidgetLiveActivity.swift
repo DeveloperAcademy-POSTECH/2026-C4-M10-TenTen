@@ -49,8 +49,12 @@ struct MissionWidgetLiveActivity: Widget {
 
 private var lockedLockScreenView: some View {
     VStack(alignment: .leading, spacing: DSSpacing.spacing8){
-        Text("여행을 더 즐겁게 만들어줄 미션")
+        Text("여행을 더")
+            .font(DSTypography.C3)
+            .foregroundStyle(.grey300)
+        Text("즐겁게 만들어줆 미션")
             .font(DSTypography.C1)
+            .foregroundStyle(.white)
         HStack(spacing: DSSpacing.spacing4) {
             Text("잠시 후")
                 .font(DSTypography.B1)
@@ -59,8 +63,9 @@ private var lockedLockScreenView: some View {
                 .font(DSTypography.C1)
         }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
+    .frame(maxWidth: .infinity, minHeight: 160, alignment: .leading)
     .padding(.horizontal, DSSpacing.contentHorizontal)
+    .background(.black)
 }
 
 @ViewBuilder
