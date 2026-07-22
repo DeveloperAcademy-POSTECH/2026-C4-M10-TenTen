@@ -11,7 +11,7 @@ import WidgetKit
 // Dynamic Island를 길게 눌렀을 때 표시되는 Expanded UI를 담당합니다.
 struct MissionDynamicIslandExpandedView: View {
     let state: MissionActivityAttributes.ContentState
-
+    
     var body: some View {
         switch state.status {
         case .locked:
@@ -22,7 +22,7 @@ struct MissionDynamicIslandExpandedView: View {
             completedView
         }
     }
-
+    
     private var lockedView: some View {
         contentLayout {
             VStack(
@@ -40,7 +40,7 @@ struct MissionDynamicIslandExpandedView: View {
             expandedStatusIcon(status: .locked)
         }
     }
-
+    
     private var availableView: some View {
         contentLayout {
             VStack(
@@ -61,17 +61,10 @@ struct MissionDynamicIslandExpandedView: View {
                 }
             }
         } action: {
-            if let missionID = state.missionID,
-               let cameraURL = MissionActivityDeepLink.camera(
-                   missionID: missionID
-               ) {
-                Link(destination: cameraURL) {
-                    expandedStatusIcon(status: .available)
-                }
-            }
+            // TODO: 카메라 Deep Link 구현 (새미)
         }
     }
-
+    
     private var completedView: some View {
         contentLayout {
             VStack(
@@ -93,13 +86,13 @@ struct MissionDynamicIslandExpandedView: View {
             expandedStatusIcon(status: .completed)
         }
     }
-
+    
     private var header: some View {
         Text("여행을 더 즐겁게 만들어줄 미션")
             .font(DSTypography.C1)
             .foregroundStyle(.white)
     }
-
+    
     private func missionDescription(
         highlightedText: String,
         trailingText: String
@@ -117,7 +110,7 @@ struct MissionDynamicIslandExpandedView: View {
                 .fixedSize()
         }
     }
-
+    
     private func expandedStatusIcon(
         status: MissionActivityAttributes.Status
     ) -> some View {
@@ -127,7 +120,7 @@ struct MissionDynamicIslandExpandedView: View {
             .background(.main600)
             .clipShape(Circle())
     }
-
+    
     private func contentLayout<Content: View, Action: View>(
         @ViewBuilder content: () -> Content,
         @ViewBuilder action: () -> Action

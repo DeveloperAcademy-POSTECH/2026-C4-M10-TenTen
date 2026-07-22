@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MissionActivityStatusIcon: View {
     let status: MissionActivityAttributes.Status
-
+    
     var body: some View {
         Image(systemName: status.symbolName)
             .foregroundStyle(.main300)

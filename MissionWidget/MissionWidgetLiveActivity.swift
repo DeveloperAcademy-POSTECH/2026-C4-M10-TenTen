@@ -30,6 +30,7 @@ struct MissionWidgetLiveActivity: Widget {
                     status: context.state.status
                 )
             } compactTrailing: {
+                // trailing 영역은 기획에서 제외된다
                 EmptyView()
             } minimal: {
                 MissionActivityStatusIcon(
