@@ -109,6 +109,7 @@ struct JourneyView: View {
             debugSubQuestControls
         }
 #endif
+
     }
     
     private func journeyContent(destination: RecommendedPlace) -> some View {
@@ -214,6 +215,24 @@ struct JourneyView: View {
         
         return .active(subQuest)
     }
+
+    #if DEBUG
+    private var subQuestDebugControls: some View {
+        VStack(alignment: .trailing, spacing: DSSpacing.spacing8) {
+            Button("퀘스트 잠금 해제") {
+                model.trackingModel.triggerSubQuestForDebug(after: .zero)
+            }
+
+            Button("퀘스트 초기화") {
+                model.trackingModel.resetSubQuestForDebug()
+            }
+        }
+        .buttonStyle(.borderedProminent)
+        .font(DSTypography.C3)
+        .padding(.top, DSSpacing.spacing8)
+        .padding(.trailing, DSSpacing.spacing16)
+    }
+    #endif
     
     private func loadDestinationIfNeeded() async {
         if model.destination == nil {
