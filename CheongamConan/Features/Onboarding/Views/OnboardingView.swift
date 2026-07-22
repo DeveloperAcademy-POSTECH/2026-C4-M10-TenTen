@@ -76,7 +76,7 @@ struct OnboardingView: View {
                 }
                 
                 if step == 4 {
-                    NavigationStack {
+
                         VStack {
                             Text("목적지가\n바뀌어도 괜찮아요!")
                                 .font(DSTypography.H1)
@@ -100,7 +100,6 @@ struct OnboardingView: View {
                             .padding(.horizontal, 20)
                             .padding(.bottom, 20)
                         }
-                    }
                     
                     
                 }

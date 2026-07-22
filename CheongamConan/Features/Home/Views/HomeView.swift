@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        NavigationStack {
             ZStack {
                 Image("Background")
                     .resizable()
@@ -52,7 +51,6 @@ struct HomeView: View {
                 Text("이미지 저장 테스트")
             }
             #endif
-        }
     }
 }
 
