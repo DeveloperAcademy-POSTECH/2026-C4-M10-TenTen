@@ -24,44 +24,38 @@ struct MissionDynamicIslandExpandedView: View {
     }
     
     private var lockedView: some View {
-        contentLayout {
-            VStack(
-                alignment: .leading,
+        verticalContentLayout {
+            missionDescription(
+                highlightedText: "잠시 후",
+                trailingText: "미션이 공개됩니다."
+            )
+        } action: {
+            actionLabel(
+                title: "잠금 해제중",
                 spacing: DSSpacing.spacing8
             ) {
-                header
-
-                missionDescription(
-                    highlightedText: "잠시 후",
-                    trailingText: "미션이 공개됩니다."
+                MissionActivityStatusIcon(
+                    status: .locked,
+                    presentation: .expanded
                 )
             }
-        } action: {
-            expandedStatusIcon(status: .locked)
         }
     }
     
     private var availableView: some View {
-        contentLayout {
-            VStack(
-                alignment: .leading,
-                spacing: DSSpacing.spacing8
-            ) {
-                header
-
-                if let title = state.missionTitle {
-                    missionDescription(
-                        highlightedText: title,
-                        trailingText: "사진 찍기"
-                    )
-                } else {
-                    Text("앱에서 미션을 확인해 보세요")
-                        .font(DSTypography.C1)
-                        .foregroundStyle(.white)
-                }
+        verticalContentLayout {
+            if let title = state.missionTitle {
+                missionDescription(
+                    highlightedText: title,
+                    trailingText: "사진 찍기"
+                )
+            } else {
+                Text("앱에서 미션을 확인해 보세요")
+                    .font(DSTypography.C1)
+                    .foregroundStyle(.white)
             }
         } action: {
-            // TODO: 카메라 Deep Link 구현 (새미)
+            availableCameraAction
         }
     }
     
@@ -87,10 +81,21 @@ struct MissionDynamicIslandExpandedView: View {
         }
     }
     
-    private var header: some View {
-        Text("여행을 더 즐겁게 만들어줄 미션")
-            .font(DSTypography.C1)
-            .foregroundStyle(.white)
+    private var expandedHeader: some View {
+        Text("여행을 더\n즐겁게 만들어줄 미션")
+            .font(DSTypography.C3)
+            .foregroundStyle(.grey300)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+    
+    private var availableCameraAction: some View {
+        // TODO: 카메라 Deep Link 구현 (새미)
+        actionLabel(title: "카메라 열기", spacing: 7) {
+            Image("Camera")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 28, height: 28)
+        }
     }
     
     private func missionDescription(
@@ -99,11 +104,11 @@ struct MissionDynamicIslandExpandedView: View {
     ) -> some View {
         HStack(spacing: DSSpacing.spacing4) {
             Text(highlightedText)
-                .font(DSTypography.B1)
+                .font(DSTypography.H5)
                 .foregroundStyle(.main300)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
-
+            
             Text(trailingText)
                 .font(DSTypography.C1)
                 .foregroundStyle(.white)
@@ -127,13 +132,57 @@ struct MissionDynamicIslandExpandedView: View {
     ) -> some View {
         HStack(spacing: DSSpacing.spacing12) {
             content()
-
-            Spacer(minLength: DSSpacing.spacing8)
-
+            
+            Spacer(minLength: DSSpacing.spacing12)
+            
             action()
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, DSSpacing.spacing16)
+    }
+    
+    private func verticalContentLayout<
+        MissionContent: View,
+        Action: View
+    >(
+        @ViewBuilder missionContent: () -> MissionContent,
+        @ViewBuilder action: () -> Action
+    ) -> some View {
+        VStack(
+            alignment: .leading,
+            spacing: 14
+        ) {
+            VStack(
+                alignment: .leading,
+                spacing: DSSpacing.spacing4
+            ) {
+                expandedHeader
+                missionContent()
+            }
+            
+            action()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, DSSpacing.spacing24)
+        .padding(.bottom, DSSpacing.spacing12)
+    }
+    
+    private func actionLabel<Icon: View>(
+        title: String,
+        spacing: CGFloat,
+        @ViewBuilder icon: () -> Icon
+    ) -> some View {
+        HStack(spacing: spacing) {
+            icon()
+            
+            Text(title)
+                .font(DSTypography.B2)
+                .foregroundStyle(.main300)
+        }
+        .padding(.vertical, DSSpacing.spacing4)
+        .frame(maxWidth: .infinity, minHeight: 40)
+        .background(.main600)
+        .clipShape(Capsule())
     }
 }
 

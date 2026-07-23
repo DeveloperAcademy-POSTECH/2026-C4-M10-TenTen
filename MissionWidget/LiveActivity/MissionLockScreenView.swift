@@ -13,94 +13,138 @@ struct MissionLockScreenView: View {
     let state: MissionActivityAttributes.ContentState
     
     var body: some View {
-        switch state.status {
-        case .locked:
-            lockedView
-        case .available:
-            availableView
-        case .completed:
-            completedView
-        }
-            
-    }
-    private var lockedView: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-            Text("여행을 더 즐겁게 만들어줄 미션")
-                .font(DSTypography.C3)
-                .foregroundStyle(.grey300)
-            
-            HStack(spacing: DSSpacing.spacing4) {
-                Text("잠시 후")
-                    .font(DSTypography.H5)
-                    .foregroundStyle(.main300)
-                
-                Text("미션이 공개됩니다.")
-                    .font(DSTypography.C1)
-                    .foregroundStyle(.white)
+        Group {
+            switch state.status {
+            case .locked:
+                lockedView
+            case .available:
+                availableView
+            case .completed:
+                completedView
             }
         }
         .frame(maxWidth: .infinity, maxHeight: 100, alignment: .leading)
         .padding(.vertical, DSSpacing.spacing20)
         .padding(.horizontal, DSSpacing.spacing28)
         .background(.neutralBlack)
+        
+        
+    }
+    private var lockedView: some View {
+        contentLayout {
+            VStack(
+                alignment: .leading,
+                spacing: DSSpacing.spacing8
+            ) {
+                header
+
+                missionDescription(
+                    highlightedText: "잠시 후",
+                    trailingText: "미션이 공개됩니다."
+                )
+            }
+        } action: {
+            expandedStatusIcon(status: .locked)
+        }
     }
     
     private var availableView: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-            Text("여행을 더 즐겁게 만들어줄 미션")
-                .font(DSTypography.C3)
-                .foregroundStyle(.grey300)
+        contentLayout {
+            VStack(
+                alignment: .leading,
+                spacing: DSSpacing.spacing8
+            ) {
+                header
 
-            HStack(spacing: DSSpacing.spacing4) {
                 if let title = state.missionTitle {
-                    Text(title)
-                        .font(DSTypography.H5)
-                        .foregroundStyle(.main300)
-
-                    Text("사진 찍기")
-                        .font(DSTypography.C1)
-                        .foregroundStyle(.white)
+                    missionDescription(
+                        highlightedText: title,
+                        trailingText: "사진 찍기"
+                    )
                 } else {
                     Text("앱에서 미션을 확인해 보세요")
                         .font(DSTypography.C1)
                         .foregroundStyle(.white)
                 }
             }
+        } action: {
+            // TODO: 카메라 Deep Link 구현 (새미)
+            expandedStatusIcon(status: (.available))
         }
-        .frame(maxWidth: .infinity, maxHeight: 100, alignment: .leading)
-        .padding(.vertical, DSSpacing.spacing20)
-        .padding(.horizontal, DSSpacing.spacing28)
-        .background(.neutralBlack)
     }
     
     private var completedView: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-            Text("여행을 더 즐겁게 만들어줄 미션")
-                .font(DSTypography.C3)
-                .foregroundStyle(.grey300)
+        contentLayout {
+            VStack(
+                alignment: .leading,
+                spacing: DSSpacing.spacing8
+            ) {
+                Text("미션을 완료했어요")
+                    .font(DSTypography.C1)
+                    .foregroundStyle(.white)
 
-            HStack(spacing: DSSpacing.spacing4) {
                 if let title = state.missionTitle {
-                    Text(title)
-                        .font(DSTypography.H5)
-                        .foregroundStyle(.main300)
-
-                    Text("사진 찍기 미션 완료")
-                        .font(DSTypography.C1)
-                        .foregroundStyle(.white)
-                } else {
-                    Text("미션 완료!")
-                        .font(DSTypography.C1)
-                        .foregroundStyle(.white)
+                    missionDescription(
+                        highlightedText: title,
+                        trailingText: "사진 찍기"
+                    )
                 }
             }
+        } action: {
+            expandedStatusIcon(status: .completed)
         }
-        .frame(maxWidth: .infinity, maxHeight: 100, alignment: .leading)
-        .padding(.vertical, DSSpacing.spacing20)
-        .padding(.horizontal, DSSpacing.spacing28)
-        .background(.neutralBlack)
+    }
+    
+    
+    private var header: some View {
+        Text("여행을 더 즐겁게 만들어줄 미션")
+            .font(DSTypography.C1)
+            .foregroundStyle(.white)
+    }
+    
+    private func missionDescription(
+        highlightedText: String,
+        trailingText: String
+    ) -> some View {
+        HStack(spacing: DSSpacing.spacing4) {
+            Text(highlightedText)
+                .font(DSTypography.B1)
+                .foregroundStyle(.main300)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            Text(trailingText)
+                .font(DSTypography.C1)
+                .foregroundStyle(.white)
+                .fixedSize()
+        }
+    }
+    
+    private func expandedStatusIcon(
+        status: MissionActivityAttributes.Status
+    ) -> some View {
+        MissionActivityStatusIcon(status: status)
+            .font(.title2.bold())
+            .frame(width: 60, height: 60)
+            .background(.main600)
+            .clipShape(Circle())
+    }
+    
+    private func contentLayout<Content: View, Action: View>(
+        @ViewBuilder content: () -> Content,
+        @ViewBuilder action: () -> Action
+    ) -> some View {
+        HStack(spacing: DSSpacing.spacing12) {
+            content()
+
+            Spacer(minLength: DSSpacing.spacing8)
+
+            action()
+        }
+
     }
 }
+
 
 #Preview(
     "잠금 화면",

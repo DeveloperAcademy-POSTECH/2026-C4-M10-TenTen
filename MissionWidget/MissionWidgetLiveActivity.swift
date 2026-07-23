@@ -16,7 +16,7 @@ struct MissionWidgetLiveActivity: Widget {
             for: MissionActivityAttributes.self
         ) { context in
             MissionLockScreenView(state: context.state)
-                .activityBackgroundTint(.black)
+                .activityBackgroundTint(.neutralBlack)
                 .activitySystemActionForegroundColor(.white)
         } dynamicIsland: { context in
             DynamicIsland {
@@ -27,15 +27,15 @@ struct MissionWidgetLiveActivity: Widget {
                 }
             } compactLeading: {
                 MissionActivityStatusIcon(
-                    status: context.state.status
+                    status: context.state.status,
+                    presentation: .minimal
                 )
             } compactTrailing: {
                 // trailing 영역은 기획에서 제외된다
                 EmptyView()
             } minimal: {
-                MissionActivityStatusIcon(
-                    status: context.state.status
-                )
+                // minimal 영역은 기획에서 제외된다
+                EmptyView()
             }
         }
     }

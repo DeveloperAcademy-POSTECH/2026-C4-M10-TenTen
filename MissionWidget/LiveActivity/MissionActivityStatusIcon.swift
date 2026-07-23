@@ -8,12 +8,41 @@
 import SwiftUI
 
 struct MissionActivityStatusIcon: View {
-    let status: MissionActivityAttributes.Status
-    
-    var body: some View {
-        Image(systemName: status.symbolName)
-            .foregroundStyle(.main300)
+    enum Presentation {
+        case minimal
+        case expanded
     }
+    let status: MissionActivityAttributes.Status
+    let presentation: Presentation
+    
+    init(
+        status: MissionActivityAttributes.Status,
+        presentation: Presentation = .expanded
+    ) {
+        self.status = status
+        self.presentation = presentation
+    }
+    
+    @ViewBuilder
+    var body: some View {
+        switch (status, presentation) {
+        case (.available, .minimal):
+            activityIcon("MissionUnlocked")
+        case (.locked, _):
+            activityIcon("MissionLocked")
+        case (.available, .expanded):
+            activityIcon("Camera")
+        case (.completed, _):
+            activityIcon("MissionCompleted")
+        }
+    }
+}
+
+private func activityIcon(_ name: String) -> some View {
+    Image(name)
+        .resizable()
+        .scaledToFit()
+        .frame(width: 28, height: 28)
 }
 
 extension MissionActivityAttributes.Status {
