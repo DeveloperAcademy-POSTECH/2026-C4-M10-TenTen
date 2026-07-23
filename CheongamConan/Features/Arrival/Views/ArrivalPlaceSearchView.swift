@@ -71,7 +71,7 @@ struct ArrivalPlaceSearchView: View {
                 .foregroundStyle(.neutralBlack)
                 .padding(.horizontal, DSSpacing.contentHorizontal)
             
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 ForEach(model.places) { place in
                     PlaceResultItem(place: place)
                 }
