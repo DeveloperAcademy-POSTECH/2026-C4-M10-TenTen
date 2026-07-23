@@ -27,6 +27,8 @@ struct EndJourneyView: View {
         )
     ]
     
+    @State private var isPresentedHomeView: Bool = false
+    
     var body: some View {
         GeometryReader { geometry in
             let mapHeight = geometry.size.width * (437.0 / 402.0)
@@ -65,9 +67,9 @@ struct EndJourneyView: View {
                     
                     HStack {
                         Button {
-                            
+                            isPresentedHomeView = true
                         } label: {
-                            Text("여행 종료하기")
+                            Text("홈으로 가기")
                                 .font(DSTypography.B2)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DSSpacing.spacing16)
@@ -101,6 +103,10 @@ struct EndJourneyView: View {
             }
         }
         .ignoresSafeArea()
+        .navigationBarBackButtonHidden()
+        .navigationDestination(isPresented: $isPresentedHomeView) {
+            HomeView()
+        }
     }
 }
 

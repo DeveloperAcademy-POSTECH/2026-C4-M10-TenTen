@@ -45,6 +45,7 @@ struct HomeView: View {
                 .padding(.bottom, DSSpacing.spacing56)
                 .padding(.top, 193)
             }
+            .navigationBarBackButtonHidden()
             #if DEBUG
             NavigationLink {
                 MissionImageStorageDebugView()
