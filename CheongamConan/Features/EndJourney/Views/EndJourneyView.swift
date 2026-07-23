@@ -7,46 +7,34 @@
 
 import SwiftUI
 
-struct Journey: Codable {
-    let finishedAt: String
-    let destination: String
-    let latitude: Double
-    let longitude: Double
-    let isComplete: Bool
-    let missionTitle: String
-//    let missionImage: String?
-}
-
 struct EndJourneyView: View {
     let journeyList: [Journey] = [
         Journey(
             finishedAt: "2026-07-22T10:00:00",
             destination: "바르벳",
-            latitude: 30.0,
-            longitude: 45.0,
+            latitude: 36.010222,
+            longitude: 129.296528,
             isComplete: true,
             missionTitle: "하트 모양",
-//            missionImage: "heartImage"
         ),
         Journey(
             finishedAt: "2026-07-22T11:00:00",
-            destination: "청암공원",
-            latitude: 35.0,
-            longitude: 129.0,
+            destination: "포항 순이",
+            latitude: 36.002871,
+            longitude: 129.33086,
             isComplete: false,
             missionTitle: "횡단보도의 신호등",
-//            missionImage: nil
         )
     ]
-
+    
     var body: some View {
         GeometryReader { geometry in
             let mapHeight = geometry.size.width * (437.0 / 402.0)
             
             VStack(spacing: 0) {
-                Rectangle()
-                    .fill(.blue100)
+                JourneyMapView(journeyList: journeyList)
                     .frame(height: mapHeight)
+                    .clipped()
                 
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
@@ -108,7 +96,8 @@ struct EndJourneyView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.neutralWhite)
                 .cornerRadius(DSRadius.standard)
-                .padding(.top, -16)
+                // MARK: 디자인과 동일은 -16이지만 네이버 지도의 규정을 위반해서 일단 내림 - 상의 필요
+                .padding(.top, -11)
             }
         }
         .ignoresSafeArea()
