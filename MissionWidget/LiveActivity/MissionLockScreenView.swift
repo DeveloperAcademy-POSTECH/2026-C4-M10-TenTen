@@ -21,42 +21,40 @@ struct MissionLockScreenView: View {
         case .completed:
             completedView
         }
+            
     }
     private var lockedView: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-            Text("여행을 더")
+            Text("여행을 더 즐겁게 만들어줄 미션")
                 .font(DSTypography.C3)
                 .foregroundStyle(.grey300)
-
-            Text("즐겁게 만들어줄 미션")
-                .font(DSTypography.C1)
-                .foregroundStyle(.white)
-
+            
             HStack(spacing: DSSpacing.spacing4) {
                 Text("잠시 후")
-                    .font(DSTypography.B1)
+                    .font(DSTypography.H5)
                     .foregroundStyle(.main300)
-
+                
                 Text("미션이 공개됩니다.")
                     .font(DSTypography.C1)
                     .foregroundStyle(.white)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 160, alignment: .leading)
-        .padding(.horizontal, DSSpacing.contentHorizontal)
-        .background(.black)
+        .frame(maxWidth: .infinity, maxHeight: 100, alignment: .leading)
+        .padding(.vertical, DSSpacing.spacing20)
+        .padding(.horizontal, DSSpacing.spacing28)
+        .background(.neutralBlack)
     }
     
     private var availableView: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
             Text("여행을 더 즐겁게 만들어줄 미션")
-                .font(DSTypography.C1)
-                .foregroundStyle(.white)
+                .font(DSTypography.C3)
+                .foregroundStyle(.grey300)
 
             HStack(spacing: DSSpacing.spacing4) {
                 if let title = state.missionTitle {
                     Text(title)
-                        .font(DSTypography.B1)
+                        .font(DSTypography.H5)
                         .foregroundStyle(.main300)
 
                     Text("사진 찍기")
@@ -69,20 +67,22 @@ struct MissionLockScreenView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, DSSpacing.contentHorizontal)
+        .frame(maxWidth: .infinity, maxHeight: 100, alignment: .leading)
+        .padding(.vertical, DSSpacing.spacing20)
+        .padding(.horizontal, DSSpacing.spacing28)
+        .background(.neutralBlack)
     }
     
     private var completedView: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
             Text("여행을 더 즐겁게 만들어줄 미션")
-                .font(DSTypography.C1)
-                .foregroundStyle(.white)
+                .font(DSTypography.C3)
+                .foregroundStyle(.grey300)
 
             HStack(spacing: DSSpacing.spacing4) {
                 if let title = state.missionTitle {
                     Text(title)
-                        .font(DSTypography.B1)
+                        .font(DSTypography.H5)
                         .foregroundStyle(.main300)
 
                     Text("사진 찍기 미션 완료")
@@ -95,8 +95,10 @@ struct MissionLockScreenView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, DSSpacing.contentHorizontal)
+        .frame(maxWidth: .infinity, maxHeight: 100, alignment: .leading)
+        .padding(.vertical, DSSpacing.spacing20)
+        .padding(.horizontal, DSSpacing.spacing28)
+        .background(.neutralBlack)
     }
 }
 
