@@ -17,7 +17,7 @@ struct CustomAlertButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(DSTypography.B2)
+            .font(DSTypography.C1)
             .foregroundStyle(foregroundColor)
             .frame(maxWidth: .infinity)
             .frame(height: 53)
