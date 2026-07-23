@@ -14,8 +14,15 @@ struct ArrivalPlaceConfirmView: View {
     @Environment(MissionActivityManager.self)
     private var missionActivityManager
     @Environment(\.modelContext) private var modelContext
+    @Environment(LocationService.self) private var locationService
     
     @State private var model = ArrivalPlaceSelectionModel()
+    @State private var confirmModel = ArrivalPlaceConfirmModel()
+    
+    @State private var isShowRerecommendAlert: Bool = false
+    @State private var isShowEndJourneyAlert: Bool = false
+    
+    @State private var isPresentedEndJourneyView: Bool = false
     
     private var isRecommendedPlace: Bool {
         model.recommendedPlace?.name == place
@@ -38,6 +45,7 @@ struct ArrivalPlaceConfirmView: View {
                     Task {
                         await missionActivityManager.end()
                     }
+                    isShowEndJourneyAlert = true
                 } label: {
                     Text("여행 종료하기")
                         .font(DSTypography.B2)
@@ -55,7 +63,7 @@ struct ArrivalPlaceConfirmView: View {
                 )
                 
                 Button {
-                    
+                    isShowRerecommendAlert = true
                 } label: {
                     Text("다음 목적지 받기")
                 }
@@ -74,10 +82,35 @@ struct ArrivalPlaceConfirmView: View {
         .task {
             model.loadRecommendPlace(modelContext: modelContext)
         }
+        .customAlert(
+            isPresented: $isShowEndJourneyAlert,
+            title: "여행을 종료하시겠어요?",
+            primaryButtonTitle: "네",
+            secondaryButtonTitle: "아니오",
+            primaryAction: {
+                try? confirmModel.endJourney(modelContext: modelContext)
+                locationService.stopUpdatingLocation()
+                
+                isPresentedEndJourneyView = true
+            },
+            secondaryAction: {},
+        )
+        .navigationDestination(isPresented: $isPresentedEndJourneyView) {
+            EndJourneyView()
+        }
+        .customAlert(
+            isPresented: $isShowRerecommendAlert,
+            title: "다음 목적지도 추천해드릴까요?",
+            primaryButtonTitle: "네",
+            secondaryButtonTitle: "아니오",
+            primaryAction: {},
+            secondaryAction: {},
+        )
     }
 }
 
 #Preview {
     ArrivalPlaceConfirmView(place: "소디스")
         .environment(MissionActivityManager())
+        .environment(LocationService())
 }

@@ -410,7 +410,6 @@ struct JourneyView: View {
     JourneyView(
         area: "포항시 지곡동",
         category: "카페",
-        initialDestination: .preview
     )
     .environment(LocationService())
     .environment(NotificationService())
