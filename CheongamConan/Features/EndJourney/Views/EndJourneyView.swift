@@ -31,6 +31,7 @@ struct EndJourneyView: View {
     @State private var shareImage: UIImage?
     @State private var isPresentedShareSheet: Bool = false
     @State private var buttonsTopY: CGFloat = .infinity
+    @State private var scrollProxy: ScrollViewProxy?
     
     var body: some View {
         GeometryReader { geometry in
@@ -52,17 +53,24 @@ struct EndJourneyView: View {
                     .foregroundStyle(.neutralBlack)
                     .padding(.bottom, 18)
                     
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 0) {
-                            ForEach(Array(journeyList.enumerated()), id: \.offset) { index, journey in
-                                TodayJourneyItem(
-                                    showsLine: index != journeyList.count - 1,
-                                    number: String(index + 1),
-                                    isComplete: journey.isComplete,
-                                    title: journey.missionTitle,
-                                    destinationTitle: journey.destination
-                                )
+                    ScrollViewReader { proxy in
+                        ScrollView(showsIndicators: false) {
+                            VStack(spacing: 0) {
+                                ForEach(Array(journeyList.enumerated()), id: \.offset) { index, journey in
+                                    TodayJourneyItem(
+                                        showsLine: index != journeyList.count - 1,
+                                        number: String(index + 1),
+                                        isComplete: journey.isComplete,
+                                        title: journey.missionTitle,
+                                        destinationTitle: journey.destination
+                                    )
+                                    .id(index)
+                                }
                             }
+                        }
+                        // 공유 이미지 캡처 전 스크롤을 맨 위로 되돌리기 위해 proxy 저장
+                        .onAppear {
+                            scrollProxy = proxy
                         }
                     }
                     
@@ -118,13 +126,13 @@ struct EndJourneyView: View {
             HomeView()
         }
         .onPreferenceChange(ButtonsTopYKey.self) { newValue in
-                    buttonsTopY = newValue
-                }
+            buttonsTopY = newValue
+        }
         .sheet(isPresented: $isPresentedShareSheet) {
-                    if let shareImage {
-                        ShareSheet(items: [shareImage])
-                    }
-                }
+            if let shareImage {
+                ShareSheet(items: [shareImage])
+            }
+        }
     }
 }
 
@@ -132,9 +140,17 @@ struct EndJourneyView: View {
 extension EndJourneyView {
     @MainActor
     func shareJournal() {
-        guard let image = UIApplication.shared.captureCurrentScreen(excludingBelow: buttonsTopY) else { return }
-        shareImage = image
-        isPresentedShareSheet = true
+        // 캡처 전 스크롤을 맨 위(1번 항목)로 이동
+        scrollProxy?.scrollTo(0, anchor: .top)
+        
+        Task {
+            // 스크롤 이동, 화면 재렌더링이 끝날 시간을 잠깐 대기
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+            
+            guard let image = UIApplication.shared.captureCurrentScreen(excludingBelow: buttonsTopY) else { return }
+            shareImage = image
+            isPresentedShareSheet = true
+        }
     }
 }
 
