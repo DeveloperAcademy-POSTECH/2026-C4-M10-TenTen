@@ -132,14 +132,14 @@ struct SubQuestCard: View {
 
 #Preview("Active") {
     SubQuestCard(
-        state: .active(.movementExample()),
+        state: .active(.previewExample()),
         onCameraTap: { _ in }
     )
 }
 
 #Preview("Completed") {
     let completedSubQuest: SubQuest = {
-        var subQuest = SubQuest.movementExample()
+        var subQuest = SubQuest.previewExample()
         subQuest.isCompleted = true
         return subQuest
     }()
