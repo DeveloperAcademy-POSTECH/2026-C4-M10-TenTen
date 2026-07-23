@@ -42,9 +42,6 @@ struct ArrivalPlaceConfirmView: View {
             
             HStack(spacing: DSSpacing.spacing12) {
                 Button {
-                    Task {
-                        await missionActivityManager.end()
-                    }
                     isShowEndJourneyAlert = true
                 } label: {
                     Text("여행 종료하기")
@@ -90,6 +87,10 @@ struct ArrivalPlaceConfirmView: View {
             primaryAction: {
                 try? confirmModel.endJourney(modelContext: modelContext)
                 locationService.stopUpdatingLocation()
+                
+                Task {
+                    await missionActivityManager.end()
+                }
                 
                 isPresentedEndJourneyView = true
             },
