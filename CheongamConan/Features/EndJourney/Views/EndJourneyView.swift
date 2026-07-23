@@ -28,6 +28,9 @@ struct EndJourneyView: View {
     ]
     
     @State private var isPresentedHomeView: Bool = false
+    @State private var shareImage: UIImage?
+    @State private var isPresentedShareSheet: Bool = false
+    @State private var buttonsTopY: CGFloat = .infinity
     
     var body: some View {
         GeometryReader { geometry in
@@ -82,7 +85,7 @@ struct EndJourneyView: View {
                         )
                         
                         Button {
-                            
+                            shareJournal()
                         } label: {
                             Text("공유하기")
                         }
@@ -91,6 +94,13 @@ struct EndJourneyView: View {
                             foregroundColor: .neutralWhite
                         ))
                     }
+                    // 버튼 HStack의 실제 화면 Y좌표를 측정해 공유 이미지 crop 기준으로 사용하기 위해 추가
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(key: ButtonsTopYKey.self, value: proxy.frame(in: .global).minY)
+                        }
+                    )
                 }
                 .padding(.top, DSSpacing.spacing36)
                 .padding(.bottom, 55)
@@ -107,9 +117,28 @@ struct EndJourneyView: View {
         .navigationDestination(isPresented: $isPresentedHomeView) {
             HomeView()
         }
+        .onPreferenceChange(ButtonsTopYKey.self) { newValue in
+                    buttonsTopY = newValue
+                }
+        .sheet(isPresented: $isPresentedShareSheet) {
+                    if let shareImage {
+                        ShareSheet(items: [shareImage])
+                    }
+                }
+    }
+}
+
+// 공유기능
+extension EndJourneyView {
+    @MainActor
+    func shareJournal() {
+        guard let image = UIApplication.shared.captureCurrentScreen(excludingBelow: buttonsTopY) else { return }
+        shareImage = image
+        isPresentedShareSheet = true
     }
 }
 
 #Preview {
     EndJourneyView()
 }
+
