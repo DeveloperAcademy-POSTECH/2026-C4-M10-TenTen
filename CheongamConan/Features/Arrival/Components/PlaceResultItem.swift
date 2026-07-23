@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct PlaceResultItem: View {
-    let place: Place
+    let place: SearchResultPlace
     
     var body: some View {
-        NavigationLink{ArrivalPlaceConfirmView(place: place.name)} label: {
+        NavigationLink{ArrivalPlaceConfirmView(place: place.placeName)} label: {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-                    Text(place.name)
+                    Text(place.placeName)
                         .font(DSTypography.B1)
                         .foregroundStyle(.grey900)
                     
-                    Text(place.roadAddress)
+                    Text(place.roadAddressName)
                         .font(DSTypography.C2)
                         .foregroundStyle(.grey700)
                 }
@@ -35,14 +35,14 @@ struct PlaceResultItem: View {
 
 #Preview {
     PlaceResultItem(
-        place: Place(
-            name: "소디스커피 효자점",
-            category: "음식점 > 카페 > 커피전문점",
-            address: "경북 포항시 남구 효자동 225-2",
-            roadAddress: "경북 포항시 남구 효자동길 12",
-            latitude: 36.009731,
-            longitude: 129.333273,
-            link: URL(string: "https://place.map.kakao.com/123456789")
+        place: SearchResultPlace(
+            placeName: "소디스커피 효자점",
+            categoryName: "음식점 > 카페 > 커피전문점",
+            addressName: "경북 포항시 남구 효자동 225-2",
+            roadAddressName: "경북 포항시 남구 효자동길 12",
+            longitude: "129.333273",
+            latitude: "36.009731",
+            placeURL: "https://localhost:3000"
         )
     )
 }
