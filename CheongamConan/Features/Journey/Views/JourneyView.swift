@@ -17,6 +17,7 @@ struct JourneyView: View {
     @Environment(NotificationService.self) private var notificationService
     @Environment(MissionActivityManager.self) private var missionActivityManager
     @Environment(\.modelContext) private var modelContext
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
     
     // 여행 및 미션 저장 로직
     @State private var model: JourneyModel
@@ -104,6 +105,20 @@ struct JourneyView: View {
                 }
             }
         }
+        .onChange(
+            of: deepLinkRouter.route,
+            initial: true
+        ) { _, route in
+            guard case let .missionCamera(missionID)? = route,
+                  let subQuest = model.cameraSubQuest(
+                      matching: missionID
+                  ) else {
+                return
+            }
+            
+            cameraSubQuest = subQuest
+            deepLinkRouter.consume()
+        }
 #if DEBUG
         .overlay(alignment: .topTrailing) {
             debugSubQuestControls
@@ -123,7 +138,7 @@ struct JourneyView: View {
             SubQuestCard(
                 state: subQuestCardState,
                 onCameraTap: { subQuest in
-                    cameraSubQuest = subQuest
+                    openCamera(for: subQuest)
                 }
             )
             .padding(.top, DSSpacing.spacing48)
@@ -283,6 +298,15 @@ struct JourneyView: View {
         }
     }
     
+    private func openCamera(for subQuest: SubQuest) {
+        guard let subQuest = model.cameraSubQuest(
+            matching: subQuest.id
+        ) else {
+            return
+        }
+
+        cameraSubQuest = subQuest
+    }
     private func cameraPicker(
         for subQuest: SubQuest
     ) -> some View {
@@ -391,4 +415,5 @@ struct JourneyView: View {
     .environment(LocationService())
     .environment(NotificationService())
     .environment(MissionActivityManager())
+    .environment(DeepLinkRouter())
 }

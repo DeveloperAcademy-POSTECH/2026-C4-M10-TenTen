@@ -88,8 +88,19 @@ struct MissionDynamicIslandExpandedView: View {
             .fixedSize(horizontal: false, vertical: true)
     }
     
+    @ViewBuilder
     private var availableCameraAction: some View {
-        // TODO: 카메라 Deep Link 구현 (새미)
+        if let missionID = state.missionID,
+           let cameraURL = MissionActivityDeepLink.camera(
+               missionID: missionID
+           ) {
+            Link(destination: cameraURL) {
+                cameraActionLabel
+            }
+        }
+    }
+
+    private var cameraActionLabel: some View {
         actionLabel(title: "카메라 열기", spacing: 7) {
             Image("Camera")
                 .resizable()

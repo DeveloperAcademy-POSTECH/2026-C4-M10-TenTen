@@ -7,4 +7,10 @@
 
 import Foundation
 
-// TODO: Deep Link 카메라 버튼 구현 (새미)
+enum MissionActivityDeepLink {
+    static func camera(missionID: UUID) -> URL? {
+        URL(
+            string: "tenten://mission/\(missionID.uuidString)/camera"
+        )
+    }
+}
