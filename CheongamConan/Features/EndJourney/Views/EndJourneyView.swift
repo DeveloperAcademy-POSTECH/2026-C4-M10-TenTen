@@ -28,15 +28,25 @@ struct EndJourneyView: View {
     ]
     
     @State private var isPresentedHomeView: Bool = false
+    @AppStorage(JourneyRouteStorage.key)
+    private var journeyRouteData: Data = Data()
+
+    private var journeyRoutePoints: [JourneyRoutePoint] {
+        JourneyRouteStorage.decode(journeyRouteData)
+    }
     
     var body: some View {
         GeometryReader { geometry in
             let mapHeight = geometry.size.width * (437.0 / 402.0)
             
             VStack(spacing: 0) {
-                JourneyMapView(journeyList: journeyList)
-                    .frame(height: mapHeight)
-                    .clipped()
+                JourneyMapView(
+                    journeyList: journeyList,
+                    routePoints: journeyRoutePoints
+                )
+                .id(journeyRouteData)
+                .frame(height: mapHeight)
+                .clipped()
                 
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
