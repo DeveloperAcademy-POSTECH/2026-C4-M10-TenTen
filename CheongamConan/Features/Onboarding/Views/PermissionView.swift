@@ -23,6 +23,7 @@ struct PermissionView: View {
             VStack(alignment: .leading, spacing: 112) {
                 Text("여행 전에 앱 사용을 위해\n필요한 권한을 허용해주세요")
                     .font(DSTypography.H4)
+                    .foregroundStyle(.neutralBlack)
                 
                 VStack(alignment: .leading, spacing: 52) {
                     PermissionList(icon: "location.circle.fill", title: "위치 (필수)", content: "우리 앱은 위치를 기반으로 더 나은 목적지를\n추천해 드리고자 해요.")
@@ -46,11 +47,12 @@ struct PermissionView: View {
             }
             .buttonStyle(DSButtonStyle(backgroundColor: .main300, foregroundColor: .neutralWhite))
         }
-        .frame(maxWidth: .infinity)
-        .navigationBarBackButtonHidden()
+        .padding(.top, 130)
         .padding(.horizontal, DSSpacing.contentHorizontal)
         .padding(.bottom, DSSpacing.spacing20)
-        .padding(.top, 130)
+        .background(.grey50)
+        .frame(maxWidth: .infinity)
+        .navigationBarBackButtonHidden()
         .alert(
             "위치 권한이 필요합니다.",
             isPresented: $model.isLocationSettingsAlertPresented

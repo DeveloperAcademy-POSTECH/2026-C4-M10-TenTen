@@ -13,11 +13,17 @@ struct CustomTextField: View {
     
     var body: some View {
         HStack(spacing: DSSpacing.spacing12) {
-            TextField(placeholder, text: $text)
-                .font(DSTypography.B1)
-                .foregroundStyle(.neutralBlack)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
+            TextField(
+                "",
+                text: $text,
+                prompt: Text(placeholder)
+                    .font(DSTypography.B1)
+                    .foregroundStyle(.grey400)
+            )
+            .font(DSTypography.B1)
+            .foregroundStyle(.neutralBlack)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
             
             if !text.isEmpty {
                 Button {

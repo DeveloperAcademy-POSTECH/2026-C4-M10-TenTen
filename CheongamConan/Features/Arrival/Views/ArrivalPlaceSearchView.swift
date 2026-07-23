@@ -18,6 +18,7 @@ struct ArrivalPlaceSearchView: View {
             searchContent
         }
         .padding(.top, DSSpacing.spacing28)
+        .background(.grey50)
         .onChange(of: name) { _, newValue in
             model.search(query: newValue)
         }

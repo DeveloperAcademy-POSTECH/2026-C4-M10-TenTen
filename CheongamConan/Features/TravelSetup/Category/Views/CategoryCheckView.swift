@@ -129,6 +129,7 @@ struct CategoryCheckView: View {
         .padding(.top, 23)
         .padding(.bottom, DSSpacing.spacing20)
         .padding(.horizontal, DSSpacing.contentHorizontal)
+        .background(.grey50)
     }
 }
  
