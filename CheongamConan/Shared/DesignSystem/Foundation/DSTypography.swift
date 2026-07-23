@@ -13,11 +13,13 @@ enum DSTypography {
     static let H3: Font = Font.custom("Pretendard-Bold", size: 36)
     static let H4: Font = Font.custom("Pretendard-Bold", size: 30)
     static let H5: Font = Font.custom("Pretendard-Bold", size: 24)
-
+    
     static let B1: Font = Font.custom("Pretendard-Bold", size: 24)
     static let B2: Font = Font.custom("Pretendard-Bold", size: 20)
     
     static let C1: Font = Font.custom("Pretendard-SemiBold", size: 16)
     static let C2: Font = Font.custom("Pretendard-Medium", size: 16)
     static let C3: Font = Font.custom("Pretendard-Regular", size: 12)
+    
+    static let markerUIFont: UIFont = UIFont(name: "Pretendard-Bold", size: 20) ?? .systemFont(ofSize: 20, weight: .bold)
 }
