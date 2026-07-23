@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D10000013010A00100000001 /* Missions.json in Resources */ = {isa = PBXBuildFile; fileRef = D10000023010A00100000001 /* Missions.json */; };
 		8E548F9D3003EE8E005353A2 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 8E548F9C3003EE8E005353A2 /* NMapsMap */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D10000023010A00100000001 /* Missions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = CheongamConan/Resources/Missions.json; sourceTree = SOURCE_ROOT; };
 		8E103A893000F0CF00AF9464 /* CheongamConan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CheongamConan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -19,6 +21,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Resources/Missions.json,
 			);
 			target = 8E103A883000F0CF00AF9464 /* CheongamConan */;
 		};
@@ -131,6 +134,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D10000013010A00100000001 /* Missions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
