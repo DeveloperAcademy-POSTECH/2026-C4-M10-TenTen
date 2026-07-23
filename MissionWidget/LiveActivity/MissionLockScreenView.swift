@@ -68,8 +68,17 @@ struct MissionLockScreenView: View {
                 }
             }
         } action: {
-            // TODO: 카메라 Deep Link 구현 (새미)
-            expandedStatusIcon(status: (.available))
+            if let missionID = state.missionID,
+               let cameraURL = MissionActivityDeepLink.camera(
+                   missionID: missionID
+               ) {
+                Link(destination: cameraURL) {
+                    expandedStatusIcon(status: .available)
+                }
+                .buttonStyle(.plain)
+            } else {
+                expandedStatusIcon(status: .available)
+            }
         }
     }
     
