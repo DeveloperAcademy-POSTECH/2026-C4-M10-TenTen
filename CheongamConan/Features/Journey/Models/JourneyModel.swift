@@ -42,6 +42,18 @@ final class JourneyModel {
         // 하나의 여행에서 목적지 도착 후 다음 목적지를 추천받는 흐름 고려
     }
 
+    func cameraSubQuest(
+        matching missionID: UUID
+    ) -> SubQuest? {
+        guard let subQuest = trackingModel.activeSubQuest,
+              subQuest.id == missionID,
+              !subQuest.isCompleted else {
+            return nil
+        }
+        
+        return subQuest
+    }
+
     func startJourneyIfNeeded(
         locationService: LocationService,
         notificationService: NotificationService,

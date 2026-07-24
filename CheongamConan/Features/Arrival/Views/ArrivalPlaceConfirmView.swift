@@ -11,6 +11,8 @@ import SwiftData
 struct ArrivalPlaceConfirmView: View {
     let place: String
     
+    @Environment(MissionActivityManager.self)
+    private var missionActivityManager
     @Environment(\.modelContext) private var modelContext
     @Environment(LocationService.self) private var locationService
     
@@ -86,6 +88,10 @@ struct ArrivalPlaceConfirmView: View {
                 try? confirmModel.endJourney(modelContext: modelContext)
                 locationService.stopUpdatingLocation()
                 
+                Task {
+                    await missionActivityManager.end()
+                }
+                
                 isPresentedEndJourneyView = true
             },
             secondaryAction: {},
@@ -106,5 +112,6 @@ struct ArrivalPlaceConfirmView: View {
 
 #Preview {
     ArrivalPlaceConfirmView(place: "소디스")
+        .environment(MissionActivityManager())
         .environment(LocationService())
 }

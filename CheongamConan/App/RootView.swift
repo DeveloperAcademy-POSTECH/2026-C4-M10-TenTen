@@ -13,12 +13,18 @@ import Observation
 @Observable
 final class JourneyRouter {
     private(set) var session: JourneySession?
-
+    private(set) var homeResetRequest = 0
+    
     func showJourney(_ session: JourneySession) {
         self.session = session
     }
 
     func dismissJourney() {
+        session = nil
+    }
+    
+    func finishJourney() {
+        homeResetRequest += 1
         session = nil
     }
 }
@@ -44,6 +50,7 @@ struct RootView: View {
                 NavigationStack {
                     mainContent
                 }
+                .id(journeyRouter.homeResetRequest)
                 .transition(
                     .asymmetric(
                         insertion: .move(edge: .trailing)

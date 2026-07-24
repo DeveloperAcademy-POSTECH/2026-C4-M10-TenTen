@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct EndJourneyView: View {
+    @Environment(JourneyRouter.self) private var journeyRouter
+    
     let journeyList: [Journey] = [
         Journey(
             finishedAt: "2026-07-22T10:00:00",
@@ -26,8 +28,6 @@ struct EndJourneyView: View {
             missionTitle: "횡단보도의 신호등",
         )
     ]
-    
-    @State private var isPresentedHomeView: Bool = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -67,7 +67,7 @@ struct EndJourneyView: View {
                     
                     HStack {
                         Button {
-                            isPresentedHomeView = true
+                            journeyRouter.finishJourney()
                         } label: {
                             Text("홈으로 가기")
                                 .font(DSTypography.B2)
@@ -104,12 +104,10 @@ struct EndJourneyView: View {
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
-        .navigationDestination(isPresented: $isPresentedHomeView) {
-            HomeView()
-        }
     }
 }
 
 #Preview {
     EndJourneyView()
+        .environment(JourneyRouter())
 }

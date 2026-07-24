@@ -94,4 +94,3 @@ struct AreaPickerView: View {
     AreaPickerView(setupModel: TravelSetupModel())
         .environment(LocationService())
 }
-
