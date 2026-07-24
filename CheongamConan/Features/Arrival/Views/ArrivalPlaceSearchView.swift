@@ -72,7 +72,7 @@ struct ArrivalPlaceSearchView: View {
                 .padding(.horizontal, DSSpacing.contentHorizontal)
             
             ScrollView(showsIndicators: false) {
-                ForEach(model.places) { place in
+                ForEach(model.places, id: \.placeURL) { place in
                     PlaceResultItem(place: place)
                 }
             }
