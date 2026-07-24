@@ -90,7 +90,11 @@ struct ArrivalPlaceSearchView: View {
             ScrollView(showsIndicators: false) {
                 ForEach(model.places, id: \.placeURL) { place in
                     Button {
-                        selectPlace(place)
+                        guard let domainPlace = place.toDomain() else {
+                            return
+                        }
+                        
+                        selectPlace(domainPlace)
                     } label: {
                         PlaceResultItem(place: place)
                     }

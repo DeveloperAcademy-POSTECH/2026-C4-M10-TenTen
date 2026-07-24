@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct EndJourneyView: View {
+    @Environment(JourneyRouter.self) private var journeyRouter
+    
     @Query(
         sort: \TodayJourney.createdAt,
         order: .reverse
@@ -17,7 +19,6 @@ struct EndJourneyView: View {
     
     @Environment(\.modelContext) private var modelContext
     
-    @State private var isPresentedHomeView: Bool = false
     @State private var isShowShareAlert: Bool = false
     
     @AppStorage(JourneyRouteStorage.key)
@@ -79,8 +80,7 @@ struct EndJourneyView: View {
                     HStack {
                         Button {
                             clearTodayJourney()
-
-                            isPresentedHomeView = true
+                            journeyRouter.finishJourney()
                         } label: {
                             Text("홈으로 가기")
                                 .font(DSTypography.B2)
@@ -117,9 +117,6 @@ struct EndJourneyView: View {
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
-        .navigationDestination(isPresented: $isPresentedHomeView) {
-            HomeView()
-        }
         .customAlert(
             isPresented: $isShowShareAlert,
             title: "준비 중입니다.",
@@ -160,4 +157,5 @@ struct EndJourneyView: View {
 
 #Preview {
     EndJourneyView()
+        .environment(JourneyRouter())
 }
