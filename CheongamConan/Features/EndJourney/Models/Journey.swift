@@ -12,8 +12,10 @@ struct Journey: Codable, Equatable {
     let destination: String
     let latitude: Double
     let longitude: Double
+
     let isComplete: Bool
     let missionTitle: String
+    let imageFileName: String?
 
     init(
         finishedAt: String,
@@ -21,7 +23,8 @@ struct Journey: Codable, Equatable {
         latitude: Double,
         longitude: Double,
         isComplete: Bool,
-        missionTitle: String
+        missionTitle: String,
+        imageFileName: String?
     ) {
         self.finishedAt = finishedAt
         self.destination = destination
@@ -29,5 +32,6 @@ struct Journey: Codable, Equatable {
         self.longitude = longitude
         self.isComplete = isComplete
         self.missionTitle = missionTitle
+        self.imageFileName = imageFileName
     }
 }

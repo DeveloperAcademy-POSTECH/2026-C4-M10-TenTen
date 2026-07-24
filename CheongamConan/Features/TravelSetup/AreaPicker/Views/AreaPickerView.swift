@@ -52,6 +52,7 @@ struct AreaPickerView: View {
                     
                     Text(selectedAreaText)
                         .font(DSTypography.H2)
+                        .foregroundStyle(.neutralBlack)
                 }
                 
                 Button("선택하기") {
@@ -75,6 +76,7 @@ struct AreaPickerView: View {
         .padding(.top, 67)
         .padding(.bottom, 20)
         .padding(.horizontal, DSSpacing.contentHorizontal)
+        .background(.grey50)
         .navigationBarBackButtonHidden()
         .navigationDestination(
             isPresented: $isCategoryPresented
@@ -94,4 +96,3 @@ struct AreaPickerView: View {
     AreaPickerView(setupModel: TravelSetupModel())
         .environment(LocationService())
 }
-

@@ -7,11 +7,12 @@
 
 import Foundation
 import Observation
+import SwiftData
 
 @MainActor
 @Observable
 final class ArrivalPlaceSearchModel {
-    private(set) var places: [Place] = []
+    private(set) var places: [SearchResultPlace] = []
     private(set) var isLoading: Bool = false
     private(set) var errorMessage: String?
     
@@ -66,5 +67,38 @@ final class ArrivalPlaceSearchModel {
         places = []
         errorMessage = nil
         isLoading = false
+    }
+    
+    func selectPlace(
+        _ place: Place,
+        modelContext: ModelContext
+    ) throws {
+        var descriptor = FetchDescriptor<RecommendedPlace>(
+            sortBy: [
+                SortDescriptor(
+                    \.recommendedAt,
+                    order: .reverse
+                )
+            ]
+        )
+
+        descriptor.fetchLimit = 1
+
+        guard let recommendedPlace =
+            try modelContext.fetch(descriptor).first
+        else {
+            return
+        }
+
+        recommendedPlace.name = place.name
+        recommendedPlace.latitude = place.latitude
+        recommendedPlace.longitude = place.longitude
+
+        recommendedPlace.roadAddress =
+            place.roadAddress.isEmpty
+            ? place.address
+            : place.roadAddress
+
+        try modelContext.save()
     }
 }

@@ -10,6 +10,16 @@ import NMapsMap
 
 struct JourneyMapView: View {
     let journeyList: [Journey]
+    let routePoints: [JourneyRoutePoint]
+    
+    init(
+        journeyList: [Journey],
+        routePoints: [JourneyRoutePoint] = []
+    ) {
+        self.journeyList = journeyList
+        self.routePoints = routePoints
+    }
+    
     
     var body: some View {
         NaverMapView(
@@ -18,6 +28,11 @@ struct JourneyMapView: View {
             },
             onMake: { naverMapView, coordinator in
                 configureMap(naverMapView)
+                
+                updateRoutePath(
+                    naverMapView: naverMapView,
+                    coordinator: coordinator
+                )
                 
                 updateMarkers(
                     naverMapView: naverMapView,
@@ -29,9 +44,18 @@ struct JourneyMapView: View {
                 )
             },
             onUpdate: { naverMapView, coordinator in
+                updateRoutePath(
+                    naverMapView: naverMapView,
+                    coordinator: coordinator
+                )
+                
                 updateMarkers(
                     naverMapView: naverMapView,
                     coordinator: coordinator
+                )
+                
+                moveCamera(
+                    mapView: naverMapView.mapView
                 )
             }
         )
@@ -104,15 +128,36 @@ private extension JourneyMapView {
 
 private extension JourneyMapView {
     func moveCamera(mapView: NMFMapView) {
-        guard !journeyList.isEmpty else {
+        let routeCoordinates:
+        [(latitude: Double, longitude: Double)] =
+        routePoints.map {
+            (
+                latitude: $0.latitude,
+                longitude: $0.longitude
+            )
+        }
+        
+        let destinationCoordinates:
+        [(latitude: Double, longitude: Double)] =
+        journeyList.map {
+            (
+                latitude: $0.latitude,
+                longitude: $0.longitude
+            )
+        }
+        
+        let allCoordinates =
+        routeCoordinates + destinationCoordinates
+        
+        guard !allCoordinates.isEmpty else {
             return
         }
         
-        if journeyList.count == 1,
-           let journey = journeyList.first {
+        if allCoordinates.count == 1,
+           let coordinate = allCoordinates.first {
             let position = NMGLatLng(
-                lat: journey.latitude,
-                lng: journey.longitude
+                lat: coordinate.latitude,
+                lng: coordinate.longitude
             )
             
             let cameraUpdate = NMFCameraUpdate(
@@ -124,8 +169,8 @@ private extension JourneyMapView {
             return
         }
         
-        let latitudes = journeyList.map(\.latitude)
-        let longitudes = journeyList.map(\.longitude)
+        let latitudes = allCoordinates.map(\.latitude)
+        let longitudes = allCoordinates.map(\.longitude)
         
         guard
             let minLatitude = latitudes.min(),
@@ -159,6 +204,7 @@ private extension JourneyMapView {
 extension JourneyMapView {
     final class Coordinator: NSObject {
         var markers: [NMFMarker] = []
+        var routePath: NMFPath?
         
         func removeMarkers() {
             markers.forEach {
@@ -167,5 +213,44 @@ extension JourneyMapView {
             
             markers.removeAll()
         }
+        
+        func removeRoutePath() {
+            routePath?.mapView = nil
+            routePath = nil
+        }
+    }
+}
+
+private extension JourneyMapView {
+    func updateRoutePath(
+        naverMapView: NMFNaverMapView,
+        coordinator: Coordinator
+    ) {
+        coordinator.removeRoutePath()
+        
+        let coordinates = routePoints.map { point in
+            NMGLatLng(
+                lat: point.latitude,
+                lng: point.longitude
+            )
+        }
+        
+        guard coordinates.count >= 2 else { return }
+        
+        let routePath = NMFPath()
+        
+        routePath.path = NMGLineString(
+            points: coordinates
+        )
+        
+        routePath.width = 4
+        routePath.outlineWidth = 0
+        
+        routePath.color = .main300
+        routePath.outlineColor = .clear
+        
+        routePath.mapView = naverMapView.mapView
+        
+        coordinator.routePath = routePath
     }
 }

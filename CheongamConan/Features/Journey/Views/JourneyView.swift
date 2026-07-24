@@ -15,7 +15,9 @@ struct JourneyView: View {
     
     @Environment(LocationService.self) private var locationService
     @Environment(NotificationService.self) private var notificationService
+    @Environment(MissionActivityManager.self) private var missionActivityManager
     @Environment(\.modelContext) private var modelContext
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
     
     // 여행 및 미션 저장 로직
     @State private var model: JourneyModel
@@ -62,6 +64,7 @@ struct JourneyView: View {
                 journeyContent(destination: destination)
             }
         }
+        .background(.grey50)
         .task {
             await loadDestinationIfNeeded()
         }
@@ -83,11 +86,46 @@ struct JourneyView: View {
         .navigationDestination(isPresented: $isShowArrivalView) {
             ArrivalPlaceSelectionView()
         }
-        #if DEBUG
-        .overlay(alignment: .topTrailing) {
-            subQuestDebugControls
+        .onChange(
+            of: model.trackingModel.activeSubQuest // activeSubQuest의 값이 변경되면 Live Activity 의 상태도 변경
+        ) { _, subQuest in
+            guard let subQuest else {
+                return
+            }
+            
+            Task {
+                if subQuest.isCompleted {
+                    await missionActivityManager.completeMission(
+                        missionID: subQuest.id
+                    )
+                } else {
+                    await missionActivityManager.showMission(
+                        missionID: subQuest.id,
+                        title: subQuest.title
+                    )
+                }
+            }
         }
-        #endif
+        .onChange(
+            of: deepLinkRouter.route,
+            initial: true
+        ) { _, route in
+            guard case let .missionCamera(missionID)? = route,
+                  let subQuest = model.cameraSubQuest(
+                      matching: missionID
+                  ) else {
+                return
+            }
+            
+            cameraSubQuest = subQuest
+            deepLinkRouter.consume()
+        }
+#if DEBUG
+        .overlay(alignment: .topTrailing) {
+            debugSubQuestControls
+        }
+#endif
+
     }
     
     private func journeyContent(destination: RecommendedPlace) -> some View {
@@ -101,7 +139,7 @@ struct JourneyView: View {
             SubQuestCard(
                 state: subQuestCardState,
                 onCameraTap: { subQuest in
-                    cameraSubQuest = subQuest
+                    openCamera(for: subQuest)
                 }
             )
             .padding(.top, DSSpacing.spacing48)
@@ -119,9 +157,11 @@ struct JourneyView: View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
             Text("오늘 이곳을 찾아 떠나는 거 어때요?")
                 .font(DSTypography.C2)
+                .foregroundStyle(.neutralBlack)
             
             Text(destination.name)
                 .font(DSTypography.H3)
+                .foregroundStyle(.neutralBlack)
             
             Text(destination.roadAddress)
                 .font(DSTypography.C3)
@@ -239,6 +279,8 @@ struct JourneyView: View {
             destination: destination
         )
         
+        await startMissionActivity(for: destination)
+        
         model.startJourneyIfNeeded(
             locationService: locationService,
             notificationService: notificationService,
@@ -247,6 +289,27 @@ struct JourneyView: View {
         )
     }
     
+    private func startMissionActivity(
+        for destination: RecommendedPlace
+    ) async {
+        do {
+            try await missionActivityManager.start(
+                destinationID: destination.id
+            )
+        } catch {
+            print("Live Activity 시작 실패:", error)
+        }
+    }
+    
+    private func openCamera(for subQuest: SubQuest) {
+        guard let subQuest = model.cameraSubQuest(
+            matching: subQuest.id
+        ) else {
+            return
+        }
+
+        cameraSubQuest = subQuest
+    }
     private func cameraPicker(
         for subQuest: SubQuest
     ) -> some View {
@@ -278,7 +341,7 @@ struct JourneyView: View {
         )
         .ignoresSafeArea()
     }
-        
+    
     private func createJourneySessionIfNeeded(
         destination: RecommendedPlace
     ) {
@@ -308,6 +371,42 @@ struct JourneyView: View {
         try? modelContext.save()
         isShowArrivalView = true
     }
+    
+    #if DEBUG
+    private var debugSubQuestControls: some View {
+        VStack(alignment: .trailing) {
+            Button("Live Activity 시작") {
+                startLiveActivityForDebug()
+            }
+            
+            Button("5초 후 퀘스트 발생") {
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(5)
+                )
+            }
+            
+            Button("10초 후 퀘스트 발생") {
+                model.trackingModel.triggerSubQuestForDebug(
+                    after: .seconds(10)
+                )
+            }
+            
+            Button("퀘스트 리셋") {
+                model.trackingModel.resetSubQuestForDebug()
+            }
+        }
+    }
+    
+    private func startLiveActivityForDebug() {
+        guard let destination = model.destination else {
+            return
+        }
+        
+        Task {
+            await startMissionActivity(for: destination)
+        }
+    }
+    #endif
 }
 
 #Preview {
@@ -317,4 +416,6 @@ struct JourneyView: View {
     )
     .environment(LocationService())
     .environment(NotificationService())
+    .environment(MissionActivityManager())
+    .environment(DeepLinkRouter())
 }

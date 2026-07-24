@@ -6,37 +6,48 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EndJourneyView: View {
-    let journeyList: [Journey] = [
-        Journey(
-            finishedAt: "2026-07-22T10:00:00",
-            destination: "바르벳",
-            latitude: 36.010222,
-            longitude: 129.296528,
-            isComplete: true,
-            missionTitle: "하트 모양",
-        ),
-        Journey(
-            finishedAt: "2026-07-22T11:00:00",
-            destination: "포항 순이",
-            latitude: 36.002871,
-            longitude: 129.33086,
-            isComplete: false,
-            missionTitle: "횡단보도의 신호등",
-        )
-    ]
+    @Environment(JourneyRouter.self) private var journeyRouter
     
-    @State private var isPresentedHomeView: Bool = false
+    @Query(
+        sort: \TodayJourney.createdAt,
+        order: .reverse
+    )
+    private var todayJourneys: [TodayJourney]
+    
+    @Environment(\.modelContext) private var modelContext
+    
+    @State private var isShowShareAlert: Bool = false
+    
+    @AppStorage(JourneyRouteStorage.key)
+    private var journeyRouteData: Data = Data()
+    
+    private var journeyRoutePoints: [JourneyRoutePoint] {
+        JourneyRouteStorage.decode(journeyRouteData)
+    }
+    
+    private var journeyList: [Journey] {
+        todayJourneys
+            .first {
+                Calendar.current.isDateInToday($0.createdAt)
+            }?
+            .journeyList ?? []
+    }
     
     var body: some View {
         GeometryReader { geometry in
             let mapHeight = geometry.size.width * (437.0 / 402.0)
             
             VStack(spacing: 0) {
-                JourneyMapView(journeyList: journeyList)
-                    .frame(height: mapHeight)
-                    .clipped()
+                JourneyMapView(
+                    journeyList: journeyList,
+                    routePoints: journeyRoutePoints
+                )
+                .id(journeyRouteData)
+                .frame(height: mapHeight)
+                .clipped()
                 
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
@@ -57,7 +68,8 @@ struct EndJourneyView: View {
                                     number: String(index + 1),
                                     isComplete: journey.isComplete,
                                     title: journey.missionTitle,
-                                    destinationTitle: journey.destination
+                                    destinationTitle: journey.destination,
+                                    imageFileName: journey.imageFileName ?? ""
                                 )
                             }
                         }
@@ -67,7 +79,8 @@ struct EndJourneyView: View {
                     
                     HStack {
                         Button {
-                            isPresentedHomeView = true
+                            clearTodayJourney()
+                            journeyRouter.finishJourney()
                         } label: {
                             Text("홈으로 가기")
                                 .font(DSTypography.B2)
@@ -82,7 +95,7 @@ struct EndJourneyView: View {
                         )
                         
                         Button {
-                            
+                            isShowShareAlert = true
                         } label: {
                             Text("공유하기")
                         }
@@ -104,12 +117,45 @@ struct EndJourneyView: View {
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden()
-        .navigationDestination(isPresented: $isPresentedHomeView) {
-            HomeView()
+        .customAlert(
+            isPresented: $isShowShareAlert,
+            title: "준비 중입니다.",
+            primaryButtonTitle: "확인",
+            primaryAction: {}
+        )
+    }
+    
+    private func clearTodayJourney() {
+        do {
+            let calendar = Calendar.current
+            let startOfToday = calendar.startOfDay(for: .now)
+            let startOfTomorrow = calendar.date(
+                byAdding: .day,
+                value: 1,
+                to: startOfToday
+            ) ?? startOfToday.addingTimeInterval(86_400)
+
+            let descriptor = FetchDescriptor<TodayJourney>(
+                predicate: #Predicate<TodayJourney> { journey in
+                    journey.createdAt >= startOfToday &&
+                    journey.createdAt < startOfTomorrow
+                }
+            )
+
+            let todayJourneys = try modelContext.fetch(descriptor)
+
+            todayJourneys.forEach { todayJourney in
+                todayJourney.journeyList = []
+            }
+
+            try modelContext.save()
+        } catch {
+            print("TodayJourney 초기화 실패:", error)
         }
     }
 }
 
 #Preview {
     EndJourneyView()
+        .environment(JourneyRouter())
 }

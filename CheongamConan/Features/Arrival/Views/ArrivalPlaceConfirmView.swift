@@ -11,6 +11,8 @@ import SwiftData
 struct ArrivalPlaceConfirmView: View {
     let place: String
     
+    @Environment(MissionActivityManager.self)
+    private var missionActivityManager
     @Environment(\.modelContext) private var modelContext
     @Environment(LocationService.self) private var locationService
     
@@ -86,6 +88,10 @@ struct ArrivalPlaceConfirmView: View {
                 try? confirmModel.endJourney(modelContext: modelContext)
                 locationService.stopUpdatingLocation()
                 
+                Task {
+                    await missionActivityManager.end()
+                }
+                
                 isPresentedEndJourneyView = true
             },
             secondaryAction: {},
@@ -93,18 +99,25 @@ struct ArrivalPlaceConfirmView: View {
         .navigationDestination(isPresented: $isPresentedEndJourneyView) {
             EndJourneyView()
         }
+//        .customAlert(
+//            isPresented: $isShowRerecommendAlert,
+//            title: "다음 목적지도 추천해드릴까요?",
+//            primaryButtonTitle: "네",
+//            secondaryButtonTitle: "아니오",
+//            primaryAction: {},
+//            secondaryAction: {},
+//        )
         .customAlert(
             isPresented: $isShowRerecommendAlert,
-            title: "다음 목적지도 추천해드릴까요?",
-            primaryButtonTitle: "네",
-            secondaryButtonTitle: "아니오",
-            primaryAction: {},
-            secondaryAction: {},
+            title: "준비 중입니다.",
+            primaryButtonTitle: "확인",
+            primaryAction: {}
         )
     }
 }
 
 #Preview {
     ArrivalPlaceConfirmView(place: "소디스")
+        .environment(MissionActivityManager())
         .environment(LocationService())
 }

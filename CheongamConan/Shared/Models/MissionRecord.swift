@@ -16,7 +16,6 @@ final class MissionRecord {
     var recommendedPlaceID: UUID
     
     var title: String
-    var missionDescription: String
     var unlockedAt: Date // 미션 발생 조건을 충족하여 미션이 사용자에게 공개된 시각
     
     private(set) var isCompleted: Bool
@@ -27,7 +26,6 @@ final class MissionRecord {
         id: UUID,
         recommendedPlaceID: UUID,
         title: String,
-        missionDescription: String,
         unlockedAt: Date,
         isCompleted: Bool = false,
         completedAt: Date? = nil,
@@ -36,7 +34,6 @@ final class MissionRecord {
         self.id = id
         self.recommendedPlaceID = recommendedPlaceID
         self.title = title
-        self.missionDescription = missionDescription
         self.unlockedAt = unlockedAt
         self.isCompleted = isCompleted
         self.completedAt = completedAt
@@ -54,4 +51,3 @@ final class MissionRecord {
         self.isCompleted = true
     }
 }
-

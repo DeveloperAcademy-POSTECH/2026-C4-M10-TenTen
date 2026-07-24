@@ -105,6 +105,7 @@ struct OnboardingView: View {
                 }
             }
         }
+        .background(.grey50)
         .task {
             withAnimation(.easeOut(duration: 1.5)) {
                 step = 1

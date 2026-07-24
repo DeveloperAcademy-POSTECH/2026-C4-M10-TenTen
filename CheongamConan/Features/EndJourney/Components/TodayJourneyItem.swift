@@ -13,6 +13,29 @@ struct TodayJourneyItem: View {
     let isComplete: Bool
     let title: String
     let destinationTitle: String
+    let imageFileName: String
+    
+    private var missionImage: UIImage? {
+        guard !imageFileName.isEmpty else {
+            return nil
+        }
+
+        guard let applicationSupportURL = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else {
+            return nil
+        }
+
+        let imageURL = applicationSupportURL
+            .appendingPathComponent(
+                "MissionImages",
+                isDirectory: true
+            )
+            .appendingPathComponent(imageFileName)
+
+        return UIImage(contentsOfFile: imageURL.path)
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: DSSpacing.spacing8) {
@@ -32,31 +55,44 @@ struct TodayJourneyItem: View {
             }
             
             VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-                Text(destinationTitle)
-                    .font(DSTypography.B1)
-                
                 HStack {
-                    VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
-                        Text(isComplete ? "완료한 미션" : "이런 미션이 있었어요")
-                            .font(DSTypography.C1)
-                            .foregroundStyle(.grey700)
-                        
-                        Text(title)
-                            .font(DSTypography.B2)
-                            .foregroundStyle(.neutralBlack)
-                    }
+                    Text(destinationTitle)
+                        .font(DSTypography.B1)
                     
                     Spacer()
-                    
-                    Rectangle()
-                        .foregroundStyle(isComplete ? .neutralBlack : .clear)
-                        .frame(width: 65, height: 65)
-                        .cornerRadius(DSRadius.standard)
                 }
-                .padding(DSSpacing.spacing16)
-                .background(.grey200)
-                .cornerRadius(DSRadius.standard)
-                .padding(.bottom, 28)
+                
+                if !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    HStack {
+                        VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
+                            Text(isComplete ? "완료한 미션" : "이런 미션이 있었어요")
+                                .font(DSTypography.C1)
+                                .foregroundStyle(.grey700)
+                            
+                            Text(title)
+                                .font(DSTypography.B2)
+                                .foregroundStyle(.neutralBlack)
+                        }
+                        
+                        Spacer()
+                        
+                        if isComplete, let missionImage {
+                            Image(uiImage: missionImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 65, height: 65)
+                                .clipShape(
+                                    RoundedRectangle(
+                                        cornerRadius: DSRadius.standard
+                                    )
+                                )
+                        }
+                    }
+                    .padding(DSSpacing.spacing16)
+                    .background(.grey200)
+                    .cornerRadius(DSRadius.standard)
+                    .padding(.bottom, 28)
+                }
             }
         }
     }
@@ -68,6 +104,7 @@ struct TodayJourneyItem: View {
         number: "1",
         isComplete: false,
         title: "미션 1",
-        destinationTitle: "바르벳"
+        destinationTitle: "바르벳",
+        imageFileName: ""
     )
 }
