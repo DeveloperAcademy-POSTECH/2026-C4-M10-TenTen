@@ -125,6 +125,8 @@
 				78745B78300F0BE600C52E19 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		788CBF8F3012EECA004B15CE /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
