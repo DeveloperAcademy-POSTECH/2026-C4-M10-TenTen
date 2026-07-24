@@ -60,7 +60,8 @@ final class ArrivalPlaceConfirmModel {
                 latitude: place.latitude,
                 longitude: place.longitude,
                 isComplete: mission?.isCompleted ?? false,
-                missionTitle: mission?.title ?? ""
+                missionTitle: mission?.title ?? "",
+                imageFileName: mission?.imageFileName
             )
         }
 

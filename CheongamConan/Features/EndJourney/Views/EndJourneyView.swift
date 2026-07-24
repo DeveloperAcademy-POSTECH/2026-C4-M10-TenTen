@@ -67,7 +67,8 @@ struct EndJourneyView: View {
                                     number: String(index + 1),
                                     isComplete: journey.isComplete,
                                     title: journey.missionTitle,
-                                    destinationTitle: journey.destination
+                                    destinationTitle: journey.destination,
+                                    imageFileName: journey.imageFileName ?? ""
                                 )
                             }
                         }
