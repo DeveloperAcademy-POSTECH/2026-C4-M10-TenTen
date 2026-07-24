@@ -11,24 +11,22 @@ struct PlaceResultItem: View {
     let place: SearchResultPlace
     
     var body: some View {
-        NavigationLink{ArrivalPlaceConfirmView(place: place.placeName)} label: {
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
-                    Text(place.placeName)
-                        .font(DSTypography.B1)
-                        .foregroundStyle(.grey900)
-                    
-                    Text(place.roadAddressName)
-                        .font(DSTypography.C2)
-                        .foregroundStyle(.grey700)
-                }
-                .padding(.horizontal, DSSpacing.contentHorizontal)
-                .foregroundStyle(.black)
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: DSSpacing.spacing8) {
+                Text(place.placeName)
+                    .font(DSTypography.B1)
+                    .foregroundStyle(.grey900)
                 
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundStyle(.grey400)
+                Text(place.roadAddressName)
+                    .font(DSTypography.C2)
+                    .foregroundStyle(.grey700)
             }
+            .padding(.horizontal, DSSpacing.contentHorizontal)
+            .foregroundStyle(.black)
+            
+            Rectangle()
+                .frame(height: 1)
+                .foregroundStyle(.grey400)
         }
     }
 }

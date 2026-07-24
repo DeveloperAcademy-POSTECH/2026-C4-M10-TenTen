@@ -64,6 +64,7 @@ struct JourneyView: View {
                 journeyContent(destination: destination)
             }
         }
+        .background(.grey50)
         .task {
             await loadDestinationIfNeeded()
         }
@@ -156,9 +157,11 @@ struct JourneyView: View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing4) {
             Text("오늘 이곳을 찾아 떠나는 거 어때요?")
                 .font(DSTypography.C2)
+                .foregroundStyle(.neutralBlack)
             
             Text(destination.name)
                 .font(DSTypography.H3)
+                .foregroundStyle(.neutralBlack)
             
             Text(destination.roadAddress)
                 .font(DSTypography.C3)

@@ -15,17 +15,17 @@ import UIKit
 @Observable
 final class JourneyModel {
     var destination: RecommendedPlace?
-
+    
     // 여행 진행 화면 재진입 시 위치 추적이 중복 시작되지 않도록 관리
     private(set) var hasStartedTracking = false
     
     private(set) var missionStorageError: Error? = nil
-
+    
     private(set) var isCompletingMission = false // 비동기 완료 처리 중 동일 미션이 중복 제출되는 것을 방지
     private let missionImageStorageService: MissionImageStorageService
-
+    
     let trackingModel: JourneyTrackingModel
-
+    
     init(
         destination: RecommendedPlace? = nil,
         trackingModel: JourneyTrackingModel? = nil,
@@ -35,13 +35,13 @@ final class JourneyModel {
         self.trackingModel = trackingModel ?? JourneyTrackingModel()
         self.missionImageStorageService = missionImageStorageService ?? MissionImageStorageService()
     }
-
+    
     func updateDestination(_ destination: RecommendedPlace) {
         self.destination = destination
         // TODO: 목적지 진행 상태가 추가되면 추천 단계에서만 변경하도록 제한
         // 하나의 여행에서 목적지 도착 후 다음 목적지를 추천받는 흐름 고려
     }
-
+    
     func cameraSubQuest(
         matching missionID: UUID
     ) -> SubQuest? {
@@ -63,9 +63,9 @@ final class JourneyModel {
     ) {
         guard !hasStartedTracking else { return }
         guard locationService.isAuthorized else { return }
-
+        
         hasStartedTracking = true
-
+        
         connectLocationService(locationService)
         connectSubQuestHandling(
             notificationService: notificationService,
@@ -73,26 +73,32 @@ final class JourneyModel {
             modelContext: modelContext
         )
         trackingModel.beginJourney()
+        
+        JourneyRouteStorage.clear()
+        
         locationService.startUpdatingLocation(
             allowsBackgroundUpdates: true
         )
-
+        
         if locationService.authorizationStatus == .authorizedWhenInUse {
             locationService.requestAlwaysAuthorization()
         }
     }
-
+    
     private func connectLocationService(
         _ locationService: LocationService
     ) {
         let trackingModel = trackingModel
-
+        
         locationService.onLocationsReceived = {
             [weak trackingModel] locations in
+            
             trackingModel?.receive(locations)
+            
+            JourneyRouteStorage.append(locations)
         }
     }
-
+    
     private func connectSubQuestHandling(
         notificationService: NotificationService,
         missionStorageModel: MissionStorageModel,
@@ -112,7 +118,7 @@ final class JourneyModel {
                 title: subQuest.title,
                 unlockedAt: subQuest.triggeredAt
             )
-
+            
             do {
                 try missionStorageModel.save(
                     missionRecord,
@@ -128,7 +134,7 @@ final class JourneyModel {
             }
         }
     }
-
+    
     func completeSubQuest(
         _ subQuest: SubQuest,
         image: UIImage,
@@ -142,13 +148,13 @@ final class JourneyModel {
         defer {
             isCompletingMission = false
         }
-
+        
         // 1. 인증 이미지 파일 저장
         let fileName = try await missionImageStorageService.save(
             image,
             missionID: subQuest.id
         )
-
+        
         // 2. 저장된 미션 완료 정보 갱신
         do {
             try missionStorageModel.completeMission(

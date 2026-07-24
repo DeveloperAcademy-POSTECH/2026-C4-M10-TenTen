@@ -72,6 +72,7 @@ struct CategoryView: View {
         }
         .padding(.top, 23)
         .padding(.horizontal, DSSpacing.contentHorizontal)
+        .background(.grey50)
     }
 }
 

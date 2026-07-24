@@ -80,6 +80,7 @@ struct ArrivalPlaceSelectionView: View {
         .padding(.top, DSSpacing.spacing32)
         .padding(.bottom, 6)
         .padding(.horizontal, DSSpacing.contentHorizontal)
+        .background(.grey50)
     }
 }
 
