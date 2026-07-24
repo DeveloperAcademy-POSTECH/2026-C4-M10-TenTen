@@ -6,10 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ArrivalPlaceSearchView: View {
+    @Environment(\.modelContext) private var modelContext
+    
     @State private var name = ""
     @State private var model = ArrivalPlaceSearchModel()
+    
+    @State private var selectedPlace: Place?
+    @State private var isPresentedConfirmView = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.spacing20) {
@@ -24,6 +30,15 @@ struct ArrivalPlaceSearchView: View {
         }
         .onDisappear {
             model.cancelSearch()
+        }
+        .navigationDestination(
+            isPresented: $isPresentedConfirmView
+        ) {
+            if let selectedPlace {
+                ArrivalPlaceConfirmView(
+                    place: selectedPlace.name
+                )
+            }
         }
     }
     
@@ -74,9 +89,30 @@ struct ArrivalPlaceSearchView: View {
             
             ScrollView(showsIndicators: false) {
                 ForEach(model.places) { place in
-                    PlaceResultItem(place: place)
+                    Button {
+                        selectPlace(place)
+                    } label: {
+                        PlaceResultItem(place: place)
+                    }
                 }
             }
+        }
+    }
+    
+    private func selectPlace(_ place: Place) {
+        do {
+            try model.selectPlace(
+                place,
+                modelContext: modelContext
+            )
+            
+            selectedPlace = place
+            isPresentedConfirmView = true
+        } catch {
+            print(
+                "RecommendedPlace 수정 실패:",
+                error
+            )
         }
     }
     

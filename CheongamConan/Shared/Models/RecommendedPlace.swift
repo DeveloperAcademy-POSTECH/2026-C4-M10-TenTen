@@ -28,6 +28,7 @@ final class RecommendedPlace {
         self.recommendedAt = recommendedAt
     }
 }
+
 #if DEBUG
 extension RecommendedPlace {
     static var preview: RecommendedPlace {

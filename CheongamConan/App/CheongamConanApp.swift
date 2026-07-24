@@ -28,7 +28,8 @@ struct CheongamConanApp: App {
             for: [
                 RecommendedPlace.self,
                 MissionRecord.self,
-                JourneySession.self
+                JourneySession.self,
+                TodayJourney.self
             ]
         )
     }
