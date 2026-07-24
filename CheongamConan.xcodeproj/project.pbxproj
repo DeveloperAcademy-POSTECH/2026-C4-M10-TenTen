@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		8E548F9D3003EE8E005353A2 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 8E548F9C3003EE8E005353A2 /* NMapsMap */; };
+		D10000013010A00100000001 /* CheongamConan/Resources/Missions.json in Resources */ = {isa = PBXBuildFile; fileRef = D10000023010A00100000001 /* CheongamConan/Resources/Missions.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8E103A893000F0CF00AF9464 /* CheongamConan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CheongamConan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D10000023010A00100000001 /* CheongamConan/Resources/Missions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = CheongamConan/Resources/Missions.json; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -19,6 +21,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Resources/Missions.json,
 			);
 			target = 8E103A883000F0CF00AF9464 /* CheongamConan */;
 		};
@@ -47,11 +50,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		788CBF8F3012EECA004B15CE /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				D10000023010A00100000001 /* CheongamConan/Resources/Missions.json */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		8E103A803000F0CF00AF9464 = {
 			isa = PBXGroup;
 			children = (
 				8E103A8B3000F0CF00AF9464 /* CheongamConan */,
 				8E103A8A3000F0CF00AF9464 /* Products */,
+				788CBF8F3012EECA004B15CE /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,6 +143,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D10000013010A00100000001 /* CheongamConan/Resources/Missions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +292,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HJGS4LQ7XH;
+				DEVELOPMENT_TEAM = 42K8379729;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CheongamConan/Info.plist;

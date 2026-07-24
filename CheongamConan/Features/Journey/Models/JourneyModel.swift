@@ -104,7 +104,6 @@ final class JourneyModel {
                 id: subQuest.id,
                 recommendedPlaceID: destination.id,
                 title: subQuest.title,
-                missionDescription: subQuest.description,
                 unlockedAt: subQuest.triggeredAt
             )
             

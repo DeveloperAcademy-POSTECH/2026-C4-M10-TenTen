@@ -12,7 +12,7 @@ import SwiftData
 @MainActor
 @Observable
 final class ArrivalPlaceSearchModel {
-    private(set) var places: [Place] = []
+    private(set) var places: [SearchResultPlace] = []
     private(set) var isLoading: Bool = false
     private(set) var errorMessage: String?
     
