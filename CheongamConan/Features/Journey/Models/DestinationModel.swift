@@ -16,23 +16,23 @@ final class DestinationModel {
     private(set) var isLoading = false
     private(set) var errorMessage: String?
     
-    private let placeSearchService: NaverPlaceSearchService
+    private let placeSearchService: KakaoPlaceSearchService
     
     init() {
-        self.placeSearchService = NaverPlaceSearchService()
+        self.placeSearchService = KakaoPlaceSearchService()
     }
     
-    init(placeSearchService: NaverPlaceSearchService) {
+    init(placeSearchService: KakaoPlaceSearchService) {
         self.placeSearchService = placeSearchService
     }
     
-    private func isExcludedPlace(_ place: Place) -> Bool {
-        let name = place.name
+    private func isExcludedPlace(_ place: SearchResultPlace) -> Bool {
+        let name = place.placeName
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: " ", with: "")
             .lowercased()
         
-        let category = place.category
+        let category = place.categoryName
             .replacingOccurrences(of: " ", with: "")
             .lowercased()
         
@@ -95,7 +95,7 @@ final class DestinationModel {
         }
     }
     
-    private func requestRecommendation(area: String, category: String) async throws -> Place {
+    private func requestRecommendation(area: String, category: String) async throws -> SearchResultPlace {
         let searchCategory = randomCategory(from: category)
         let places = try await placeSearchService.search(query: "\(area) \(searchCategory)")
         let localPlaces = places.filter {
@@ -116,9 +116,12 @@ final class DestinationModel {
         return try modelContext.fetch(descriptor).first
     }
     
-    private func saveRecommendedPlace(_ place: Place, modelContext: ModelContext) throws -> RecommendedPlace {
+    private func saveRecommendedPlace(_ place: SearchResultPlace, modelContext: ModelContext) throws -> RecommendedPlace {
         let recommendedPlace = RecommendedPlace(
-            latitude: place.latitude, longitude: place.longitude, name: place.name, roadAddress: place.roadAddress
+            latitude: Double(place.latitude) ?? 0,
+            longitude: Double(place.longitude) ?? 0,
+            name: place.placeName,
+            roadAddress: place.roadAddressName
         )
         
         modelContext.insert(recommendedPlace)

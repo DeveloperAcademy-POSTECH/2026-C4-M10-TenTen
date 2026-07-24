@@ -40,6 +40,8 @@ final class JourneyTrackingModel {
     // MARK: - SubQuest State
     
     private let subQuestTriggerRule = SubQuestTriggerRule(distanceThreshold: 25)
+    private let missionProvider: MissionProvider?
+    private(set) var missionLoadingError: Error?
     
     /// 현재는 기존 동작을 유지하기 위해
     /// 한 Journey에서 서브 퀘스트를 한 번만 발생시킨다
@@ -54,6 +56,22 @@ final class JourneyTrackingModel {
         
         return triggeredSubQuests.first {
             $0.id == activeSubQuestID
+        }
+    }
+
+    init(missionProvider: MissionProvider? = nil) {
+        if let missionProvider {
+            self.missionProvider = missionProvider
+            missionLoadingError = nil
+            return
+        }
+
+        do {
+            self.missionProvider = try MissionProvider()
+            missionLoadingError = nil
+        } catch {
+            self.missionProvider = nil
+            missionLoadingError = error
         }
     }
     
@@ -145,7 +163,9 @@ final class JourneyTrackingModel {
         ) else {
             return
         }
-        let subQuest = SubQuest.movementExample()
+        guard let subQuest = missionProvider?.makeRandomSubQuest() else {
+            return
+        }
         activate(subQuest)
         hasTriggeredSubQuest = true
     }
@@ -183,7 +203,10 @@ final class JourneyTrackingModel {
             guard let self, !hasTriggeredSubQuest else {
                 return
             }
-            activate(SubQuest.movementExample())
+            guard let subQuest = missionProvider?.makeRandomSubQuest() else {
+                return
+            }
+            activate(subQuest)
             hasTriggeredSubQuest = true
         }
     }
